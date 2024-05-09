@@ -1,0 +1,62 @@
+name: DeadByMinecraft
+version: '${project.version}'
+main: me.mod108.deadbyminecraft.DeadByMinecraft
+api-version: '1.20'
+commands:
+  getmovementspeed:
+    description: Prints your current movement speed in %
+    usage: /<command>
+  setmovementspeed:
+    description: Changes your current movement speed to a value between 0.0 and 50.0 (0% and 5000%)
+    usage: /<command> (speed)
+  togglesprint:
+    description: Toggles your sprint ability
+    usage: /<command>
+  togglejump:
+    description: Toggles your jump ability
+    usage: /<command>
+  freeze:
+    description: Disables any movements for you (or enables if you're frozen already)
+    usage: /<command>
+  togglehealthregain:
+    description: Toggles your health regain ability
+    usage: /<command>
+  sbtest:
+    description: Testing nametag hiding feature
+    usage: /<command>
+  createlobby:
+    description: Creates a new Dead by Minecraft lobby
+    usage: /<command>
+  deletelobby:
+    description: Deletes current Dead by Minecraft lobby
+    usage: /<command>
+  addplayer:
+    description: Adds a player to Dead by Minecraft lobby
+    usage: /<command> (player) (role) [killer]
+  removeplayer:
+    description: Removes player from Dead by Minecraft lobby
+    usage: /<command> (player)
+  getplayers:
+    description: Gets the list of all players in the game on in the lobby
+    usage: /<command>
+  getkillers:
+    description: Gets the list of all killers available
+    usage: /<command>
+  startgame:
+    description: Starts a new game
+    usage: /<command>
+  finishgame:
+    description: Finishes the current game
+    usage: /<command>
+  spawnprop:
+    description: Spawns a prop
+    usage: /<command>
+  vanish:
+    description: Hides you
+    usage: /<command>
+  testplaysound:
+    description: Plays a sound by its name
+    usage: /<command> (sound)
+  getinjured:
+    description: Injures you
+    usage: /<command>

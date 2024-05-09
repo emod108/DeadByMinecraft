@@ -1,0 +1,37 @@
+1. Make game creation menu inventory gui based instead of commands
+
+2. Add inventory system for survivors
+    2.1 Add survivor items
+    2.2 Implement chests
+
+3. Update locker interaction
+    3.1 Add delay before entering and exiting lockers (implement action for this)
+    3.2 Add entering/leaving locker door animation
+    3.3 Add sounds and effects
+
+4. Implement killers
+    4.1 Make killers be able to search lockers
+    4.2 Add ability for killers to break pallets (+ sounds)
+    4.3 Implement pallet stuns and wiggling free stuns
+    4.4 Make killers be able to drop carried survivors
+    4.5 Add grabs
+
+5. Implement survivors
+    5.1 Implement wiggling mechanic
+    5.2 Implement healing
+    5.3 Implement recovering
+    5.4 Implement scratch marks and blood pools
+    5.5 Add endurance status effect
+
+6. Implement dying
+    6.1 Implement sacrifice mechanic
+    6.2 Add bleed-out mechanic
+
+7. Implement escaping
+    7.1 Implement exit gates escaping
+    7.2 Make it so killers can't leave the map
+    7.3 Implement the hatch
+
+8. Implement random map generation
+
+9. Connect everything together
