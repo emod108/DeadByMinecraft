@@ -99,6 +99,7 @@ public final class DeadByMinecraft extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ExitGateInteractListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerInteractEntityListener(), this);
         getServer().getPluginManager().registerEvents(new KillerPickupSurvivorListener(), this);
+        getServer().getPluginManager().registerEvents(new SurvivorHealListener(), this);
         getServer().getPluginManager().registerEvents(new EntityDismountListener(), this);
 
         // Inventory interactions

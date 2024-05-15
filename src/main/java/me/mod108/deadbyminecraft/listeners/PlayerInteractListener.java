@@ -79,7 +79,6 @@ public class PlayerInteractListener implements Listener {
 
                     final ExitGateInteractEvent event = new ExitGateInteractEvent(player, exitGate);
                     Bukkit.getServer().getPluginManager().callEvent(event);
-                    return;
                 }
             }
         }
@@ -120,7 +119,6 @@ public class PlayerInteractListener implements Listener {
                 if (hook != null) {
                     final HookInteractEvent event = new HookInteractEvent(player, hook);
                     Bukkit.getServer().getPluginManager().callEvent(event);
-                    return;
                 }
             }
         }

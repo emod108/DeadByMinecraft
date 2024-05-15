@@ -7,11 +7,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 public class SurvivorOpenExitAction extends Action {
-    // Repair progress achieved per second
-    private static final float OPEN_SPEED_SECONDS = 1.0f;
-
     // Repair speed achieved per tick
-    private static final float OPEN_SPEED_TICKS = OPEN_SPEED_SECONDS / Timings.TICKS_PER_SECOND;
+    private static final float OPEN_SPEED_TICKS = 1.0f / Timings.TICKS_PER_SECOND;
 
     // If players moves, exit gates opening process stops
     private Location startLocation = null;

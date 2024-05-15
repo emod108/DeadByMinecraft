@@ -9,7 +9,7 @@ import org.bukkit.Location;
 
 public class RepairAction extends Action {
     // Repair progress achieved per tick
-    private static final float REPAIR_SPEED = Timings.secondsToTicks(1.0);
+    private static final float REPAIR_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
 
     // How often does the action sound play
     private static final int timeTillRepairSound = Timings.secondsToTicks(2);
@@ -47,9 +47,10 @@ public class RepairAction extends Action {
             return;
         }
 
-        final Generator generator = (Generator) target;
-        generator.addRepairProgress(REPAIR_SPEED);
+        // Adding repair progress
+        ((Generator) target).addRepairProgress(REPAIR_SPEED);
 
+        // Repair sounds
         ++currentTicksTillRepairSound;
         if (currentTicksTillRepairSound >= timeTillRepairSound) {
             SoundManager.playForAll(location, Generator.REPAIR_SOUND, 1.0f, 0.5f);

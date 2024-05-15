@@ -2,6 +2,7 @@ package me.mod108.deadbyminecraft.targets.characters;
 
 import me.mod108.crawlingplugin.CrawlingPlugin;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.actions.HealAction;
 import me.mod108.deadbyminecraft.actions.SurvivorOpenExitAction;
 import me.mod108.deadbyminecraft.actions.SurvivorUnhookAction;
 import me.mod108.deadbyminecraft.managers.SoundManager;
@@ -68,6 +69,7 @@ public class Survivor extends Character {
     public void getHit() {
         // Interrupting any actions after receiving a hit
         interruptAction();
+        healingProgress = 0.0f;
 
         // Creating hit effect
         player.playHurtAnimation(0);
@@ -106,8 +108,33 @@ public class Survivor extends Character {
         player.sendMessage(ChatColor.RED + "You are now in dying state.");
     }
 
-    public void addHealingProgress(final float progress) {
+    // Converts percents to progress
+    public static float healingPercentsToProgress(final float percents) {
+        return percents * MAX_HEALING_PROGRESS;
+    }
 
+    // Converts healing progress to percents
+    public static float healingProgressToPercents(final float progress) {
+        return progress / MAX_HEALING_PROGRESS;
+    }
+
+    // Returns current healing progress in range from 0.0 to 1.0
+    public float getHealingProgressPercents() {
+        return healingProgressToPercents(healingProgress);
+    }
+
+    // Returns current healing progress
+    public float getHealingProgress() {
+        return healingProgress;
+    }
+
+    public void addHealingProgress(final float progress) {
+        if (!isHealable() || progress < 0.0f)
+            return;
+
+        healingProgress += progress;
+        if (healingProgress >= MAX_HEALING_PROGRESS)
+            recoverHealthState();
     }
 
     public void recoverHealthState() {
@@ -219,6 +246,15 @@ public class Survivor extends Character {
         player.sendMessage(ChatColor.GREEN + "You have started repairing this generator. Don't move!");
     }
 
+    public void startHealing(final Survivor healingTarget) {
+        action = new HealAction(this, healingTarget);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+        player.sendMessage(ChatColor.GREEN + "You have started healing " + ChatColor.YELLOW +
+                healingTarget.getPlayer().getDisplayName());
+        healingTarget.getPlayer().sendMessage(ChatColor.GREEN + "You are now being healed by " + ChatColor.YELLOW +
+                player.getDisplayName());
+    }
+
     public void startUnhooking(final Survivor survivor) {
         action = new SurvivorUnhookAction(this, survivor);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
@@ -244,6 +280,19 @@ public class Survivor extends Character {
     public boolean isIncapacitated() {
         return (healthState != HealthState.HEALTHY && healthState != HealthState.INJURED &&
                 healthState != HealthState.DEEP_WOUND);
+    }
+
+    // Returns true, if survivor can be healed
+    // It works if survivor is injured and isn't interacting with anything
+    public boolean isHealable() {
+        if (healthState != HealthState.INJURED && healthState != HealthState.DEEP_WOUND &&
+                healthState != HealthState.DYING)
+            return false;
+
+        if (movementState != MovementState.IDLE)
+            return false;
+
+        return action == null;
     }
 
     @Override

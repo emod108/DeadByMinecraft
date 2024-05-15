@@ -2,6 +2,7 @@ package me.mod108.deadbyminecraft.listeners;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.events.KillerPickupSurvivorEvent;
+import me.mod108.deadbyminecraft.events.SurvivorHealEvent;
 import me.mod108.deadbyminecraft.events.SurvivorUnhookEvent;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
@@ -61,7 +62,12 @@ public class PlayerInteractEntityListener implements Listener {
                 if (target.getHealthState() == Survivor.HealthState.HOOKED) {
                     final SurvivorUnhookEvent event = new SurvivorUnhookEvent(performer, target);
                     Bukkit.getServer().getPluginManager().callEvent(event);
+                    return;
                 }
+
+                // Survivor heals another survivor
+                final SurvivorHealEvent event = new SurvivorHealEvent(performer, target);
+                Bukkit.getServer().getPluginManager().callEvent(event);
             }
         }
     }

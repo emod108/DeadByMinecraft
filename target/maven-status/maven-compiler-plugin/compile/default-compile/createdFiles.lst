@@ -1,5 +1,4 @@
 me\mod108\deadbyminecraft\events\PalletInteractEvent.class
-me\mod108\deadbyminecraft\actions\LockerEnterAction.class
 me\mod108\deadbyminecraft\targets\props\Generator.class
 me\mod108\deadbyminecraft\utility\Lobby.class
 me\mod108\deadbyminecraft\test\GetInjuredCommand.class
@@ -28,7 +27,6 @@ me\mod108\deadbyminecraft\actions\VaultAction.class
 me\mod108\deadbyminecraft\listeners\SurvivorUnhookListener.class
 me\mod108\deadbyminecraft\targets\props\vaultable\Vaultable.class
 me\mod108\deadbyminecraft\targets\props\ExitGate$ExitGateState.class
-me\mod108\deadbyminecraft\actions\LockerLeaveAction.class
 me\mod108\deadbyminecraft\actions\RepairAction.class
 me\mod108\deadbyminecraft\targets\props\vaultable\Window.class
 me\mod108\deadbyminecraft\targets\props\Generator$1.class
@@ -55,7 +53,6 @@ me\mod108\deadbyminecraft\events\KillerMissEvent.class
 me\mod108\deadbyminecraft\utility\Timings.class
 me\mod108\deadbyminecraft\listeners\KillerHookSurvivorListener.class
 me\mod108\deadbyminecraft\targets\props\vaultable\Pallet.class
-me\mod108\deadbyminecraft\items\Medkit.class
 me\mod108\deadbyminecraft\listeners\PlayerInteractListener.class
 me\mod108\deadbyminecraft\actions\HealAction.class
 me\mod108\deadbyminecraft\items\Item.class

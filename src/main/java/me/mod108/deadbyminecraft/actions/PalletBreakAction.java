@@ -9,10 +9,7 @@ import me.mod108.deadbyminecraft.utility.Timings;
 
 public class PalletBreakAction extends Action {
     // Pallet break progress achieved per second
-    private static final float PALLET_BREAK_PROGRESS_PER_SECOND = 1.0f;
-
-    // Pallet break progress achieved per second
-    private static final int PALLET_BREAK_PROGRESS_PER_TICK = Timings.secondsToTicks(PALLET_BREAK_PROGRESS_PER_SECOND);
+    private static final float PALLET_BREAK_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
 
     // Max pallet break progress
     private static final float MAX_PALLET_BREAK_PROGRESS = 2.3f;
@@ -46,7 +43,7 @@ public class PalletBreakAction extends Action {
         }
 
         // Unhook when progress reaches maximum
-        palletBreakProgress += PALLET_BREAK_PROGRESS_PER_TICK;
+        palletBreakProgress += PALLET_BREAK_SPEED;
         if (palletBreakProgress >= MAX_PALLET_BREAK_PROGRESS) {
             SoundManager.playForAll(pallet.getLocation(), Pallet.BREAK_SOUND, 1.0f, 1.0f);
             pallet.destroy();

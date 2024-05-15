@@ -87,6 +87,7 @@ public abstract class Prop implements Target {
         return bottom;
     }
 
+    @Override
     public Location getLocation() {
         return location;
     }

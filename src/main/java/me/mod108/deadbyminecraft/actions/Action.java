@@ -10,7 +10,7 @@ public abstract class Action extends BukkitRunnable {
     protected final Character performer;
     protected final Target target;
 
-    // If true, action end
+    // If true, action ends
     protected boolean cancelled = false;
 
     public Action(final Character performer, final Target target) {

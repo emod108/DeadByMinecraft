@@ -1,7 +1,6 @@
 package me.mod108.deadbyminecraft.listeners;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
-import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.utility.Game;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

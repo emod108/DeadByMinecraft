@@ -7,11 +7,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 public class SurvivorUnhookAction extends Action {
-    // Unhook progress achieved per second
-    private static final float UNHOOK_PROGRESS_PER_SECOND = 1.0f;
-
-    // Repair speed achieved per tick
-    private static final float UNHOOK_PROGRESS_PER_TICK = Timings.secondsToTicks(UNHOOK_PROGRESS_PER_SECOND);
+    // Unhook progress achieved per tick
+    private static final float UNHOOK_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
 
     // Max unhook progress
     private static final float MAX_UNHOOK_PROGRESS = 1.0f;
@@ -55,7 +52,7 @@ public class SurvivorUnhookAction extends Action {
         }
 
         // Unhook when progress reaches maximum
-        unhookProgress += UNHOOK_PROGRESS_PER_TICK;
+        unhookProgress += UNHOOK_SPEED;
         if (unhookProgress >= MAX_UNHOOK_PROGRESS) {
             unhookTarget.getUnhooked(hook);
             end();

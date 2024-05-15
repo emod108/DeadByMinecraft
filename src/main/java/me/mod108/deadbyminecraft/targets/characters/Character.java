@@ -62,6 +62,7 @@ public abstract class Character implements Target {
         return player;
     }
 
+    @Override
     public Location getLocation() {
         return player.getLocation();
     }

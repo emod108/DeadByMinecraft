@@ -4,15 +4,15 @@ import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class SurvivorUnhookEvent extends Event {
+public class SurvivorHealEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
 
     private final Survivor performer;
-    private final Survivor unhookTarget;
+    private final Survivor healingTarget;
 
-    public SurvivorUnhookEvent(final Survivor performer, final Survivor unhookTarget) {
+    public SurvivorHealEvent(final Survivor performer, final Survivor healingTarget) {
         this.performer = performer;
-        this.unhookTarget = unhookTarget;
+        this.healingTarget = healingTarget;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class SurvivorUnhookEvent extends Event {
         return performer;
     }
 
-    public Survivor getUnhookTarget() {
-        return unhookTarget;
+    public Survivor getHealingTarget() {
+        return healingTarget;
     }
 }

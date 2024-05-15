@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class EntityDamageEntityListener implements Listener {
-    private Set<UUID> attackers = new HashSet<>();
+    private final Set<UUID> attackers = new HashSet<>();
 
     @EventHandler
     public void onEntityDamageEntity(final EntityDamageByEntityEvent e) {
@@ -78,7 +78,7 @@ public class EntityDamageEntityListener implements Listener {
 
         final Player player = e.getPlayer();
         final PlayerAnimationType anim = e.getAnimationType();
-        if(anim == PlayerAnimationType.ARM_SWING) {
+        if (anim == PlayerAnimationType.ARM_SWING) {
             BukkitScheduler scheduler = plugin.getServer().getScheduler();
             scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
                 @Override

@@ -5,7 +5,6 @@ import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Prop;
-import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
