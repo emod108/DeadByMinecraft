@@ -24,7 +24,7 @@ public abstract class Character implements Target {
     public static final double ACTION_MAX_DISTANCE = 1.8;
 
     // Player who plays as this character
-    protected final Player player;
+    protected Player player;
 
     // Base speed at which this character moves
     private final float baseSpeed;
@@ -60,6 +60,10 @@ public abstract class Character implements Target {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void setPlayer(final Player player) {
+        this.player = player;
     }
 
     @Override

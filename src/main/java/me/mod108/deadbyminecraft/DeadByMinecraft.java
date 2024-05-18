@@ -18,8 +18,10 @@ import me.mod108.deadbyminecraft.managers.VanishManager;
 import me.mod108.deadbyminecraft.test.*;
 import me.mod108.deadbyminecraft.utility.Game;
 import me.mod108.deadbyminecraft.utility.Lobby;
+import org.bukkit.Server;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DeadByMinecraft extends JavaPlugin {
@@ -48,6 +50,8 @@ public final class DeadByMinecraft extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+        final Server server = getServer();
+        final PluginManager pluginManager = server.getPluginManager();
 
         // Test commands
         registerCommand("getmovementspeed", new GetMovementSpeedCommand());
@@ -66,11 +70,11 @@ public final class DeadByMinecraft extends JavaPlugin {
         registerCommand("finishgame", new FinishGameCommand());
 
         // Freeze manager
-        getServer().getPluginManager().registerEvents(freezeManager, this);
+        pluginManager.registerEvents(freezeManager, this);
         registerCommand("freeze", freezeManager);
 
         // Health regain manager
-        getServer().getPluginManager().registerEvents(healthRegainManager, this);
+        pluginManager.registerEvents(healthRegainManager, this);
         registerCommand("togglehealthregain", healthRegainManager);
 
         // Jumping manager
@@ -80,36 +84,40 @@ public final class DeadByMinecraft extends JavaPlugin {
         registerCommand("testplaysound", soundManager);
 
         // Sprint manager
-        getServer().getPluginManager().registerEvents(sprintManager, this);
+        pluginManager.registerEvents(sprintManager, this);
         registerCommand("togglesprint", sprintManager);
 
         // Vanish manager
         registerCommand("vanish", vanishManager);
 
         // Player attacking another player
-        getServer().getPluginManager().registerEvents(new EntityDamageEntityListener(), this);
-        getServer().getPluginManager().registerEvents(new KillerAttackSurvivorListener(), this);
+        pluginManager.registerEvents(new EntityDamageEntityListener(), this);
+        pluginManager.registerEvents(new KillerAttackSurvivorListener(), this);
+
+        // Join / Leave events
+        pluginManager.registerEvents(new PlayerLeaveListener(), this);
+        pluginManager.registerEvents(new PlayerJoinListener(), this);
 
         // Player interaction
-        getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
-        getServer().getPluginManager().registerEvents(new VaultListener(), this);
-        getServer().getPluginManager().registerEvents(new PalletInteractListener(), this);
-        getServer().getPluginManager().registerEvents(new LockerInteractListener(), this);
-        getServer().getPluginManager().registerEvents(new GeneratorInteractListener(), this);
-        getServer().getPluginManager().registerEvents(new ExitGateInteractListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerInteractEntityListener(), this);
-        getServer().getPluginManager().registerEvents(new KillerPickupSurvivorListener(), this);
-        getServer().getPluginManager().registerEvents(new SurvivorHealListener(), this);
-        getServer().getPluginManager().registerEvents(new EntityDismountListener(), this);
+        pluginManager.registerEvents(new PlayerInteractListener(), this);
+        pluginManager.registerEvents(new VaultListener(), this);
+        pluginManager.registerEvents(new PalletInteractListener(), this);
+        pluginManager.registerEvents(new LockerInteractListener(), this);
+        pluginManager.registerEvents(new GeneratorInteractListener(), this);
+        pluginManager.registerEvents(new ExitGateInteractListener(), this);
+        pluginManager.registerEvents(new PlayerInteractEntityListener(), this);
+        pluginManager.registerEvents(new KillerPickupSurvivorListener(), this);
+        pluginManager.registerEvents(new SurvivorHealListener(), this);
+        pluginManager.registerEvents(new EntityDismountListener(), this);
 
         // Inventory interactions
-        getServer().getPluginManager().registerEvents(new DropItemListener(), this);
-        getServer().getPluginManager().registerEvents(new InventoryClickListener(), this);
+        pluginManager.registerEvents(new DropItemListener(), this);
+        pluginManager.registerEvents(new InventoryClickListener(), this);
 
         // Hook Interactions
-        getServer().getPluginManager().registerEvents(new HookInteractListener(), this);
-        getServer().getPluginManager().registerEvents(new KillerHookSurvivorListener(), this);
-        getServer().getPluginManager().registerEvents(new SurvivorUnhookListener(), this);
+        pluginManager.registerEvents(new HookInteractListener(), this);
+        pluginManager.registerEvents(new KillerHookSurvivorListener(), this);
+        pluginManager.registerEvents(new SurvivorUnhookListener(), this);
 
         // Test
         registerCommand("getinjured", new GetInjuredCommand());
@@ -142,7 +150,23 @@ public final class DeadByMinecraft extends JavaPlugin {
         return game;
     }
 
-    public void setGame(final Game game) {
-        this.game = game;
+    public void startGame() {
+        if (game != null)
+            return;
+
+        if (lobby == null)
+            return;
+
+        lobby.removeOfflinePlayers();
+        game = new Game(plugin.getLobby().getPlayers());
+        game.startGame();
+        lobby = null;
+    }
+
+    public void finishGame() {
+        if (game != null) {
+            game.finishGame();
+            game = null;
+        }
     }
 }

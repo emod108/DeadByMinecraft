@@ -18,6 +18,10 @@ public class SurvivorUnhookListener implements Listener {
         if (!performer.canInteractWithSurvivor())
             return;
 
+        // Hooked survivor can be unhooked only by one person at a time
+        if (unhookTarget.isBeingUnhooked())
+            return;
+
         // Distance check
         final Location performerLocation = performer.getLocation();
         final Location unhookTargetLocation = unhookTarget.getLocation();

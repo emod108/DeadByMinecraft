@@ -1,7 +1,6 @@
 package me.mod108.deadbyminecraft.commands;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
-import me.mod108.deadbyminecraft.utility.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,9 +18,7 @@ public class StartGameCommand implements CommandExecutor {
         } else if (plugin.getLobby() == null) {
             sender.sendMessage(ChatColor.YELLOW + "No lobby exists to get players from! Create a lobby first.");
         } else {
-            final Game game = new Game(plugin.getLobby().getPlayers());
-            plugin.setGame(game);
-            plugin.setLobby(null);
+            plugin.startGame();
             sender.sendMessage(ChatColor.GREEN + "The game was started successfully!");
         }
 

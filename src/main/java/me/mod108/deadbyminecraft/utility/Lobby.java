@@ -92,6 +92,12 @@ public class Lobby {
             players.remove(index);
     }
 
+    // Removes offline players
+    // Returns true if offline players were found
+    public boolean removeOfflinePlayers() {
+        return players.removeIf(n -> !n.getPlayer().isOnline());
+    }
+
     public void clearPlayers() {
         players.clear();
     }

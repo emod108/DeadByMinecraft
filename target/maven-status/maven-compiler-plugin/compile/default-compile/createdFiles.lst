@@ -58,6 +58,7 @@ me\mod108\deadbyminecraft\listeners\PlayerInteractListener.class
 me\mod108\deadbyminecraft\actions\HealAction.class
 me\mod108\deadbyminecraft\items\Item.class
 me\mod108\deadbyminecraft\targets\props\Generator$GeneratorSide.class
+me\mod108\deadbyminecraft\listeners\PlayerJoinListener.class
 me\mod108\deadbyminecraft\targets\characters\Character$MovementState.class
 me\mod108\deadbyminecraft\events\SurvivorUnhookEvent.class
 me\mod108\deadbyminecraft\targets\props\BasementHook.class
@@ -75,6 +76,7 @@ me\mod108\deadbyminecraft\utility\Game.class
 me\mod108\deadbyminecraft\commands\GetKillersCommand.class
 me\mod108\deadbyminecraft\test\SpawnPropCommand.class
 me\mod108\deadbyminecraft\listeners\PlayerInteractEntityListener.class
+me\mod108\deadbyminecraft\listeners\PlayerLeaveListener.class
 me\mod108\deadbyminecraft\utility\ProgressBar.class
 me\mod108\deadbyminecraft\listeners\DropItemListener.class
 me\mod108\deadbyminecraft\events\KillerAttackSurvivorEvent.class

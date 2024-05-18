@@ -9,6 +9,7 @@ E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\dea
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\events\LockerInteractEvent.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\SurvivorUnhookListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\props\vaultable\Pallet.java
+E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\RecoverAction.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\SurvivorOpenExitAction.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\props\Locker.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\HookInteractListener.java
@@ -22,6 +23,7 @@ E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\dea
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\DropItemListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\VaultAction.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\events\KillerAttackSurvivorEvent.java
+E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\PlayerJoinListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\VaultListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\managers\JumpingManager.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\characters\Survivor.java
@@ -48,6 +50,7 @@ E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\dea
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\events\ExitGateInteractEvent.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\LockerInteractListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\test\ScoreboardTestCommand.java
+E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\PlayerLeaveListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\test\SpawnPropCommand.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\utility\Timings.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\events\KillerHookSurvivorEvent.java

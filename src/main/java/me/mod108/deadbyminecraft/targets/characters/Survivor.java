@@ -16,13 +16,17 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class Survivor extends Character {
-    public enum HealthState { HEALTHY, INJURED, DEEP_WOUND, DYING, BEING_CARRIED, HOOKED, DEAD }
+    public enum HealthState { HEALTHY, INJURED, DEEP_WOUND, DYING, BEING_CARRIED, HOOKED,
+        SACRIFICED, DEAD, DISCONNECTED, ESCAPED }
 
     // After achieving this hook stage survivor dies
     private static final int MAX_HOOK_STAGE = 3;
 
     // Default time survivor has before hook stage progression (in ticks)
-    private static final int STARTING_HOOKED_HEALTH = Timings.secondsToTicks(75);
+    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(75);
+
+    // Default time survivor has before dying from bleeding out
+    private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(240);
 
     // Default speed is 100%
     public static final float DEFAULT_SPEED = 1.0f;
@@ -40,10 +44,16 @@ public class Survivor extends Character {
     private int hookStage = 0;
 
     // Time survivor has before hook stage progression (in ticks)
-    private int hookedHealth = STARTING_HOOKED_HEALTH;
+    private int sacrificeTime = 0;
 
     // Hook survivor is hooked on
     private Hook hookedOn = null;
+
+    // Shows if survivor is being unhooked by someone
+    private boolean beingUnhooked = false;
+
+    // Time survivor has before dying from bleeding out
+    private int bleedoutTime = STARTING_BLEEDOUT_TIME;
 
     // How survivor is doing
     private HealthState healthState = HealthState.HEALTHY;
@@ -154,6 +164,9 @@ public class Survivor extends Character {
                 healthState = HealthState.INJURED;
                 CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
                 player.sendMessage(ChatColor.GREEN + "You are no longer in dying state.");
+
+                // Hiding bleed-out timer
+                player.setLevel(0);
             }
         }
     }
@@ -171,6 +184,57 @@ public class Survivor extends Character {
             world.spawnParticle(Particle.BLOCK_CRACK, getLocation(), 1, 0.1, 0.1, 0.1,
                     Material.REDSTONE_BLOCK.createBlockData());
         }
+    }
+
+    // If survivor is in dying state, he can bleed-out after some time.
+    // Must be called every tick
+    public void processBleedOut() {
+        if (healthState != HealthState.DYING)
+            return;
+
+        if (!isBeingHealed() && bleedoutTime > 0) {
+            --bleedoutTime;
+        }
+
+        // Showing bleed-out timer
+        player.setLevel((int) Timings.ticksToSeconds(bleedoutTime));
+    }
+
+    // If survivor is hooked, he can be sacrificed after some time.
+    // Must be called every tick
+    public void processSacrifice() {
+        if (healthState != HealthState.HOOKED)
+            return;
+
+        // Processing timer
+        if (!beingUnhooked && sacrificeTime > 0) {
+            --sacrificeTime;
+
+            // Progressing to the next stage
+            if (sacrificeTime == 0) {
+                ++hookStage;
+                sacrificeTime = STAGE_PROGRESSION_TIME;
+            }
+        }
+
+        // PLACE FOR CHECK IF PERSON HIT THE 3rd stage
+        // RETURN AFTER THAT
+        if (hookStage >= MAX_HOOK_STAGE) {
+            return;
+        }
+
+        // Showing sacrifice time
+        final int timeLeftTicks = sacrificeTime + STAGE_PROGRESSION_TIME * (MAX_HOOK_STAGE - hookStage - 1);
+        final int timeLeft = (int) Timings.ticksToSeconds(timeLeftTicks);
+        player.setLevel(timeLeft);
+    }
+
+    public boolean isBeingUnhooked() {
+        return beingUnhooked;
+    }
+
+    public void setBeingUnhooked(final boolean beingUnhooked) {
+        this.beingUnhooked = beingUnhooked;
     }
 
     public void enterLocker(final Locker locker) {
@@ -225,6 +289,9 @@ public class Survivor extends Character {
         player.teleport(teleportLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT));
         healthState = HealthState.HOOKED;
         hookedOn = hook;
+
+        ++hookStage;
+        sacrificeTime = STAGE_PROGRESSION_TIME;
     }
 
     public void getUnhooked(final Hook hook) {
@@ -234,6 +301,9 @@ public class Survivor extends Character {
         plugin.freezeManager.unFreeze(player);
         healthState = HealthState.INJURED;
         hookedOn = null;
+
+        // Hiding sacrifice time
+        player.setLevel(0);
     }
 
     // Returns hook on which survivor is hooked on
@@ -295,7 +365,7 @@ public class Survivor extends Character {
     // It doesn't show if he is damageable
     public boolean isHittable() {
         return (healthState != HealthState.DYING && healthState != HealthState.BEING_CARRIED &&
-                healthState != HealthState.DEAD && movementState != MovementState.IN_LOCKER);
+                movementState != MovementState.IN_LOCKER);
     }
 
     // Returns true if survivor is neither healthy, injured, nor deep wounded

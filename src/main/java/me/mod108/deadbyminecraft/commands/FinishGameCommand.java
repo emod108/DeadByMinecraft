@@ -1,7 +1,6 @@
 package me.mod108.deadbyminecraft.commands;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
-import me.mod108.deadbyminecraft.utility.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,13 +12,11 @@ public class FinishGameCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
-        final Game game = plugin.getGame();
 
-        if (game == null) {
+        if (plugin.getGame() == null) {
             sender.sendMessage(ChatColor.YELLOW + "There's no game to finish!");
         } else {
-            game.finishGame();
-            plugin.setGame(null);
+            plugin.finishGame();
             sender.sendMessage(ChatColor.GREEN + "Game was finished successfully!");
         }
 

@@ -6,6 +6,7 @@ import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Prop;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -29,6 +30,9 @@ public class Game {
     final BukkitRunnable gameUpdater = new BukkitRunnable() {
         @Override
         public void run() {
+            if (isCancelled())
+                return;
+
             for (final Character player : players) {
                 updatePlayer(player);
             }
@@ -40,11 +44,9 @@ public class Game {
 
         startingGenerators = players.size() + ADDITIONAL_GENERATORS;
         generatorsLeft = startingGenerators;
-
-        startGame();
     }
 
-    private void startGame() {
+    public void startGame() {
         // Preparing all players for the game
         for (final Character player : players) {
             preparePlayer(player);
@@ -84,6 +86,9 @@ public class Game {
         player.getPlayer().setExp(0.0f);
         player.getPlayer().setLevel(0);
 
+        // Setting game mode to adventure
+        player.getPlayer().setGameMode(GameMode.ADVENTURE);
+
         // Preparing killer
         if (player instanceof final Killer killer) {
             killer.applyKillerKit();
@@ -92,9 +97,6 @@ public class Game {
 
     // Updates this player. Must be called every tick
     private void updatePlayer(final Character player) {
-        // Updating player's speed
-        player.updateSpeed();
-
         if (player instanceof final Killer killer) {
             killer.decrementStunTime();
             killer.decrementAttackCooldownTime();
@@ -110,15 +112,28 @@ public class Game {
         } else if (player instanceof final Survivor survivor) {
             // Spawning blood particles under injured survivors
             final Survivor.HealthState healthState = survivor.getHealthState();
-            if (healthState != Survivor.HealthState.HEALTHY && healthState != Survivor.HealthState.DEAD &&
-                healthState != Survivor.HealthState.BEING_CARRIED) {
+
+            // We don't update disconnected survivors
+            if (healthState == Survivor.HealthState.DISCONNECTED)
+                return;
+
+            // Create blood particles on injured survivors
+            if (healthState == Survivor.HealthState.INJURED || healthState == Survivor.HealthState.DEEP_WOUND ||
+                healthState == Survivor.HealthState.DYING || healthState == Survivor.HealthState.HOOKED) {
                 survivor.bleed();
             }
+
+            // Processing bleed-out and sacrifice timers
+            survivor.processBleedOut();
+            survivor.processSacrifice();
         }
+
+        // Updating player's speed
+        player.updateSpeed();
     }
 
     // This method fully resets player
-    private void resetPlayer(final Character player) {
+    public void resetPlayer(final Character player) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
 
         // Resetting killer
@@ -138,7 +153,9 @@ public class Game {
         plugin.vanishManager.show(player.getPlayer());
 
         ProgressBar.resetProgress(player.getPlayer());
+        player.getPlayer().setLevel(0);
         CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player.getPlayer());
+        player.getPlayer().setGameMode(GameMode.ADVENTURE);
     }
 
     public Character getPlayer(final Player player) {

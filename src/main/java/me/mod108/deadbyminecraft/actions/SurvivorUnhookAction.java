@@ -21,6 +21,7 @@ public class SurvivorUnhookAction extends Action {
 
     public SurvivorUnhookAction(final Survivor performer, final Survivor unhookTarget) {
         super(performer, unhookTarget);
+        unhookTarget.setBeingUnhooked(true);
     }
 
     @Override
@@ -57,6 +58,12 @@ public class SurvivorUnhookAction extends Action {
             unhookTarget.getUnhooked(hook);
             end();
         }
+    }
+
+    @Override
+    public void end() {
+        super.end();
+        ((Survivor) target).setBeingUnhooked(false);
     }
 
     @Override

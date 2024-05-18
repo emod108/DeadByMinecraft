@@ -2,8 +2,8 @@
 1.2 Make players invulnerable to damage
 
 2. Add inventory system for survivors
-    2.1 Add survivor items
-    2.2 Implement chests
+    2.1 Bonus: Add survivor items
+    2.2 Bonus: Implement chests
 
 3. Update locker interaction
     3.1 Add delay before entering and exiting lockers (implement action for this)
@@ -14,17 +14,16 @@
     4.1 Make killers be able to search lockers
     4.2 Implement pallet stuns and wiggling free stuns
     4.3 Make killers be able to drop carried survivors
-    4.4 Add grabs
+    4.4 Bonus: Add grabs
     4.5 Add breaking generators and implement generator regress system
-    4.6 Add opening gates
-    4.7 Implement breakable walls
+    4.6 Bonus: Add opening gates
+    4.7 Bonus: Implement breakable walls
     4.8 Implement hooking and picking up animation
 
 5. Implement survivors
     5.1 Implement wiggling mechanic
-    5.2 Implement recovering
-    5.3 Implement scratch marks and blood pools
-    5.4 Add endurance status effect
+    5.2 Bonus: Implement scratch marks and blood pools
+    5.3 Bonus: Add endurance status effect
     5.5 Bonus: Implement skill-checks in any way
 
 6. Implement dying
@@ -34,7 +33,7 @@
 7. Implement escaping
     7.1 Implement exit gates escaping
     7.2 Make it so killers can't leave the map
-    7.3 Implement the hatch
+    7.3 Bonus: Implement the hatch
     7.4 Implement endgame collapse timer
 
 8. Implement random map generation
