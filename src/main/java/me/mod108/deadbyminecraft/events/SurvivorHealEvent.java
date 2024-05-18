@@ -20,6 +20,10 @@ public class SurvivorHealEvent extends Event {
         return handlers;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Survivor getPerformer() {
         return performer;
     }

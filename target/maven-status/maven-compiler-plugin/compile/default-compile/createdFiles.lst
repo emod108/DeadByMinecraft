@@ -18,6 +18,7 @@ me\mod108\deadbyminecraft\targets\characters\Character.class
 me\mod108\deadbyminecraft\actions\SurvivorOpenExitAction.class
 me\mod108\deadbyminecraft\listeners\EntityDismountListener.class
 me\mod108\deadbyminecraft\listeners\InventoryClickListener.class
+me\mod108\deadbyminecraft\actions\RecoverAction.class
 me\mod108\deadbyminecraft\DeadByMinecraft.class
 me\mod108\deadbyminecraft\listeners\LockerInteractListener.class
 me\mod108\deadbyminecraft\targets\characters\killers\Killer.class

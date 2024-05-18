@@ -35,18 +35,23 @@ public class PalletBreakAction extends Action {
             return;
         super.run();
 
-        final Pallet pallet = (Pallet) target;
-
+        // Playing break sound if breaking progress reaches half
         if (!halfwayThrough && palletBreakProgress >= MAX_PALLET_BREAK_PROGRESS / 2) {
-            SoundManager.playForAll(pallet.getLocation(), Pallet.BREAK_SOUND, 1.0f, 1.0f);
+            SoundManager.playForAll(target.getLocation(), Pallet.BREAK_SOUND, 1.0f, 1.0f);
             halfwayThrough = true;
         }
 
-        // Unhook when progress reaches maximum
+        // Breaking the pallet when the progress reaches max
         palletBreakProgress += PALLET_BREAK_SPEED;
         if (palletBreakProgress >= MAX_PALLET_BREAK_PROGRESS) {
-            SoundManager.playForAll(pallet.getLocation(), Pallet.BREAK_SOUND, 1.0f, 1.0f);
+            SoundManager.playForAll(target.getLocation(), Pallet.BREAK_SOUND, 1.0f, 1.0f);
+
+            // Destroying the pallet
+            final Pallet pallet = (Pallet) target;
             pallet.destroy();
+            ((Pallet) target).destroy();
+            DeadByMinecraft.getPlugin().getGame().removeProp(pallet);
+
             end();
         }
     }

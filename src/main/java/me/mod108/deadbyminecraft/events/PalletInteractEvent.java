@@ -21,6 +21,10 @@ public class PalletInteractEvent extends Event {
         return handlers;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Character getPlayer() {
         return player;
     }

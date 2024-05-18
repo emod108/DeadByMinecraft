@@ -8,7 +8,7 @@ import org.bukkit.Location;
 
 public class SurvivorOpenExitAction extends Action {
     // Repair speed achieved per tick
-    private static final float OPEN_SPEED_TICKS = 1.0f / Timings.TICKS_PER_SECOND;
+    private static final float OPEN_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
 
     // If players moves, exit gates opening process stops
     private Location startLocation = null;
@@ -36,8 +36,7 @@ public class SurvivorOpenExitAction extends Action {
             return;
         }
 
-        final ExitGate exitGate = (ExitGate) target;
-        exitGate.addOpenProgress(OPEN_SPEED_TICKS);
+        ((ExitGate) target).addOpenProgress(OPEN_SPEED);
     }
 
     @Override

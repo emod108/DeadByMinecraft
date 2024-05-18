@@ -1,6 +1,7 @@
 package me.mod108.deadbyminecraft.listeners;
 
 import me.mod108.deadbyminecraft.events.*;
+import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.props.*;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Window;
@@ -25,13 +26,24 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return;
 
-        // Checking if it was right click
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-
         // Checking if player is in the game
         final Character player = game.getPlayer(e.getPlayer());
         if (player == null)
+            return;
+
+        // Checking if it's a survivor in dying state, so he can start recovering
+        if (player instanceof final Survivor survivor) {
+            if (survivor.getHealthState() == Survivor.HealthState.DYING) {
+                if (!survivor.isBeingHealed() && survivor.getAction() == null &&
+                        (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR)) {
+                    survivor.startRecovering();
+                }
+                return;
+            }
+        }
+
+        // Checking if it was right click
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
         // Checking if block is not null

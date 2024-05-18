@@ -11,9 +11,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.HashSet;
@@ -70,43 +72,43 @@ public class EntityDamageEntityListener implements Listener {
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
 
-    // This event fires every time players swings
-    // Needed to check later if killer missed
+    // This event fires every time players left clicks
+    // Needed to check later if the killer missed an attack
     @EventHandler
-    public void onSwinging(final PlayerAnimationEvent e) {
+    public void onSwinging(final PlayerInteractEvent e) {
+        // If it's not a left click, we return
+        final Action playerAction = e.getAction();
+        if (playerAction != Action.LEFT_CLICK_AIR && playerAction != Action.LEFT_CLICK_BLOCK)
+            return;
+
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
-
         final Player player = e.getPlayer();
-        final PlayerAnimationType anim = e.getAnimationType();
-        if (anim == PlayerAnimationType.ARM_SWING) {
-            BukkitScheduler scheduler = plugin.getServer().getScheduler();
-            scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    // Killer attacked someone, it's already handled
-                    if (attackers.contains(player.getUniqueId())) {
-                        attackers.remove(player.getUniqueId());
-                        return;
-                    }
-
-                    // Checking game
-                    final Game game = DeadByMinecraft.getPlugin().getGame();
-                    if (game == null)
-                        return;
-
-                    // Player must be in the game
-                    final Character attacker = game.getPlayer(player);
-                    if (attacker == null)
-                        return;
-
-                    // Player must be a killer
-                    if (attacker instanceof final Killer killer) {
-                        final KillerMissEvent event = new KillerMissEvent(killer);
-                        Bukkit.getServer().getPluginManager().callEvent(event);
-                    }
+        final BukkitScheduler scheduler = plugin.getServer().getScheduler();
+        scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                // Killer attacked someone, it's already handled
+                if (attackers.contains(player.getUniqueId())) {
+                    attackers.remove(player.getUniqueId());
+                    return;
                 }
-            }, 1L);
 
-        }
+                // Checking game
+                final Game game = DeadByMinecraft.getPlugin().getGame();
+                if (game == null)
+                    return;
+
+                // Player must be in the game
+                final Character attacker = game.getPlayer(player);
+                if (attacker == null)
+                    return;
+
+                // Player must be the killer
+                if (attacker instanceof final Killer killer) {
+                    final KillerMissEvent event = new KillerMissEvent(killer);
+                    Bukkit.getServer().getPluginManager().callEvent(event);
+                }
+            }
+        }, 1L);
     }
 }

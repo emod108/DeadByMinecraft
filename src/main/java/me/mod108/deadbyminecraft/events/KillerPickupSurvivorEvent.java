@@ -21,6 +21,10 @@ public class KillerPickupSurvivorEvent extends Event {
         return handlers;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Killer getKiller() {
         return killer;
     }

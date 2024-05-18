@@ -5,6 +5,7 @@ import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Prop;
+import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -169,5 +170,9 @@ public class Game {
 
         if (!prop.isBuilt())
             prop.build();
+    }
+
+    public void removeProp(final Prop prop) {
+        props.removeIf(n -> (n.getLocation().equals(prop.getLocation())));
     }
 }

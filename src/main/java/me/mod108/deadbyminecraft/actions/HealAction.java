@@ -8,7 +8,7 @@ import org.bukkit.Location;
 
 public class HealAction extends Action {
     // Healing progress achieved per tick
-    private static final float HEALING_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
+    public static final float HEALING_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
 
     // If healer or healing target moves, then action stops
     private Location healerLocation = null;
@@ -16,6 +16,7 @@ public class HealAction extends Action {
 
     public HealAction(final Survivor healer, final Survivor target) {
         super(healer, target);
+        target.addToHealersList(healer);
     }
 
     @Override
@@ -27,6 +28,19 @@ public class HealAction extends Action {
         // Showing healing progress to the one who is being healed
         final Survivor healedTarget = (Survivor) target;
         ProgressBar.setProgress(healedTarget.getPlayer(), getProgress());
+
+        // If target can't be healed anymore, we stop
+        if (!healedTarget.isHealable()) {
+            end();
+            return;
+        }
+
+        // Can't heal sneaking players
+        if (healedTarget.getPlayer().isSneaking()) {
+            end();
+            performer.getPlayer().sendMessage(ChatColor.RED + "Target doesn't want to be healed.");
+            return;
+        }
 
         // Getting starting location
         if (healerLocation == null)
@@ -55,17 +69,17 @@ public class HealAction extends Action {
             return;
         }
 
-        // If target can't be healed anymore, we stop
         healedTarget.addHealingProgress(HEALING_SPEED);
-        if (!healedTarget.isHealable())
-            end();
     }
 
     @Override
     public void end() {
         super.end();
         final Survivor healedSurvivor = (Survivor) target;
-        ProgressBar.resetProgress(healedSurvivor.getPlayer());
+
+        if (healedSurvivor.getHealthState() != Survivor.HealthState.DYING)
+            ProgressBar.resetProgress(healedSurvivor.getPlayer());
+        healedSurvivor.removeFromHealersList((Survivor) performer);
     }
 
     @Override

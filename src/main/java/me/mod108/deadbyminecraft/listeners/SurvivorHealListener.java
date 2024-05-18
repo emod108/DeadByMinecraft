@@ -20,6 +20,12 @@ public class SurvivorHealListener implements Listener {
         if (!healingTarget.isHealable())
             return;
 
+        // Can't heal sneaking players
+        if (healingTarget.getPlayer().isSneaking()) {
+            performer.getPlayer().sendMessage(ChatColor.RED + "Target doesn't want to be healed.");
+            return;
+        }
+
         // Distance check
         final Location performerLocation = performer.getLocation();
         final Location healingTargetLocation = healingTarget.getLocation();

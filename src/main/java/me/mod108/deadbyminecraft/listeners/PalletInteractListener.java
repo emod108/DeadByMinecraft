@@ -30,14 +30,22 @@ public class PalletInteractListener implements Listener {
             return;
         }
 
-        // If killer breaks the pallet, we can't interact with it
+        // Can't interact with pallet when they are being broken
         if (pallet.isBeingDestroyed())
             return;
 
-        if (player instanceof Killer)
+        // Can't interact with pallet when they are being vaulted
+        if (pallet.getVaultingPlayer() != null)
             return;
 
-        // If pallet is not dropped, then we change that
+        // If it's the killer
+        if (player instanceof final Killer killer) {
+            if (pallet.isDropped())
+                killer.startBreakingPallet(pallet);
+            return;
+        }
+
+        // If pallet is not dropped, then survivor can drop it
         if (!pallet.isDropped()) {
             pallet.dropPallet();
             return;

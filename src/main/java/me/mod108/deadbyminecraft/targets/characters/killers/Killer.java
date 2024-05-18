@@ -1,11 +1,14 @@
 package me.mod108.deadbyminecraft.targets.characters.killers;
 
 import me.mod108.crawlingplugin.CrawlingPlugin;
+import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.actions.PalletBreakAction;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.props.ExitGate;
 import me.mod108.deadbyminecraft.targets.props.Hook;
+import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -253,6 +256,12 @@ public abstract class Killer extends Character {
         player.sendMessage(ChatColor.GREEN + "Survivor hooked!");
     }
 
+    public void startBreakingPallet(final Pallet target) {
+        action = new PalletBreakAction(this, target);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+        player.sendMessage(ChatColor.YELLOW + "Breaking a pallet");
+    }
+
     @Override
     public void startOpening(final ExitGate exitGate) {}
 
@@ -282,7 +291,7 @@ public abstract class Killer extends Character {
 
     @Override
     public boolean canInteractWithPallet() {
-        return false;
+        return canInteract();
     }
 
     @Override

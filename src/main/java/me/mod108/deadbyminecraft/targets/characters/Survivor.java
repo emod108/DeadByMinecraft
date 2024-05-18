@@ -2,9 +2,7 @@ package me.mod108.deadbyminecraft.targets.characters;
 
 import me.mod108.crawlingplugin.CrawlingPlugin;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
-import me.mod108.deadbyminecraft.actions.HealAction;
-import me.mod108.deadbyminecraft.actions.SurvivorOpenExitAction;
-import me.mod108.deadbyminecraft.actions.SurvivorUnhookAction;
+import me.mod108.deadbyminecraft.actions.*;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.props.ExitGate;
 import me.mod108.deadbyminecraft.targets.props.Generator;
@@ -12,9 +10,10 @@ import me.mod108.deadbyminecraft.targets.props.Hook;
 import me.mod108.deadbyminecraft.targets.props.Locker;
 import me.mod108.deadbyminecraft.utility.SpeedModifier;
 import me.mod108.deadbyminecraft.utility.Timings;
-import me.mod108.deadbyminecraft.actions.RepairAction;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class Survivor extends Character {
     public enum HealthState { HEALTHY, INJURED, DEEP_WOUND, DYING, BEING_CARRIED, HOOKED, DEAD }
@@ -34,6 +33,9 @@ public class Survivor extends Character {
     // Each N ticks, blood particles are created
     private static final int DEFAULT_TICKS_TILL_BLOOD_PARTICLES = Timings.secondsToTicks(0.25);
 
+    // Progress to reach so survivor can regain a health state
+    public static final float MAX_HEALING_PROGRESS = 16.0f;
+
     // Current hook stage
     private int hookStage = 0;
 
@@ -46,8 +48,8 @@ public class Survivor extends Character {
     // How survivor is doing
     private HealthState healthState = HealthState.HEALTHY;
 
-    // Progress to reach so survivor can regain a health state
-    private static final float MAX_HEALING_PROGRESS = 16.0f;
+    // Current healers
+    private final ArrayList<Survivor> healers = new ArrayList<>();
 
     // Current healing/recovery progress
     private float healingProgress = 0.0f;
@@ -142,16 +144,16 @@ public class Survivor extends Character {
         switch (healthState) {
             case INJURED -> {
                 healthState = HealthState.HEALTHY;
-                player.sendMessage(ChatColor.RED + "You are no longer injured.");
+                player.sendMessage(ChatColor.GREEN + "You are no longer injured.");
             }
             case DEEP_WOUND -> {
                 healthState = HealthState.INJURED;
-                player.sendMessage(ChatColor.RED + "You are no longer in deep wound.");
+                player.sendMessage(ChatColor.GREEN + "You are no longer in deep wound.");
             }
             case DYING -> {
                 healthState = HealthState.INJURED;
                 CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
-                player.sendMessage(ChatColor.RED + "You are no longer in dying state.");
+                player.sendMessage(ChatColor.GREEN + "You are no longer in dying state.");
             }
         }
     }
@@ -251,8 +253,28 @@ public class Survivor extends Character {
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
         player.sendMessage(ChatColor.GREEN + "You have started healing " + ChatColor.YELLOW +
                 healingTarget.getPlayer().getDisplayName());
+
+        // Message to the one who is being healed
         healingTarget.getPlayer().sendMessage(ChatColor.GREEN + "You are now being healed by " + ChatColor.YELLOW +
                 player.getDisplayName());
+    }
+
+    public void startRecovering() {
+        action = new RecoverAction(this);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+        player.sendMessage(ChatColor.GREEN + "You have started recovering");
+    }
+
+    public boolean isBeingHealed() {
+        return !healers.isEmpty();
+    }
+
+    public void addToHealersList(final Survivor survivor) {
+        healers.add(survivor);
+    }
+
+    public void removeFromHealersList(final Survivor survivor) {
+        healers.removeIf(n -> (n.player.getUniqueId().equals(survivor.getPlayer().getUniqueId())));
     }
 
     public void startUnhooking(final Survivor survivor) {
@@ -292,13 +314,19 @@ public class Survivor extends Character {
         if (movementState != MovementState.IDLE)
             return false;
 
-        return action == null;
+        return (action == null || action instanceof RecoverAction);
     }
 
     @Override
     public boolean canInteract() {
         if (isIncapacitated())
             return false;
+
+        if (isBeingHealed()) {
+            player.sendMessage(ChatColor.YELLOW + "You can't interact with anything while being healed. " +
+                    "Sneak (press Shift) to force others to stop healing you");
+            return false;
+        }
 
         if (movementState != MovementState.IDLE)
             return false;
