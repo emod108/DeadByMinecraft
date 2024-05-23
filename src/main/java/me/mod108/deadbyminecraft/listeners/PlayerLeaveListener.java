@@ -4,6 +4,7 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
+import me.mod108.deadbyminecraft.targets.props.Hook;
 import me.mod108.deadbyminecraft.utility.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,6 +34,13 @@ public class PlayerLeaveListener implements Listener {
             plugin.finishGame();
         } else if (player instanceof final Survivor survivor) {
             e.setQuitMessage(ChatColor.RED + "Survivor " + p.getDisplayName() + " has left the game!");
+
+            // If survivor was on hook while he disconnected, it counts as sacrifice
+            final Hook hook = survivor.getHook();
+            if (hook != null) {
+                hook.becomeBroken();
+            }
+
             game.resetPlayer(player);
             survivor.setHealthState(Survivor.HealthState.DISCONNECTED);
         }

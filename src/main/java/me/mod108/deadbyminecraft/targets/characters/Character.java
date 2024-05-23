@@ -58,6 +58,15 @@ public abstract class Character implements Target {
         return (player.getUniqueId().equals(otherPlayer.getPlayer().getUniqueId()));
     }
 
+    public boolean isInArea(final double x1, final double x2,
+                            final double y1, final double y2,
+                            final double z1, final double z2) {
+        final Location pLoc = player.getLocation();
+        return pLoc.getX() > x1 && pLoc.getX() < x2 &&
+                pLoc.getY() > y1 && pLoc.getY() < y2 &&
+                pLoc.getZ() > z1 && pLoc.getZ() < z2;
+    }
+
     public Player getPlayer() {
         return player;
     }

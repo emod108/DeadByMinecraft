@@ -86,7 +86,12 @@ public class Hook extends Prop {
 
     // Makes the hook broken
     public void becomeBroken() {
+        if (hook == null)
+            return;
+
+        removeBlock(hook.getRelative(0, -3, 0).getLocation(), true);
         removeBlock(hook.getLocation(), true);
+        hookedSurvivor = null;
         hook = null;
     }
 }

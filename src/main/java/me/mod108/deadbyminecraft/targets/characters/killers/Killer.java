@@ -3,6 +3,7 @@ package me.mod108.deadbyminecraft.targets.characters.killers;
 import me.mod108.crawlingplugin.CrawlingPlugin;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.actions.PalletBreakAction;
+import me.mod108.deadbyminecraft.actions.WiggleAction;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
@@ -154,6 +155,10 @@ public abstract class Killer extends Character {
 
     // Returns killer's stun recover progress from 0.0 to 1.0
     public float getAttackRecoverProgress() {
+        // Avoiding division by 0
+        if (lastAttackCooldownTime == 0)
+            return 1.0f;
+
         return (float) (1.0 - Timings.ticksToSeconds(attackCooldownTime) /
                 Timings.ticksToSeconds(lastAttackCooldownTime));
     }
@@ -168,6 +173,10 @@ public abstract class Killer extends Character {
 
     // Returns killer's stun recover progress from 0.0 to 1.0
     public float getStunRecoverProgress() {
+        // Avoiding division by 0
+        if (lastStunTime == 0)
+            return 1.0f;
+
         return (float) (1.0 - Timings.ticksToSeconds(stunTime) / Timings.ticksToSeconds(lastStunTime));
     }
 
@@ -182,14 +191,35 @@ public abstract class Killer extends Character {
     }
 
     public void decrementStunTime() {
-        if (stunTime > 0)
+        if (stunTime > 0) {
             --stunTime;
+
+            // Allowing to move if the killer is no longer stunned
+            if (stunTime == 0)
+                DeadByMinecraft.getPlugin().freezeManager.unFreeze(player);
+        }
     }
 
-    public void getStunned(final int stunTime) {
+    public void getStunned() {
+        int stunTime;
+
+        // If the killer was carrying someone, that survivor escapes
+        if (carriedSurvivor != null) {
+            getWiggledFrom();
+            stunTime = WIGGLE_STUN_TIME;
+        } else {
+            stunTime = PALLET_STUN_TIME;
+        }
+
+        // Setting stun timer
         lastStunTime = stunTime;
         this.stunTime = stunTime;
         attackCooldownTime = 0;
+
+        // Freezing killer and playing stun sound
+        DeadByMinecraft.getPlugin().freezeManager.freeze(player);
+        SoundManager.playForAll(player.getLocation(), getStunSounds(), 1, 1);
+        player.sendMessage(ChatColor.RED + "You were stunned!");
     }
 
     // Returns carrying survivor or null if no survivor carried
@@ -221,8 +251,14 @@ public abstract class Killer extends Character {
         // Slime rides killer, survivor rides slime
         player.addPassenger(slime);
         slime.addPassenger(survivorPlayer);
-
         player.sendMessage(ChatColor.GREEN + "Picked up " + survivor.getPlayer().getDisplayName());
+
+        // Creating wiggle action
+        survivorPlayer.sendMessage(ChatColor.YELLOW + "You have been picked up by the killer. " +
+                "Press SHIFT (dismount button) to start trying to escape him.");
+        final WiggleAction wiggleAction = new WiggleAction(survivor, this);
+        survivor.setAction(wiggleAction);
+        wiggleAction.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
     }
 
     public void stopCarrying() {
@@ -239,6 +275,15 @@ public abstract class Killer extends Character {
             return;
         slimeEntity.eject();
         slimeEntity.remove();
+    }
+
+    private void getWiggledFrom() {
+        final Survivor survivor = carriedSurvivor;
+        if (carriedSurvivor == null)
+            return;
+
+        stopCarrying();
+        survivor.setHealthState(Survivor.HealthState.INJURED);
     }
 
     // Hook currently carrying survivor

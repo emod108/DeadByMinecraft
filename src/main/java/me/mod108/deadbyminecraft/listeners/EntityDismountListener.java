@@ -1,6 +1,8 @@
 package me.mod108.deadbyminecraft.listeners;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.actions.Action;
+import me.mod108.deadbyminecraft.actions.WiggleAction;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.utility.Game;
@@ -34,7 +36,17 @@ public class EntityDismountListener implements Listener {
             return;
 
         // Checking if killer carries this player
-        if (carriedSurvivor.getPlayer().getUniqueId().equals(player.getUniqueId()))
+        if (carriedSurvivor.getPlayer().getUniqueId().equals(player.getUniqueId())) {
             e.setCancelled(true);
+
+            // Trying to wiggle
+            final Action action = carriedSurvivor.getAction();
+            if (action == null)
+                return;
+
+            if (action instanceof final WiggleAction wiggleAction) {
+                wiggleAction.toggleTryingToWiggle();
+            }
+        }
     }
 }

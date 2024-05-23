@@ -23,10 +23,10 @@ public class Survivor extends Character {
     private static final int MAX_HOOK_STAGE = 3;
 
     // Default time survivor has before hook stage progression (in ticks)
-    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(75);
+    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(15);
 
     // Default time survivor has before dying from bleeding out
-    private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(240);
+    private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(24);
 
     // Default speed is 100%
     public static final float DEFAULT_SPEED = 1.0f;
@@ -38,7 +38,7 @@ public class Survivor extends Character {
     private static final int DEFAULT_TICKS_TILL_BLOOD_PARTICLES = Timings.secondsToTicks(0.25);
 
     // Progress to reach so survivor can regain a health state
-    public static final float MAX_HEALING_PROGRESS = 16.0f;
+    public static final float MAX_HEALING_PROGRESS = 12.0f;
 
     // Current hook stage
     private int hookStage = 0;
@@ -194,10 +194,25 @@ public class Survivor extends Character {
 
         if (!isBeingHealed() && bleedoutTime > 0) {
             --bleedoutTime;
+
+            if (bleedoutTime == 0) {
+                die();
+                return;
+            }
         }
 
         // Showing bleed-out timer
         player.setLevel((int) Timings.ticksToSeconds(bleedoutTime));
+    }
+
+    // This function is called when survivor dies
+    public void die() {
+        CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
+
+        healthState = HealthState.DEAD;
+        player.setGameMode(GameMode.SPECTATOR);
+
+        Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " has died!");
     }
 
     // If survivor is hooked, he can be sacrificed after some time.
@@ -220,6 +235,7 @@ public class Survivor extends Character {
         // PLACE FOR CHECK IF PERSON HIT THE 3rd stage
         // RETURN AFTER THAT
         if (hookStage >= MAX_HOOK_STAGE) {
+            getSacrificed();
             return;
         }
 
@@ -227,6 +243,20 @@ public class Survivor extends Character {
         final int timeLeftTicks = sacrificeTime + STAGE_PROGRESSION_TIME * (MAX_HOOK_STAGE - hookStage - 1);
         final int timeLeft = (int) Timings.ticksToSeconds(timeLeftTicks);
         player.setLevel(timeLeft);
+    }
+
+    // This function is called, when survivor is sacrificed
+    public void getSacrificed() {
+        if (hookedOn != null) {
+            hookedOn.becomeBroken();
+            hookedOn = null;
+        }
+
+        DeadByMinecraft.getPlugin().freezeManager.unFreeze(player);
+        healthState = HealthState.SACRIFICED;
+        player.setGameMode(GameMode.SPECTATOR);
+
+        Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " was sacrificed!");
     }
 
     public boolean isBeingUnhooked() {
@@ -372,6 +402,12 @@ public class Survivor extends Character {
     public boolean isIncapacitated() {
         return (healthState != HealthState.HEALTHY && healthState != HealthState.INJURED &&
                 healthState != HealthState.DEEP_WOUND);
+    }
+
+    // Returns true, if survivor is considered alive (and he didn't escape yet)
+    public boolean isAlive() {
+        return healthState != HealthState.DEAD && healthState != HealthState.DISCONNECTED &&
+                healthState != HealthState.SACRIFICED && healthState != HealthState.ESCAPED;
     }
 
     // Returns true, if survivor can be healed
