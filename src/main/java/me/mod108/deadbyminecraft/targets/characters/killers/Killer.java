@@ -1,14 +1,15 @@
 package me.mod108.deadbyminecraft.targets.characters.killers;
 
-import me.mod108.crawlingplugin.CrawlingPlugin;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
-import me.mod108.deadbyminecraft.actions.PalletBreakAction;
-import me.mod108.deadbyminecraft.actions.WiggleAction;
+import me.mod108.deadbyminecraft.actions.*;
+import me.mod108.deadbyminecraft.managers.FreezeManager;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
+import me.mod108.deadbyminecraft.targets.props.Breakable;
 import me.mod108.deadbyminecraft.targets.props.ExitGate;
 import me.mod108.deadbyminecraft.targets.props.Hook;
+import me.mod108.deadbyminecraft.targets.props.Locker;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.*;
@@ -21,7 +22,7 @@ import org.bukkit.util.Vector;
 
 public abstract class Killer extends Character {
     // For how much killer moves forward after attacking
-    // Doesn't affect range attack
+    // Doesn't affect range attack. Should be reworked later
     public static final double LUNGE_STRENGTH = 0.5;
 
     // How fast killers move by default
@@ -38,6 +39,12 @@ public abstract class Killer extends Character {
 
     // Default attack cooldown after successful hit
     private static final int HIT_ATTACK_COOLDOWN = Timings.secondsToTicks(2.7);
+
+    // For how long killers are searching lockers
+    private static final int LOCKER_SEARCH_TIME = Timings.secondsToTicks(2.3);
+
+    // For how long killer grabs survivors
+    private static final int GRAB_TIME = Timings.secondsToTicks(1.5);
 
     // Moving speed modifier after successful attack
     private static final float HIT_ATTACK_SPEED = 0.125f;
@@ -75,7 +82,7 @@ public abstract class Killer extends Character {
     private int stunTime = 0;
 
     public Killer(final Player player, final float baseSpeed) {
-        super(player, baseSpeed, DEFAULT_VAULT_TIME);
+        super(player, baseSpeed);
     }
 
     @Override
@@ -228,19 +235,33 @@ public abstract class Killer extends Character {
     }
 
     public void pickUp(final Survivor survivor) {
-        carriedSurvivor = survivor;
+        // Freezing both players
+        final FreezeManager manager = DeadByMinecraft.getPlugin().freezeManager;
+        manager.freeze(player);
+        manager.freeze(survivor.getPlayer());
+
+        // Survivor is now being carried
         survivor.setHealthState(Survivor.HealthState.BEING_CARRIED);
 
-        // Making so player stops crawling
-        final Player survivorPlayer = survivor.getPlayer();
-        CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(survivorPlayer);
+        // Hiding bleed-out timer from survivor
+        survivor.getPlayer().setLevel(0);
 
-        // Spawning a slime to ride
+        // Creating pick up action
+        action = new PickUpAction(this, survivor);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+    }
+
+    public void getSurvivorOnShoulder(final Survivor survivor) {
+        carriedSurvivor = survivor;
+
+        // Getting the world
         final World world = Bukkit.getWorld("world");
         if (world == null) {
             System.err.println("While picking up survivor couldn't get the world to spawn a slime!");
             return;
         }
+
+        // Creating invisible slime to ride
         final Slime slime = (Slime) world.spawnEntity(player.getLocation(), EntityType.SLIME);
         slime.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY,
                 PotionEffect.INFINITE_DURATION, 1, false, false));
@@ -248,14 +269,14 @@ public abstract class Killer extends Character {
         slime.setAI(false);
         slime.setInvulnerable(true);
 
-        // Slime rides killer, survivor rides slime
+        // Survivor is now on top of the killer
         player.addPassenger(slime);
-        slime.addPassenger(survivorPlayer);
-        player.sendMessage(ChatColor.GREEN + "Picked up " + survivor.getPlayer().getDisplayName());
+        slime.addPassenger(survivor.getPlayer());
+        player.sendMessage(ChatColor.YELLOW + "Picked up survivor");
 
-        // Creating wiggle action
-        survivorPlayer.sendMessage(ChatColor.YELLOW + "You have been picked up by the killer. " +
-                "Press SHIFT (dismount button) to start trying to escape him.");
+        // Making survivor being able to start wiggling
+        survivor.getPlayer().sendMessage(ChatColor.YELLOW +
+                "Press SHIFT (dismount button) to start trying to escape the killer");
         final WiggleAction wiggleAction = new WiggleAction(survivor, this);
         survivor.setAction(wiggleAction);
         wiggleAction.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
@@ -264,6 +285,12 @@ public abstract class Killer extends Character {
     public void stopCarrying() {
         if (carriedSurvivor == null)
             return;
+
+        // If killer is picking survivor up
+        if (action != null && action instanceof PickUpAction) {
+            action.end();
+            return;
+        }
 
         // Making it so survivor is no longer carried
         final Survivor carried = carriedSurvivor;
@@ -284,6 +311,7 @@ public abstract class Killer extends Character {
 
         stopCarrying();
         survivor.setHealthState(Survivor.HealthState.INJURED);
+        survivor.getPlayer().sendMessage(ChatColor.GREEN + "You have escaped the killer's grasp!");
     }
 
     // Hook currently carrying survivor
@@ -292,23 +320,30 @@ public abstract class Killer extends Character {
         if (carriedSurvivor == null)
             return;
 
-        // Getting carried survivor
-        final Survivor survivor = carriedSurvivor;
-        stopCarrying();
-
-        // Hooking survivor
-        survivor.getHooked(hook);
-        player.sendMessage(ChatColor.GREEN + "Survivor hooked!");
+        // Starting to hook survivor
+        action = new HookAction(this, carriedSurvivor, hook);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+        player.sendMessage(ChatColor.YELLOW + "Hooking survivor");
     }
 
-    public void startBreakingPallet(final Pallet target) {
-        action = new PalletBreakAction(this, target);
+    public void startBreaking(final Breakable target) {
+        action = new BreakAction(this, target);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
-        player.sendMessage(ChatColor.YELLOW + "Breaking a pallet");
+        player.sendMessage(ChatColor.YELLOW + "Breaking");
+    }
+
+    @Override
+    public int getVaultTimeTicks(final boolean isRushed) {
+        return DEFAULT_VAULT_TIME;
     }
 
     @Override
     public void startOpening(final ExitGate exitGate) {}
+
+    public void searchLocker(final Locker locker) {
+        action = new LockerSearchAction(this, locker, LOCKER_SEARCH_TIME);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+    }
 
     @Override
     public boolean canInteract() {
@@ -326,7 +361,7 @@ public abstract class Killer extends Character {
 
     @Override
     public boolean canInteractWithLocker() {
-        return false;
+        return canInteract();
     }
 
     @Override
@@ -341,7 +376,7 @@ public abstract class Killer extends Character {
 
     @Override
     public boolean canInteractWithGenerator() {
-        return false;
+        return canInteract();
     }
 
     @Override

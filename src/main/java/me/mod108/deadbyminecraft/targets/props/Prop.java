@@ -1,6 +1,7 @@
 package me.mod108.deadbyminecraft.targets.props;
 
 import me.mod108.deadbyminecraft.targets.Target;
+import me.mod108.deadbyminecraft.targets.characters.Character;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,6 +21,9 @@ public abstract class Prop implements Target {
     // Blocks of the prop
     protected final ArrayList<Block> blocks = new ArrayList<>();
 
+    // Player, who currently interacts with this prop
+    protected Character interactingPlayer = null;
+
     public Prop(final Location location, final BlockFace direction) {
         // Making deep copy
         this.location = new Location(location.getWorld(), location.getBlockX(),
@@ -27,11 +31,26 @@ public abstract class Prop implements Target {
         this.direction = direction;
     }
 
+    public boolean isBeingInteractedWith() {
+        return interactingPlayer != null;
+    }
+
+    public Character getInteractingPlayer() {
+        return interactingPlayer;
+    }
+
+    public void setInteractingPlayer(final Character player) {
+        interactingPlayer = player;
+    }
+
     // Method, which defines how the prop looks like
     public abstract void build();
 
     // Destroys the prop
     public void destroy() {
+        if (interactingPlayer != null)
+            interactingPlayer.cancelAction();
+
         for (final Block block : blocks)
             block.setType(Material.AIR);
         blocks.clear();

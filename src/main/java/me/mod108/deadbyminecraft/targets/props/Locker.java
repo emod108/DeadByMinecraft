@@ -1,5 +1,6 @@
 package me.mod108.deadbyminecraft.targets.props;
 
+import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.utility.Directions;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import org.bukkit.Location;
@@ -37,9 +38,11 @@ public class Locker extends Prop {
 
     @Override
     public void destroy() {
-        // Make any survivors leave before destroying the locker
-        if (hidingSurvivor != null)
-            hidingSurvivor.leaveLocker(this);
+        final Survivor survivor = hidingSurvivor;
+        if (survivor != null) {
+            survivor.teleportFromLocker(this);
+            DeadByMinecraft.getPlugin().freezeManager.unFreeze(survivor.getPlayer());
+        }
 
         // Destroying the door manually so it won't drop
         removeBlock(bottomDoorBlock.getLocation(), false);

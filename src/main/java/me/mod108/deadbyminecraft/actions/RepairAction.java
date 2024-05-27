@@ -8,9 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 public class RepairAction extends Action {
-    // Repair progress achieved per tick
-    private static final float REPAIR_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
-
     // How often does the action sound play
     private static final int timeTillRepairSound = Timings.secondsToTicks(2);
 
@@ -26,6 +23,10 @@ public class RepairAction extends Action {
     public RepairAction(final Survivor performer, final Generator generator, final Generator.GeneratorSide side) {
         super(performer, generator);
         this.side = side;
+
+        // If generator was regressing, it becomes Idle
+        if (generator.getGeneratorState() == Generator.GeneratorState.REGRESSING)
+            generator.setGeneratorState(Generator.GeneratorState.IDLE);
     }
 
     @Override
@@ -33,6 +34,12 @@ public class RepairAction extends Action {
         if (cancelled)
             return;
         super.run();
+
+        // If survivor can't perform repairing anymore, we stop
+        if (((Survivor) performer).isIncapacitated()) {
+            end();
+            return;
+        }
 
         // Getting starting location
         if (startLocation == null)
@@ -48,7 +55,7 @@ public class RepairAction extends Action {
         }
 
         // Adding repair progress
-        ((Generator) target).addRepairProgress(REPAIR_SPEED);
+        ((Generator) target).addRepairProgress(Generator.REPAIR_SPEED);
 
         // Repair sounds
         ++currentTicksTillRepairSound;

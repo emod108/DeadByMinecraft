@@ -35,6 +35,12 @@ public class HealAction extends Action {
             return;
         }
 
+        // If survivor can't perform healing anymore, we stop
+        if (((Survivor) performer).isIncapacitated()) {
+            end();
+            return;
+        }
+
         // Can't heal sneaking players
         if (healedTarget.getPlayer().isSneaking()) {
             end();

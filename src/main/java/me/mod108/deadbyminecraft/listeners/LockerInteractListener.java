@@ -4,6 +4,7 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.events.LockerInteractEvent;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
+import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Locker;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,30 +16,35 @@ import static me.mod108.deadbyminecraft.targets.characters.Character.ACTION_MAX_
 public class LockerInteractListener implements Listener {
     @EventHandler
     public void onLockerInteract(final LockerInteractEvent e) {
-        if (e.getPlayer() instanceof final Survivor survivor) {
-            // Ability check
-            if (!survivor.canInteractWithLocker())
-                return;
+        final Character player = e.getPlayer();
+        final Locker locker = e.getLocker();
 
-            // Getting door location and adding 0.5 so block would be in the center
-            final Locker locker = e.getLocker();
-            final Location lockerDoorLocation = locker.getBottomDoorBlock().getLocation().clone();
-            lockerDoorLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT);
+        // Ability check
+        if (!player.canInteractWithLocker())
+            return;
 
-            // Distance check
-            if (survivor.getPlayer().getLocation().distance(lockerDoorLocation) > ACTION_MAX_DISTANCE &&
-                    survivor.getMovementState() != Character.MovementState.IN_LOCKER)
-                return;
+        // If locker is already being interacted with, we can't use it
+        if (locker.isBeingInteractedWith())
+            return;
 
+        // Getting door location and adding 0.5 so block would be in the center
+        final Location lockerDoorLocation = locker.getBottomDoorBlock().getLocation().clone();
+        lockerDoorLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT);
+
+        // Distance check
+        if (player.getPlayer().getLocation().distance(lockerDoorLocation) > ACTION_MAX_DISTANCE &&
+                player.getMovementState() != Character.MovementState.IN_LOCKER)
+            return;
+
+        if (player instanceof final Survivor survivor) {
             // Getting hiding survivor
             final Survivor hidingSurvivor = locker.getHidingSurvivor();
 
             // Case 1: No one is in the locker
             if (hidingSurvivor == null) {
                 // Checking if survivor is already in the locker, so he won't teleport to another locker
-                if (survivor.getMovementState() == Character.MovementState.IN_LOCKER) {
+                if (survivor.getMovementState() == Character.MovementState.IN_LOCKER)
                     return;
-                }
 
                 // Entering the locker
                 survivor.enterLocker(locker);
@@ -54,6 +60,10 @@ public class LockerInteractListener implements Listener {
             // Case 3: Other survivor is in the locker
             survivor.getPlayer().sendMessage(ChatColor.YELLOW +
                     hidingSurvivor.getPlayer().getDisplayName() + " is hiding in this locker already!");
+            return;
         }
+
+        // It's the killer
+        ((Killer) player).searchLocker(locker);
     }
 }

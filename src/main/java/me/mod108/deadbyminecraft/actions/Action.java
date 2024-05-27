@@ -2,6 +2,7 @@ package me.mod108.deadbyminecraft.actions;
 
 import me.mod108.deadbyminecraft.targets.Target;
 import me.mod108.deadbyminecraft.targets.characters.Character;
+import me.mod108.deadbyminecraft.targets.props.Prop;
 import me.mod108.deadbyminecraft.utility.ProgressBar;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -19,6 +20,10 @@ public abstract class Action extends BukkitRunnable {
 
         // Stopping any player movement
         performer.getPlayer().setVelocity(new Vector(0, 0, 0));
+
+        // If it's a prop, we show that it's being interacted with
+        if (target instanceof final Prop prop)
+            prop.setInteractingPlayer(performer);
     }
 
     // Starts executing this action every tick
@@ -33,6 +38,10 @@ public abstract class Action extends BukkitRunnable {
         performer.setAction(null);
 
         ProgressBar.resetProgress(performer.getPlayer());
+
+        // If it's a prop, we show that it's now being free to be interacted with
+        if (target instanceof final Prop prop)
+            prop.setInteractingPlayer(null);
     }
 
     // Finishes executing this action if it's interruptible

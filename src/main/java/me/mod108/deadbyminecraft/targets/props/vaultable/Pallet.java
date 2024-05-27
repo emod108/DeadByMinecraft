@@ -1,6 +1,8 @@
 package me.mod108.deadbyminecraft.targets.props.vaultable;
 
+import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.managers.SoundManager;
+import me.mod108.deadbyminecraft.targets.props.Breakable;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -8,21 +10,20 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.TrapDoor;
 
-public class Pallet extends Vaultable {
+public class Pallet extends Vaultable implements Breakable {
     public static final Material STANDING_MATERIAL = Material.SPRUCE_TRAPDOOR;
     public static final Material DROPPED_MATERIAL = Material.SPRUCE_SLAB;
     public static final Sound DROP_SOUND = Sound.ITEM_SHIELD_BLOCK;
-    public static final Sound VAULT_SOUND = Sound.BLOCK_CHEST_OPEN;
-    public static final Sound BREAK_SOUND = Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
+    private static final Sound VAULT_SOUND = Sound.BLOCK_CHEST_OPEN;
+
+    private static final Sound BREAK_SOUND = Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR;
+    private static final float BREAK_TIME = 2.3f;
 
     // Shows if pallet is dropped
     private boolean dropped = false;
 
     // Pallet. Its location is different from prop's location
     private Block pallet;
-
-    // True when pallet is being destroyed by killer
-    private boolean beingDestroyed = false;
 
     public Pallet(final Location location, final BlockFace direction) {
         super(location, direction);
@@ -46,6 +47,11 @@ public class Pallet extends Vaultable {
         return (direction == BlockFace.NORTH || direction == BlockFace.SOUTH);
     }
 
+    @Override
+    public Sound getVaultingSound() {
+        return VAULT_SOUND;
+    }
+
     public boolean isDropped() {
         return dropped;
     }
@@ -61,11 +67,19 @@ public class Pallet extends Vaultable {
         return pallet;
     }
 
-    public boolean isBeingDestroyed() {
-        return beingDestroyed;
+    @Override
+    public Sound getBreakingSound() {
+        return BREAK_SOUND;
     }
 
-    public void startDestroying() {
-        beingDestroyed = true;
+    @Override
+    public float getBreakingTime() {
+        return BREAK_TIME;
+    }
+
+    @Override
+    public void getBroken() {
+        destroy();
+        DeadByMinecraft.getPlugin().getGame().removeProp(this);
     }
 }

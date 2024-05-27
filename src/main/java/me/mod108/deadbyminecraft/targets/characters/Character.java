@@ -4,6 +4,7 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.actions.Action;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.Target;
+import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.ExitGate;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Vaultable;
@@ -12,6 +13,7 @@ import me.mod108.deadbyminecraft.actions.VaultAction;
 import me.mod108.deadbyminecraft.utility.MovementSpeed;
 import me.mod108.deadbyminecraft.utility.SpeedModifier;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -35,20 +37,15 @@ public abstract class Character implements Target {
     // Shows if speed effects are active on this player
     private boolean isSpeedActive = false;
 
-    // How many ticks needed to vault a vaultable prop
-    private final int vaultTimeTicks;
-
     // Is he moving or is even he able to
     protected MovementState movementState = MovementState.IDLE;
 
     // Current character's action
     protected Action action = null;
 
-    public Character(final Player player, final float baseSpeed, final int vaultTimeTicks) {
+    public Character(final Player player, final float baseSpeed) {
         this.player = player;
-
         this.baseSpeed = baseSpeed;
-        this.vaultTimeTicks = vaultTimeTicks;
     }
 
     // Checks if it's the same player for both characters
@@ -140,9 +137,8 @@ public abstract class Character implements Target {
         speedModifiers.removeIf(modifier -> modifier.getName().equals(name));
     }
 
-    public int getVaultTimeTicks() {
-        return vaultTimeTicks;
-    }
+    // Returns vault time in ticks. You can check if vault is rushed
+    public abstract int getVaultTimeTicks(final boolean isRushed);
 
     public MovementState getMovementState() {
         return movementState;
@@ -171,14 +167,16 @@ public abstract class Character implements Target {
     }
 
     public void vault(final Vaultable vaultable) {
-        vaultable.setVaultingPlayer(this);
-        action = new VaultAction(this, vaultable);
+        // Checking if vaulting is rushed. Does nothing if it's the killer
+        final boolean isRushed = !player.isSneaking() || this instanceof Killer;
+
+        // Creating vaulting action
+        action = new VaultAction(this, vaultable, getVaultTimeTicks(isRushed));
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
 
-        if (vaultable instanceof Pallet)
-            SoundManager.playForAll(vaultable.getLocation(), Pallet.VAULT_SOUND, 1.0f, 1.0f);
-        else
-            SoundManager.playForAll(vaultable.getLocation(), Window.VAULT_SOUND, 1.0f, 1.0f);
+        // Playing vaulting sound if it's a rushed action
+        if (isRushed)
+            SoundManager.playForAll(vaultable.getLocation(), vaultable.getVaultingSound(), 1f, 1f);
     }
 
     public abstract void startOpening(final ExitGate exitGate);

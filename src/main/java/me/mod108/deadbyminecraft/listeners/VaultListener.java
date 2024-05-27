@@ -27,7 +27,7 @@ public class VaultListener implements Listener {
             return;
 
         // If window is occupied already
-        if (vaultable.getVaultingPlayer() != null)
+        if (vaultable.isBeingInteractedWith())
             return;
 
         // Vaulting

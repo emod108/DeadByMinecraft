@@ -32,9 +32,6 @@ public class ExitGate extends Prop {
     // Exit gates can be opened only when active
     private ExitGateState gateState = ExitGateState.POWERED;
 
-    // The player, who currently interacts with the exit gate switch
-    private Character interactingPlayer = null;
-
     // Current open progress
     private float openProgress = 0f;
 
@@ -73,13 +70,6 @@ public class ExitGate extends Prop {
         }
     }
 
-    @Override
-    public void destroy() {
-        if (interactingPlayer != null)
-            interactingPlayer.cancelAction();
-        super.destroy();
-    }
-
     public Block getGateSwitch() {
         return gateSwitch;
     }
@@ -90,14 +80,6 @@ public class ExitGate extends Prop {
 
     public void setGateState(final ExitGateState gateState) {
         this.gateState = gateState;
-    }
-
-    public Character getInteractingPlayer() {
-        return interactingPlayer;
-    }
-
-    public void setInteractingPlayer(final Character interactingPlayer) {
-        this.interactingPlayer = interactingPlayer;
     }
 
     // Converts open progress to percents
@@ -134,13 +116,15 @@ public class ExitGate extends Prop {
     }
 
     public void open() {
-        gateState = ExitGateState.OPEN;
-
+        // Finishing player's action
         final Character player = interactingPlayer;
-        player.cancelAction();
-        player.getPlayer().sendMessage(ChatColor.GREEN + "Exit gate has been opened!");
+        if (player != null) {
+            player.cancelAction();
+            player.getPlayer().sendMessage(ChatColor.GREEN + "Exit gate has been opened!");
+        }
 
-        // Removing gates
+        // Opening the exit gates
+        gateState = ExitGateState.OPEN;
         final Vector horizontalVector = Directions.getVector(Directions.turnRight(direction), 1);
         final Location currentLocation = lamps[2].getLocation().clone();
         currentLocation.add(horizontalVector);

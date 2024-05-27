@@ -30,11 +30,11 @@ public class VaultAction extends Action {
     // Distance, player should be teleported for
     private final Vector teleportVector = new Vector(0, 0, 0);
 
-    public VaultAction(final Character performer, final Vaultable vaultable) {
+    public VaultAction(final Character performer, final Vaultable vaultable, final int vaultTimeTicks) {
         super(performer, vaultable);
 
         // Calculating vaulting time
-        vaultTimeTicks = this.performer.getVaultTimeTicks();
+        this.vaultTimeTicks = vaultTimeTicks;
         final double distancePerTick = VAULT_DISTANCE / vaultTimeTicks;
 
         // Calculating how player should be teleported
@@ -98,7 +98,6 @@ public class VaultAction extends Action {
     @Override
     public void end() {
         super.end();
-        ((Vaultable) target).setVaultingPlayer(null);
     }
 
     @Override

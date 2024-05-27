@@ -30,6 +30,12 @@ public class SurvivorUnhookAction extends Action {
             return;
         super.run();
 
+        // If survivor can't perform repairing anymore, we stop
+        if (((Survivor) performer).isIncapacitated()) {
+            end();
+            return;
+        }
+
         // Getting starting location
         if (startLocation == null)
             startLocation = performer.getLocation();

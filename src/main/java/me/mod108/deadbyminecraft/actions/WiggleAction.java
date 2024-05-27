@@ -12,26 +12,36 @@ public class WiggleAction extends Action {
     // Wiggle progress achieved per tick
     public static final float WIGGLE_SPEED = 1f / Timings.TICKS_PER_SECOND;
 
+    // How often can survivor toggle between trying and not trying to wiggle
+    private static final int TOGGLE_BUFFER_MAX = Timings.secondsToTicks(0.5);
+
     // Current wiggle progress
     private float wiggleProgress = 0f;
 
     // If survivor isn't trying to wiggle, progress isn't accumulating
     private boolean tryingToWiggle = false;
 
+    // How much time left, before survivor can toggle between trying and not trying to wiggle
+    private int toggleBuffer = 0;
+
     public WiggleAction(final Survivor performer, final Killer carrier) {
         super(performer, carrier);
     }
 
     public void toggleTryingToWiggle() {
+        if (toggleBuffer > 0)
+            return;
+
         if (tryingToWiggle) {
-            performer.getPlayer().sendMessage(ChatColor.YELLOW + "You aren't trying to escape" +
+            performer.getPlayer().sendMessage(ChatColor.YELLOW + "You aren't trying to escape " +
                     "the killer's grasp anymore");
-            tryingToWiggle = false;
         } else {
-            performer.getPlayer().sendMessage(ChatColor.YELLOW + "You are now trying to escape" +
+            performer.getPlayer().sendMessage(ChatColor.YELLOW + "You are now trying to escape " +
                     "the killer's grasp");
-            tryingToWiggle = true;
         }
+
+        tryingToWiggle = !tryingToWiggle;
+        toggleBuffer = TOGGLE_BUFFER_MAX;
     }
 
     @Override
@@ -46,10 +56,18 @@ public class WiggleAction extends Action {
             return;
         }
 
-        // Survivor must try to wiggle to escape
-        if (!tryingToWiggle) {
+        // The Killer has an action, very likely he's hooking this survivor or grabbing him
+        // Can't wiggle at this moment
+        if (((Killer) target).getAction() != null)
             return;
-        }
+
+        // Decrementing toggle buffer
+        if (toggleBuffer > 0)
+            --toggleBuffer;
+
+        // Survivor must try to wiggle to escape
+        if (!tryingToWiggle)
+            return;
 
         // Survivor manages to wiggle of
         wiggleProgress += WIGGLE_SPEED;

@@ -23,6 +23,12 @@ public class SurvivorOpenExitAction extends Action {
             return;
         super.run();
 
+        // If survivor can't perform repairing anymore, we stop
+        if (((Survivor) performer).isIncapacitated()) {
+            end();
+            return;
+        }
+
         // Getting starting location
         if (startLocation == null)
             startLocation = performer.getLocation();
@@ -42,7 +48,6 @@ public class SurvivorOpenExitAction extends Action {
     @Override
     public void end() {
         super.end();
-        ((ExitGate) target).setInteractingPlayer(null);
     }
 
     @Override

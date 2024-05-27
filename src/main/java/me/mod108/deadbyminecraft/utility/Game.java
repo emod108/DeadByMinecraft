@@ -4,6 +4,7 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
+import me.mod108.deadbyminecraft.targets.props.Generator;
 import me.mod108.deadbyminecraft.targets.props.Prop;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -32,8 +33,15 @@ public class Game {
             if (isCancelled())
                 return;
 
-            for (final Character player : players) {
+            // Updating all players
+            for (final Character player : players)
                 updatePlayer(player);
+
+            // Regressing generators
+            for (final Prop prop : props) {
+                if (prop instanceof final Generator generator) {
+                    generator.regress();
+                }
             }
         }
     };
@@ -117,9 +125,11 @@ public class Game {
                 return;
 
             // Create blood particles on injured survivors
-            if (healthState == Survivor.HealthState.INJURED || healthState == Survivor.HealthState.DEEP_WOUND ||
-                healthState == Survivor.HealthState.DYING || healthState == Survivor.HealthState.HOOKED) {
-                survivor.bleed();
+            if (survivor.getMovementState() != Character.MovementState.IN_LOCKER) {
+                if (healthState == Survivor.HealthState.INJURED || healthState == Survivor.HealthState.DEEP_WOUND ||
+                        healthState == Survivor.HealthState.DYING || healthState == Survivor.HealthState.HOOKED) {
+                    survivor.bleed();
+                }
             }
 
             // Processing bleed-out and sacrifice timers

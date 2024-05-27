@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
-public class Generator extends Prop {
+public class Generator extends Prop implements Breakable {
     public enum GeneratorType { INDOOR, OUTDOOR }
     public enum GeneratorState { IDLE, REGRESSING, REPAIRED }
 
@@ -81,11 +81,32 @@ public class Generator extends Prop {
     public static final int INDOOR_LAMP_HEIGHT = 1;
     public static final int OUTDOOR_LAMP_HEIGHT = 4;
 
+    // Sound played when being broken
+    private static final Sound BREAK_SOUND = Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR;
+
+    // How long Break action takes to complete
+    private static final float BREAK_TIME = 1.8f;
+
+    // Generator progress is reduced by this amount
+    private static final float BREAK_PROGRESS_REDUCTION = 5f;
+
+    // Generator can be broken only 8 times
+    public static final int MAX_BREAK_TIMES = 8;
+
     // Max repair progress
     public static final float MAX_REPAIR_PROGRESS = 10f;
 
+    // Repair progress achieved per tick
+    public static final float REPAIR_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
+
+    // Progress reduction per tick while regressing
+    private static final float REGRESS_SPEED = REPAIR_SPEED / 4f;
+
     // Current repair progress
     private float repairProgress = 0f;
+
+    // How many times generator got broken
+    private int timesBroken = 0;
 
     // A sound of generator having repair progress is being constantly played
     final BukkitRunnable idleProgressSound = new BukkitRunnable() {
@@ -133,6 +154,30 @@ public class Generator extends Prop {
 
     // Blocks, player can interact with to interact with the generator
     private final ArrayList<Block> interactableBlocks = new ArrayList<>();
+
+    @Override
+    public Sound getBreakingSound() {
+        return BREAK_SOUND;
+    }
+
+    @Override
+    public float getBreakingTime() {
+        return BREAK_TIME;
+    }
+
+    // Returns how many times this generator was broken
+    public int getTimesBroken() {
+        return timesBroken;
+    }
+
+    @Override
+    public void getBroken() {
+        ++timesBroken;
+
+        // Reducing generator progress and making it regress
+        repairProgress -= BREAK_PROGRESS_REDUCTION;
+        generatorState = GeneratorState.REGRESSING;
+    }
 
     public Generator(final Location location, final BlockFace direction, final GeneratorType generatorType) {
         super(location, direction);
@@ -246,7 +291,7 @@ public class Generator extends Prop {
             becomeRepaired();
     }
 
-    // This function is called when all generators are fully repaired
+    // This function is called when generator is fully repaired
     public void becomeRepaired() {
         generatorState = GeneratorState.REPAIRED;
         for (final Block block : blocks) {
@@ -266,24 +311,26 @@ public class Generator extends Prop {
         SoundManager.playForAll(location, FINISH_REPAIR_SOUND, 100f, 1f);
     }
 
-    // Decreases repair progress
-    public void regress(final float progress) {
-        if (progress <= 0.0f)
+    // Simulates regression over time
+    public void regress() {
+        // Generator must be in regression state
+        if (generatorState != GeneratorState.REGRESSING)
             return;
-
-        repairProgress -= progress;
+        repairProgress -= REGRESS_SPEED;
 
         // Progress can't go below 0
-        if (repairProgress < 0.0f)
+        if (repairProgress <= 0.0f) {
             repairProgress = 0.0f;
-    }
-
-    public GeneratorType getGeneratorType() {
-        return generatorType;
+            generatorState = GeneratorState.IDLE;
+        }
     }
 
     public GeneratorState getGeneratorState() {
         return generatorState;
+    }
+
+    public void setGeneratorState(final GeneratorState state) {
+        generatorState = state;
     }
 
     // Returns generator side

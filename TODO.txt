@@ -6,24 +6,20 @@
     2.2 Bonus: Implement chests
 
 3. Update locker interaction
-    3.1 Add delay before entering and exiting lockers (implement action for this)
-    3.2 Add entering/leaving locker door animation
-    3.3 Add sounds and effects
+    3.1 Add entering/leaving locker door animation
+    3.2 Add sounds if survivor was found
 
 4. Implement killers
-    4.1 Make killers be able to search lockers
-    4.2 Make killers be able to drop carried survivors
-    4.3 Bonus: Add grabs
-    4.4 Add breaking generators and implement generator regress system
-    4.5 Bonus: Add opening gates
-    4.6 Bonus: Implement breakable walls
-    4.7 Implement hooking and picking up animation
+    4.1 Make killers be able to drop carried survivors
+    4.2 Add grabs
+    4.3 Add breaking generators and implement generator regress system
+    4.4 Bonus: Add opening gates
+    4.5 Bonus: Implement breakable walls
 
 5. Implement survivors
-    5.1 Polish wiggling mechanic
-    5.2 Bonus: Implement scratch marks and blood pools
-    5.3 Bonus: Add endurance status effect
-    5.4 Bonus: Implement skill-checks in any way
+    5.1 Bonus: Implement scratch marks and blood pools
+    5.2 Bonus: Add endurance status effect
+    5.3 Bonus: Implement skill-checks in any way
 
 6. Implement escaping
     7.1 Implement exit gates escaping
@@ -31,7 +27,7 @@
     7.3 Bonus: Implement the hatch
     7.4 Implement endgame collapse timer
 
-7. Polish and add more beauty (Title screens, hot-bar messages, etc.)
+7. Polish and add more beauty (Title screens, hot-bar messages, sounds, animations, etc.)
 
 8. Implement random map generation
 

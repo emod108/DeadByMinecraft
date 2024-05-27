@@ -23,16 +23,25 @@ public class Survivor extends Character {
     private static final int MAX_HOOK_STAGE = 3;
 
     // Default time survivor has before hook stage progression (in ticks)
-    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(15);
+    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(10);
 
     // Default time survivor has before dying from bleeding out
-    private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(24);
+    private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(20);
 
     // Default speed is 100%
     public static final float DEFAULT_SPEED = 1.0f;
 
-    // For how long survivors vault a vaultable prop in ticks
-    private static final int DEFAULT_VAULT_TIME = Timings.secondsToTicks(0.5);
+    // For how long survivors fast vault in ticks
+    private static final int FAST_VAULT_TIME = Timings.secondsToTicks(0.5);
+
+    // For how long survivors slow vault in ticks
+    private static final int SLOW_VAULT_TIME = Timings.secondsToTicks(1.5);
+
+    // Rushed locker enter / leave time
+    private static final int RUSHED_LOCKER_TIME = Timings.secondsToTicks(0.5);
+
+    // Slow locker enter / leave time
+    private static final int SLOW_LOCKER_TIME = Timings.secondsToTicks(1.5);
 
     // Each N ticks, blood particles are created
     private static final int DEFAULT_TICKS_TILL_BLOOD_PARTICLES = Timings.secondsToTicks(0.25);
@@ -67,7 +76,7 @@ public class Survivor extends Character {
     private int ticksTillBloodParticles = DEFAULT_TICKS_TILL_BLOOD_PARTICLES;
 
     public Survivor(final Player player) {
-        super(player, DEFAULT_SPEED, DEFAULT_VAULT_TIME);
+        super(player, DEFAULT_SPEED);
     }
 
     public HealthState getHealthState() {
@@ -213,6 +222,7 @@ public class Survivor extends Character {
         player.setGameMode(GameMode.SPECTATOR);
 
         Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " has died!");
+        player.sendTitle(ChatColor.RED + "DEAD", ChatColor.RED + "You bled out", 10, 70, 20);
     }
 
     // If survivor is hooked, he can be sacrificed after some time.
@@ -257,6 +267,7 @@ public class Survivor extends Character {
         player.setGameMode(GameMode.SPECTATOR);
 
         Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " was sacrificed!");
+        player.sendTitle(ChatColor.RED + "SACRIFICED", ChatColor.RED + "You were sacrificed", 10, 70, 20);
     }
 
     public boolean isBeingUnhooked() {
@@ -268,6 +279,14 @@ public class Survivor extends Character {
     }
 
     public void enterLocker(final Locker locker) {
+        // Starting locker enter action
+        final int lockerEnterTime = player.isSneaking() ? SLOW_LOCKER_TIME : RUSHED_LOCKER_TIME;
+        action = new LockerEnterAction(this, locker, lockerEnterTime, !player.isSneaking());
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+    }
+
+    // This function handles locker entrance
+    public void teleportToLocker(final Locker locker) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
 
         // Hiding survivor from every player
@@ -283,17 +302,23 @@ public class Survivor extends Character {
         lockerTop.setYaw(playerPitchAndYaw.getYaw());
         player.teleport(lockerTop);
 
-        // Freezing survivor
-        plugin.freezeManager.freeze(player);
+        // Survivor is now in the locker
         locker.setHidingSurvivor(this);
         movementState = MovementState.IN_LOCKER;
     }
 
     public void leaveLocker(final Locker locker) {
-        final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
+        final int lockerLeaveTime = player.isSneaking() ? SLOW_LOCKER_TIME : RUSHED_LOCKER_TIME;
+        action = new LockerLeaveAction(this, locker, lockerLeaveTime, !player.isSneaking());
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+    }
 
+    // This function handles locker leaving
+    public void teleportFromLocker(final Locker locker) {
         // Showing player
-        plugin.vanishManager.show(player);
+        DeadByMinecraft.getPlugin().vanishManager.show(player);
+        locker.setHidingSurvivor(null);
+        movementState = Character.MovementState.IDLE;
 
         // Teleporting to the door
         final Location exitLocation = locker.getBottomDoorBlock().getLocation().clone();
@@ -302,12 +327,8 @@ public class Survivor extends Character {
         final Location playerPitchAndYaw = player.getLocation();
         exitLocation.setPitch(playerPitchAndYaw.getPitch());
         exitLocation.setYaw(playerPitchAndYaw.getYaw());
-        player.teleport(exitLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT));
-
-        // Allowing to move
-        plugin.freezeManager.unFreeze(player);
-        locker.setHidingSurvivor(null);
-        movementState = MovementState.IDLE;
+        player.teleport(exitLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT,
+                0, DeadByMinecraft.CENTER_ADJUSTMENT));
     }
 
     public void getHooked(final Hook hook) {
@@ -322,6 +343,8 @@ public class Survivor extends Character {
 
         ++hookStage;
         sacrificeTime = STAGE_PROGRESSION_TIME;
+
+        player.sendMessage(ChatColor.RED + "You were hooked!");
     }
 
     public void getUnhooked(final Hook hook) {
@@ -384,8 +407,12 @@ public class Survivor extends Character {
     }
 
     @Override
+    public int getVaultTimeTicks(final boolean isRushed) {
+        return isRushed ? FAST_VAULT_TIME : SLOW_VAULT_TIME;
+    }
+
+    @Override
     public void startOpening(final ExitGate exitGate) {
-        exitGate.setInteractingPlayer(this);
         action = new SurvivorOpenExitAction(this, exitGate);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
         player.sendMessage(ChatColor.GREEN + "You have started opening the exit gates. Don't move!");
@@ -430,7 +457,7 @@ public class Survivor extends Character {
 
         if (isBeingHealed()) {
             player.sendMessage(ChatColor.YELLOW + "You can't interact with anything while being healed. " +
-                    "Sneak (press Shift) to force others to stop healing you");
+                    "Sneak (press Shift) or start moving to force others to stop healing you");
             return false;
         }
 
@@ -444,6 +471,12 @@ public class Survivor extends Character {
     public boolean canInteractWithLocker() {
         if (isIncapacitated())
             return false;
+
+        if (isBeingHealed()) {
+            player.sendMessage(ChatColor.YELLOW + "You can't interact with anything while being healed. " +
+                    "Sneak (press Shift) or start moving to force others to stop healing you");
+            return false;
+        }
 
         return action == null;
     }

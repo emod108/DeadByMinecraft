@@ -7,7 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Wall;
 
 public class Window extends Vaultable {
-    public static final Sound VAULT_SOUND = Sound.BLOCK_FENCE_GATE_CLOSE;
+    private static final Sound VAULT_SOUND = Sound.BLOCK_FENCE_GATE_CLOSE;
 
     private final Material wallMaterial;
 
@@ -32,5 +32,10 @@ public class Window extends Vaultable {
         // If heightNorth = LOW, then we are vaulting EAST or WEST
         // if heightNorth = NONE, then we are vaulting NORTH or SOUTH
         return (heightNorth == Wall.Height.LOW);
+    }
+
+    @Override
+    public Sound getVaultingSound() {
+        return VAULT_SOUND;
     }
 }
