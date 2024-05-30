@@ -9,9 +9,6 @@ public class WiggleAction extends Action {
     // Max wiggle progress
     private static final float MAX_WIGGLE_PROGRESS = 10f;
 
-    // Wiggle progress achieved per tick
-    public static final float WIGGLE_SPEED = 1f / Timings.TICKS_PER_SECOND;
-
     // How often can survivor toggle between trying and not trying to wiggle
     private static final int TOGGLE_BUFFER_MAX = Timings.secondsToTicks(0.5);
 
@@ -70,7 +67,7 @@ public class WiggleAction extends Action {
             return;
 
         // Survivor manages to wiggle of
-        wiggleProgress += WIGGLE_SPEED;
+        wiggleProgress += ACTION_SPEED;
         if (wiggleProgress >= MAX_WIGGLE_PROGRESS) {
             ((Killer) target).getStunned();
             end();

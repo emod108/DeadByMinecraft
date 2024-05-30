@@ -23,10 +23,10 @@ public class FreezeManager implements Listener, CommandExecutor {
             return;
 
         // Getting from and to locations
-        final Location from = e.getFrom().clone();
         final Location to = e.getTo();
         if (to == null)
             return;
+        final Location from = e.getFrom().clone();
 
         from.setPitch(to.getPitch());
         from.setYaw(to.getYaw());
@@ -34,7 +34,8 @@ public class FreezeManager implements Listener, CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command,
+                             final String label, final String[] args) {
         if (sender instanceof final Player player) {
             if (getFrozenIndex(player) == NOT_FROZEN) {
                 freeze(player);

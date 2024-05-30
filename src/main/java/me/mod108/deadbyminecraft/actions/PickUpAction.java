@@ -6,21 +6,22 @@ import me.mod108.deadbyminecraft.managers.FreezeManager;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.utility.ProgressBar;
-import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.ChatColor;
 
 public class PickUpAction extends Action {
     // Max picking up progress
     private static final float MAX_PICK_UP_PROGRESS = 3f;
 
-    // Picking up progress achieved per tick
-    private static final float PICK_UP_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
-
     // Current picking up progress
     private float pickingUpProgress = 0f;
 
     public PickUpAction(final Killer killer, final Survivor survivor) {
         super(killer, survivor);
+
+        // Freezing both players
+        final FreezeManager manager = DeadByMinecraft.getPlugin().freezeManager;
+        manager.freeze(killer.getPlayer());
+        manager.freeze(survivor.getPlayer());
 
         killer.getPlayer().sendMessage(ChatColor.YELLOW + "Picking up survivor");
         survivor.getPlayer().sendMessage(ChatColor.YELLOW + "You are being picked up by the killer");
@@ -32,13 +33,12 @@ public class PickUpAction extends Action {
             return;
         super.run();
 
-        final Survivor survivor = (Survivor) target;
-
         // Showing pick up progress to survivor
+        final Survivor survivor = (Survivor) target;
         ProgressBar.setProgress(survivor.getPlayer(), getProgress());
 
         // Progressing the action
-        pickingUpProgress += PICK_UP_SPEED;
+        pickingUpProgress += ACTION_SPEED;
         if (pickingUpProgress >= MAX_PICK_UP_PROGRESS) {
             // Making survivor to stop crawling
             CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(survivor.getPlayer());

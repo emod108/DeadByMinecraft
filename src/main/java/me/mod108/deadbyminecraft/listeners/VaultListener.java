@@ -16,7 +16,7 @@ public class VaultListener implements Listener {
 
         // Getting window location and adding 0.5 so block would be in the center
         final Location windowLocation = vaultable.getLocation().clone();
-        windowLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT);
+        windowLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
 
         // Distance check
         if (player.getPlayer().getLocation().distance(windowLocation) > Character.ACTION_MAX_DISTANCE)

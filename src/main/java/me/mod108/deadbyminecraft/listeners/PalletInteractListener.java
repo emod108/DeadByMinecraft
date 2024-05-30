@@ -22,7 +22,7 @@ public class PalletInteractListener implements Listener {
 
         // Getting pallet location and adding 0.5 so block would be in the center
         final Location palletLocation = pallet.getLocation().clone();
-        palletLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT);
+        palletLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
 
         // Distance check
         if (player.getPlayer().getLocation().distance(palletLocation) > Character.ACTION_MAX_DISTANCE)
@@ -71,9 +71,9 @@ public class PalletInteractListener implements Listener {
 
         // Getting center of the pallet
         final Location palletLocation = pallet.getLocation();
-        final double pX = palletLocation.getX() + 0.5;
+        final double pX = palletLocation.getX() + DeadByMinecraft.CENTERING;
         final double pY = palletLocation.getY();
-        final double pZ = palletLocation.getZ() + 0.5;
+        final double pZ = palletLocation.getZ() + DeadByMinecraft.CENTERING;
 
         // Checking if killer is in area
         if (killer.isInArea(pX - PALLET_STUN_DISTANCE, pX + PALLET_STUN_DISTANCE,

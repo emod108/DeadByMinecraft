@@ -4,16 +4,13 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Breakable;
-import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.Sound;
 
 public class BreakAction extends Action {
-    // Break progress achieved per second
-    private static final float BREAK_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
-
     // Max break progress
     private final float maxBreakProgress;
 
+    // Sounds played when taking break action
     private final Sound breakingSound;
 
     // Current break progress
@@ -38,7 +35,7 @@ public class BreakAction extends Action {
         super.run();
 
         // Progressing the action
-        breakProgress += BREAK_SPEED;
+        breakProgress += ACTION_SPEED;
 
         // Playing break sound if breaking progress reaches half
         if (!halfwayThrough && breakProgress >= maxBreakProgress / 2) {

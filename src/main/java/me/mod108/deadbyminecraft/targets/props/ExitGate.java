@@ -1,7 +1,10 @@
 package me.mod108.deadbyminecraft.targets.props;
 
+import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.utility.Directions;
+import me.mod108.deadbyminecraft.utility.EscapeLine;
+import me.mod108.deadbyminecraft.utility.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,6 +22,9 @@ public class ExitGate extends Prop {
     public static final int GATES_WIDTH = 6;
     public static final int GATES_HEIGHT = 5;
     public static final float MAX_OPEN_PROGRESS = 10.0f;
+
+    // How far is escape zone from lever's location
+    private static final int ESCAPE_ZONE_DISTANCE = 10;
 
     // Enum which defines possible exit gate states
     public enum ExitGateState { UNPOWERED, POWERED, OPEN }
@@ -46,7 +52,7 @@ public class ExitGate extends Prop {
         // Placing the gate switch
         gateSwitch = placeBlock(currentLocation, GATE_SWITCH_MATERIAL);
         final Switch leverData = (Switch) gateSwitch.getBlockData();
-        leverData.setFacing(Directions.getOpposite(direction));
+        leverData.setFacing(direction.getOppositeFace());
         gateSwitch.setBlockData(leverData);
 
         // Placing lamps
@@ -137,5 +143,19 @@ public class ExitGate extends Prop {
             currentLocation.add(horizontalVector);
             currentLocation.add(0, GATES_HEIGHT, 0);
         }
+
+        // Creating escape zone
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game == null) {
+            System.out.println("Game is null while opening the gates!");
+            return;
+        }
+
+        // Creating escape zone
+        final Location escapePoint = location.clone();
+        escapePoint.add(Directions.getVector(direction, ESCAPE_ZONE_DISTANCE));
+        escapePoint.add(Directions.getVector(Directions.turnRight(direction), 1));
+        final EscapeLine escapeLine = new EscapeLine(escapePoint, direction);
+        game.addEscapeLine(escapeLine);
     }
 }

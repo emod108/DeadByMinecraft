@@ -29,7 +29,7 @@ public class LockerInteractListener implements Listener {
 
         // Getting door location and adding 0.5 so block would be in the center
         final Location lockerDoorLocation = locker.getBottomDoorBlock().getLocation().clone();
-        lockerDoorLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT);
+        lockerDoorLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
 
         // Distance check
         if (player.getPlayer().getLocation().distance(lockerDoorLocation) > ACTION_MAX_DISTANCE &&

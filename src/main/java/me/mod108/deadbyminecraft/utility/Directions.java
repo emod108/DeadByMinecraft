@@ -36,14 +36,4 @@ public class Directions {
             default -> BlockFace.SELF;
         };
     }
-
-    public static BlockFace getOpposite(final BlockFace direction) {
-        return switch (direction) {
-            case NORTH -> BlockFace.SOUTH;
-            case SOUTH -> BlockFace.NORTH;
-            case WEST -> BlockFace.EAST;
-            case EAST -> BlockFace.WEST;
-            default -> BlockFace.SELF;
-        };
-    }
 }

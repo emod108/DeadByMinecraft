@@ -51,6 +51,14 @@ public class KillerAttackSurvivorListener implements Listener {
             return;
         }
 
+        // Killers can grab survivors instead of hitting them
+        // Works only if survivors can be grabbed and the killer is not carrying anyone yet
+        if (survivor.isGrabbable() && killer.getCarriedSurvivor() == null) {
+            killer.grab(survivor);
+            return;
+        }
+
+        // Hitting survivors
         killer.hit(survivor);
     }
 

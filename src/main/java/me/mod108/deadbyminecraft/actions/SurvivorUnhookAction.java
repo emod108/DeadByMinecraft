@@ -2,14 +2,10 @@ package me.mod108.deadbyminecraft.actions;
 
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.props.Hook;
-import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 public class SurvivorUnhookAction extends Action {
-    // Unhook progress achieved per tick
-    private static final float UNHOOK_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
-
     // Max unhook progress
     private static final float MAX_UNHOOK_PROGRESS = 1.0f;
 
@@ -59,7 +55,7 @@ public class SurvivorUnhookAction extends Action {
         }
 
         // Unhook when progress reaches maximum
-        unhookProgress += UNHOOK_SPEED;
+        unhookProgress += ACTION_SPEED;
         if (unhookProgress >= MAX_UNHOOK_PROGRESS) {
             unhookTarget.getUnhooked(hook);
             end();

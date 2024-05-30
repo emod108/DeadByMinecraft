@@ -31,7 +31,7 @@ public class ExitGateInteractListener implements Listener {
         final Location playerLocation = player.getLocation().getBlock().getLocation();
         final Location exitGateLocation = exitGate.getLocation().clone();
         if (!playerLocation.equals(exitGateLocation) && !playerLocation.equals(exitGateLocation.add
-                (Directions.getVector(Directions.getOpposite(exitGate.getDirection()),1))))
+                (Directions.getVector(exitGate.getDirection().getOppositeFace(),1))))
             return;
 
         player.startOpening(exitGate);

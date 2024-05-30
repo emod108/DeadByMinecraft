@@ -10,7 +10,6 @@ import me.mod108.deadbyminecraft.targets.props.Breakable;
 import me.mod108.deadbyminecraft.targets.props.ExitGate;
 import me.mod108.deadbyminecraft.targets.props.Hook;
 import me.mod108.deadbyminecraft.targets.props.Locker;
-import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -142,6 +141,20 @@ public abstract class Killer extends Character {
         player.sendMessage(ChatColor.GREEN + "You hit " + survivor.getPlayer().getDisplayName() + "!");
     }
 
+    public void grab(final Survivor survivor) {
+        player.sendMessage(ChatColor.YELLOW + "You've grabbed a survivor!");
+        survivor.getPlayer().sendMessage(ChatColor.RED + "You've been grabbed!");
+
+        // Survivor is now being carried
+        survivor.cancelAction();
+        survivor.setHealthState(Survivor.HealthState.BEING_CARRIED);
+        getSurvivorOnShoulder(survivor);
+
+        // Creating grab action
+        action = new GrabAction(this, survivor);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+    }
+
     public int getAttackCooldownTime() {
         return attackCooldownTime;
     }
@@ -235,11 +248,6 @@ public abstract class Killer extends Character {
     }
 
     public void pickUp(final Survivor survivor) {
-        // Freezing both players
-        final FreezeManager manager = DeadByMinecraft.getPlugin().freezeManager;
-        manager.freeze(player);
-        manager.freeze(survivor.getPlayer());
-
         // Survivor is now being carried
         survivor.setHealthState(Survivor.HealthState.BEING_CARRIED);
 
@@ -272,7 +280,6 @@ public abstract class Killer extends Character {
         // Survivor is now on top of the killer
         player.addPassenger(slime);
         slime.addPassenger(survivor.getPlayer());
-        player.sendMessage(ChatColor.YELLOW + "Picked up survivor");
 
         // Making survivor being able to start wiggling
         survivor.getPlayer().sendMessage(ChatColor.YELLOW +

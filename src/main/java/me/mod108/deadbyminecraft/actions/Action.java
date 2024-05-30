@@ -4,11 +4,18 @@ import me.mod108.deadbyminecraft.targets.Target;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.props.Prop;
 import me.mod108.deadbyminecraft.utility.ProgressBar;
+import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public abstract class Action extends BukkitRunnable {
+    // How much progress an action gains per tick
+    public static final float ACTION_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
+
+    // The one who performs the action
     protected final Character performer;
+
+    // Target is being influenced by the action
     protected final Target target;
 
     // If true, action ends
@@ -44,6 +51,11 @@ public abstract class Action extends BukkitRunnable {
             prop.setInteractingPlayer(null);
     }
 
+    // Returns true if this action can be interrupted (because of an attack or a stun)
+    public boolean isInterruptible() {
+        return true;
+    }
+
     // Finishes executing this action if it's interruptible
     public void interrupt() {
         if (isInterruptible())
@@ -63,10 +75,5 @@ public abstract class Action extends BukkitRunnable {
 
     public boolean isCancelled() {
         return cancelled;
-    }
-
-    // Returns trie if this action can be interrupted (because of an attack or a stun)
-    public boolean isInterruptible() {
-        return true;
     }
 }

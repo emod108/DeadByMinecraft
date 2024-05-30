@@ -48,19 +48,19 @@ public class VaultAction extends Action {
         if (vaultable.canVaultEastAndWest()) {
             // Vaulting EAST
             if (performerLocation.getX() - 0.1 < vaultableLocation.getX()) {
-                teleportLocation.add(-DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT);
+                teleportLocation.add(-DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
                 teleportVector.setX(distancePerTick);
             } else { // Vaulting WEST
-                teleportLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT * 3, 0, DeadByMinecraft.CENTER_ADJUSTMENT);
+                teleportLocation.add(DeadByMinecraft.CENTERING * 3, 0, DeadByMinecraft.CENTERING);
                 teleportVector.setX(-distancePerTick);
             }
         } else {
             // Vaulting SOUTH
             if (performerLocation.getZ() - 0.1 < vaultableLocation.getZ()) {
-                teleportLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, -DeadByMinecraft.CENTER_ADJUSTMENT);
+                teleportLocation.add(DeadByMinecraft.CENTERING, 0, -DeadByMinecraft.CENTERING);
                 teleportVector.setZ(distancePerTick);
             } else { // Vaulting NORTH
-                teleportLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT * 3);
+                teleportLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING * 3);
                 teleportVector.setZ(-distancePerTick);
             }
         }

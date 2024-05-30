@@ -27,7 +27,8 @@ public class JumpingManager implements CommandExecutor {
     );
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command,
+                             final String label,  final String[] args) {
         if (sender instanceof final Player player) {
             if (canJump(player))
                 disableJumping(player);

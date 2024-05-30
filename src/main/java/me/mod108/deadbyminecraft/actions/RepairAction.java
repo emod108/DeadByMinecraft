@@ -55,7 +55,7 @@ public class RepairAction extends Action {
         }
 
         // Adding repair progress
-        ((Generator) target).addRepairProgress(Generator.REPAIR_SPEED);
+        ((Generator) target).addRepairProgress(ACTION_SPEED);
 
         // Repair sounds
         ++currentTicksTillRepairSound;

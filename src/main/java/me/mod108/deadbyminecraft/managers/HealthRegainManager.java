@@ -31,7 +31,8 @@ public class HealthRegainManager implements Listener, CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command,
+                             final String label, final String[] args) {
         if (sender instanceof final Player player) {
             if (getHealthRegainDisabledIndex(player) == CAN_REGAIN_HEALTH)
                 disableHealthRegain(player);

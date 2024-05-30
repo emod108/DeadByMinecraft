@@ -22,6 +22,9 @@ public class Game {
     // Props in the game
     private final ArrayList<Prop> props = new ArrayList<>();
 
+    // Escape lines, which survivors must to cross
+    private final ArrayList<EscapeLine> escapeLines = new ArrayList<>();
+
     // Generators in the game
     private final int startingGenerators;
     private int generatorsLeft;
@@ -149,6 +152,11 @@ public class Game {
         if (player instanceof final Killer killer) {
             // Stops carrying survivor. Does nothing if no survivors carried
             killer.stopCarrying();
+
+            // Hiding exit gates blockers
+            for (final EscapeLine escape : escapeLines) {
+                escape.hideFromKiller(killer);
+            }
         }
 
         player.cancelAction();
@@ -200,5 +208,13 @@ public class Game {
 
     public void removeProp(final Prop prop) {
         props.removeIf(n -> (n.getLocation().equals(prop.getLocation())));
+    }
+
+    public ArrayList<EscapeLine> getEscapeLines() {
+        return escapeLines;
+    }
+
+    public void addEscapeLine(final EscapeLine escapeLine) {
+        escapeLines.add(escapeLine);
     }
 }

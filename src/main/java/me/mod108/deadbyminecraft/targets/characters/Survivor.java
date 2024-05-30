@@ -270,6 +270,14 @@ public class Survivor extends Character {
         player.sendTitle(ChatColor.RED + "SACRIFICED", ChatColor.RED + "You were sacrificed", 10, 70, 20);
     }
 
+    public void escape() {
+        healthState = HealthState.ESCAPED;
+        player.setGameMode(GameMode.SPECTATOR);
+        Bukkit.broadcastMessage(ChatColor.GREEN + player.getDisplayName() + " has escaped!");
+        player.sendTitle(ChatColor.GREEN + "ESCAPED",
+                ChatColor.GREEN + "You have escaped", 10, 70, 20);
+    }
+
     public boolean isBeingUnhooked() {
         return beingUnhooked;
     }
@@ -294,7 +302,7 @@ public class Survivor extends Character {
 
         // Teleporting survivor
         final Location lockerTop = locker.getLocation().clone().
-                add(DeadByMinecraft.CENTER_ADJUSTMENT, 2, DeadByMinecraft.CENTER_ADJUSTMENT);
+                add(DeadByMinecraft.CENTERING, 2, DeadByMinecraft.CENTERING);
 
         // Making teleport smooth for camera
         final Location playerPitchAndYaw = player.getLocation();
@@ -327,8 +335,8 @@ public class Survivor extends Character {
         final Location playerPitchAndYaw = player.getLocation();
         exitLocation.setPitch(playerPitchAndYaw.getPitch());
         exitLocation.setYaw(playerPitchAndYaw.getYaw());
-        player.teleport(exitLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT,
-                0, DeadByMinecraft.CENTER_ADJUSTMENT));
+        player.teleport(exitLocation.add(DeadByMinecraft.CENTERING,
+                0, DeadByMinecraft.CENTERING));
     }
 
     public void getHooked(final Hook hook) {
@@ -337,7 +345,7 @@ public class Survivor extends Character {
         plugin.freezeManager.freeze(player);
 
         final Location teleportLocation = hook.getHook().getRelative(0, -2, 0).getLocation().clone();
-        player.teleport(teleportLocation.add(DeadByMinecraft.CENTER_ADJUSTMENT, 0, DeadByMinecraft.CENTER_ADJUSTMENT));
+        player.teleport(teleportLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING));
         healthState = HealthState.HOOKED;
         hookedOn = hook;
 
@@ -418,11 +426,26 @@ public class Survivor extends Character {
         player.sendMessage(ChatColor.GREEN + "You have started opening the exit gates. Don't move!");
     }
 
-    // Returns true if the survivor is hittable
+    // Returns true if survivor is hittable
     // It doesn't show if he is damageable
     public boolean isHittable() {
         return (healthState != HealthState.DYING && healthState != HealthState.BEING_CARRIED &&
                 movementState != MovementState.IN_LOCKER);
+    }
+
+    // Returns true if survivor can be grabbed
+    // He must be doing specific actions
+    public boolean isGrabbable() {
+        if (action == null)
+            return false;
+
+        if (action instanceof LockerAction)
+            return true;
+
+        if (action instanceof RepairAction)
+            return true;
+
+        return action instanceof SurvivorOpenExitAction;
     }
 
     // Returns true if survivor is neither healthy, injured, nor deep wounded

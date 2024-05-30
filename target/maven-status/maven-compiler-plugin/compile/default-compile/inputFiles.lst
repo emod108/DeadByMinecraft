@@ -14,8 +14,10 @@ E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\dea
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\RecoverAction.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\SurvivorOpenExitAction.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\props\Locker.java
+E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\utility\EscapeLine.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\HookInteractListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\events\PalletInteractEvent.java
+E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\PlayerMoveListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\props\ExitGate.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\WiggleAction.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\utility\Directions.java

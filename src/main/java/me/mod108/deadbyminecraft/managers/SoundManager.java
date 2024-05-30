@@ -14,7 +14,8 @@ import java.util.Objects;
 
 public class SoundManager implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command command,
+                             final String label, final String[] args) {
         if (sender instanceof final Player player) {
             if (args.length == 0) {
                 player.sendMessage(ChatColor.YELLOW + "No sound name provided!");

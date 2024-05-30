@@ -7,7 +7,9 @@ import org.bukkit.Location;
 
 public class RecoverAction extends Action {
     // Recovery progress achieved per tick (2 times slower than healing)
-    private static final float RECOVER_SPEED = HealAction.HEALING_SPEED / 2.0f;
+    private static final float RECOVER_SPEED = ACTION_SPEED / 2.0f;
+
+    // You can recover only up to 95%
     private static final float MAX_RECOVER_PROGRESS = Survivor.MAX_HEALING_PROGRESS * 0.95f;
 
     // If players moves, recovering process stops

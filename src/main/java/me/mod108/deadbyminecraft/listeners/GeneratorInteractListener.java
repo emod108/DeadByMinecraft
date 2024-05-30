@@ -59,6 +59,12 @@ public class GeneratorInteractListener implements Listener {
                 return;
             }
 
+            // Can't break generators which have 0 progress
+            if (generator.getProgressPercents() == 0f) {
+                killer.getPlayer().sendMessage(ChatColor.YELLOW + "This generator has no progress!");
+                return;
+            }
+
             // Generator can be broken only certain amount of times
             if (generator.getTimesBroken() >= Generator.MAX_BREAK_TIMES) {
                 killer.getPlayer().sendMessage(ChatColor.YELLOW + "This generator already received maximum" +

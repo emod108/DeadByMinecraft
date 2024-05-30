@@ -14,6 +14,7 @@ me\mod108\deadbyminecraft\targets\characters\killers\Killer.class
 me\mod108\deadbyminecraft\utility\Directions.class
 me\mod108\deadbyminecraft\actions\Action.class
 me\mod108\deadbyminecraft\listeners\SurvivorUnhookListener.class
+me\mod108\deadbyminecraft\utility\EscapeLine$1.class
 me\mod108\deadbyminecraft\actions\PickUpAction.class
 me\mod108\deadbyminecraft\actions\RepairAction.class
 me\mod108\deadbyminecraft\targets\props\vaultable\Window.class
@@ -36,6 +37,7 @@ me\mod108\deadbyminecraft\targets\props\vaultable\Pallet.class
 me\mod108\deadbyminecraft\listeners\PlayerInteractListener.class
 me\mod108\deadbyminecraft\targets\props\Generator$GeneratorSide.class
 me\mod108\deadbyminecraft\listeners\PlayerJoinListener.class
+me\mod108\deadbyminecraft\listeners\PlayerMoveListener.class
 me\mod108\deadbyminecraft\events\SurvivorUnhookEvent.class
 me\mod108\deadbyminecraft\managers\SprintManager.class
 me\mod108\deadbyminecraft\commands\RemovePlayerCommand.class
@@ -47,6 +49,7 @@ me\mod108\deadbyminecraft\listeners\PlayerLeaveListener.class
 me\mod108\deadbyminecraft\events\KillerAttackSurvivorEvent.class
 me\mod108\deadbyminecraft\managers\VanishManager.class
 me\mod108\deadbyminecraft\listeners\HookInteractListener.class
+me\mod108\deadbyminecraft\utility\EscapeLine.class
 me\mod108\deadbyminecraft\targets\props\Chest.class
 me\mod108\deadbyminecraft\events\VaultEvent.class
 me\mod108\deadbyminecraft\targets\Target.class
@@ -82,6 +85,7 @@ me\mod108\deadbyminecraft\actions\HealAction.class
 me\mod108\deadbyminecraft\items\Item.class
 me\mod108\deadbyminecraft\targets\characters\Character$MovementState.class
 me\mod108\deadbyminecraft\targets\props\BasementHook.class
+me\mod108\deadbyminecraft\utility\EscapeLine$2.class
 me\mod108\deadbyminecraft\targets\props\Hatch.class
 me\mod108\deadbyminecraft\utility\Directions$1.class
 me\mod108\deadbyminecraft\listeners\EntityDamageEntityListener$1.class

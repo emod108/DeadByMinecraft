@@ -2,14 +2,10 @@ package me.mod108.deadbyminecraft.actions;
 
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.utility.ProgressBar;
-import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 public class HealAction extends Action {
-    // Healing progress achieved per tick
-    public static final float HEALING_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
-
     // If healer or healing target moves, then action stops
     private Location healerLocation = null;
     private Location targetLocation = null;
@@ -75,7 +71,7 @@ public class HealAction extends Action {
             return;
         }
 
-        healedTarget.addHealingProgress(HEALING_SPEED);
+        healedTarget.addHealingProgress(ACTION_SPEED);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package me.mod108.deadbyminecraft.targets.props;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.actions.Action;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.utility.Directions;
@@ -96,11 +97,8 @@ public class Generator extends Prop implements Breakable {
     // Max repair progress
     public static final float MAX_REPAIR_PROGRESS = 10f;
 
-    // Repair progress achieved per tick
-    public static final float REPAIR_SPEED = 1.0f / Timings.TICKS_PER_SECOND;
-
     // Progress reduction per tick while regressing
-    private static final float REGRESS_SPEED = REPAIR_SPEED / 4f;
+    private static final float REGRESS_SPEED = Action.ACTION_SPEED / 4f;
 
     // Current repair progress
     private float repairProgress = 0f;

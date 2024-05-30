@@ -27,8 +27,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class DeadByMinecraft extends JavaPlugin {
     private static DeadByMinecraft plugin;
 
-    // Used to adjust player's teleport location to make it more central
-    public static final double CENTER_ADJUSTMENT = 0.5;
+    // Used to adjust position of an object to make it centred
+    public static final double CENTERING = 0.5;
 
     // A way to get plugin instance
     public static DeadByMinecraft getPlugin() {
@@ -109,6 +109,7 @@ public final class DeadByMinecraft extends JavaPlugin {
         pluginManager.registerEvents(new KillerPickupSurvivorListener(), this);
         pluginManager.registerEvents(new SurvivorHealListener(), this);
         pluginManager.registerEvents(new EntityDismountListener(), this);
+        pluginManager.registerEvents(new PlayerMoveListener(), this);
 
         // Inventory interactions
         pluginManager.registerEvents(new DropItemListener(), this);
