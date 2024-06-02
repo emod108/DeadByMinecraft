@@ -6,11 +6,17 @@ import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Generator;
 import me.mod108.deadbyminecraft.targets.props.Prop;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class Game {
     // Additional generators so killer can't camp a single generator
@@ -85,6 +91,7 @@ public class Game {
     // This method prepares player for the game
     private void preparePlayer(final Character player) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
+        createScoreboard(player);
         player.setIsSpeedActive(true);
         player.getPlayer().getInventory().clear();
 
@@ -147,6 +154,7 @@ public class Game {
     // This method fully resets player
     public void resetPlayer(final Character player) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
+        removeScoreboard(player);
 
         // Resetting killer
         if (player instanceof final Killer killer) {
@@ -163,7 +171,7 @@ public class Game {
         player.setIsSpeedActive(false);
         player.getPlayer().getInventory().clear();
 
-        plugin.freezeManager.unFreeze(player.getPlayer());
+        plugin.freezeManager.unFreeze(player.getPlayer().getUniqueId());
         plugin.healthRegainManager.enableHealthRegain(player.getPlayer());
         plugin.jumpingManager.enableJumping(player.getPlayer());
         plugin.sprintManager.enableSprinting(player.getPlayer());
@@ -216,5 +224,53 @@ public class Game {
 
     public void addEscapeLine(final EscapeLine escapeLine) {
         escapeLines.add(escapeLine);
+    }
+
+    private void createScoreboard(final Character player) {
+        // Getting scoreboard
+        final ScoreboardManager manager = Bukkit.getScoreboardManager();
+        if (manager == null)
+            return;
+        final Scoreboard scoreboard = manager.getMainScoreboard();
+
+        // Getting team
+        final String teamStr = player instanceof Killer ? "killer" : "survivor";
+        Team team = scoreboard.getTeam(teamStr);
+        if (team == null) {
+            team = scoreboard.registerNewTeam(teamStr);
+            team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+            team.setColor(ChatColor.RED);
+        }
+
+        // Adding player to the team
+        team.addEntry(player.getPlayer().getName());
+    }
+
+    private void removeScoreboard(final Character player) {
+        // Getting scoreboard
+        final ScoreboardManager manager = Bukkit.getScoreboardManager();
+        if (manager == null)
+            return;
+        final Scoreboard scoreboard = manager.getMainScoreboard();
+
+        // Getting team
+        final String teamStr = player instanceof Killer ? "killer" : "survivor";
+        final Team team = scoreboard.getTeam(teamStr);
+        if (team == null)
+            return;
+
+        // Removing player from the team
+        final Set<String> entries = team.getEntries();
+        final String playerName = player.getPlayer().getName();
+        for (final String entry : entries) {
+            if (entry.equalsIgnoreCase(playerName)) {
+                team.removeEntry(playerName);
+            }
+        }
+
+        // If it was the last player on the team
+        if (team.getSize() == 0)
+            team.unregister();
     }
 }

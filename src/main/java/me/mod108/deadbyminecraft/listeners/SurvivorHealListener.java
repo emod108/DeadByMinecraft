@@ -20,18 +20,16 @@ public class SurvivorHealListener implements Listener {
         if (!healingTarget.isHealable())
             return;
 
-        // Can't heal sneaking players
-        if (healingTarget.getPlayer().isSneaking()) {
-            performer.getPlayer().sendMessage(ChatColor.RED + "Target doesn't want to be healed.");
-            return;
-        }
-
         // Distance check
         final Location performerLocation = performer.getLocation();
         final Location healingTargetLocation = healingTarget.getLocation();
         final double healingDistance = performerLocation.distanceSquared(healingTargetLocation);
-        if (healingDistance > Character.ACTION_DISTANCE_SQUARED) {
-            performer.getPlayer().sendMessage(ChatColor.YELLOW + "You're too far to heal that survivor!");
+        if (healingDistance > Character.ACTION_DISTANCE_SQUARED)
+            return;
+
+        // Can't heal sneaking players
+        if (healingTarget.getPlayer().isSneaking()) {
+            performer.getPlayer().sendMessage(ChatColor.RED + "Target doesn't want to be healed.");
             return;
         }
 

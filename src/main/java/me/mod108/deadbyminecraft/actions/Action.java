@@ -3,6 +3,7 @@ package me.mod108.deadbyminecraft.actions;
 import me.mod108.deadbyminecraft.targets.Target;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.props.Prop;
+import me.mod108.deadbyminecraft.utility.ActionBar;
 import me.mod108.deadbyminecraft.utility.ProgressBar;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -36,6 +37,7 @@ public abstract class Action extends BukkitRunnable {
     // Starts executing this action every tick
     public void run() {
         ProgressBar.setProgress(performer.getPlayer(), getProgress());
+        ActionBar.setActionBar(performer.getPlayer(), getActionBar());
     }
 
     // Finishes executing the action
@@ -45,6 +47,7 @@ public abstract class Action extends BukkitRunnable {
         performer.setAction(null);
 
         ProgressBar.resetProgress(performer.getPlayer());
+        ActionBar.resetActionBar(performer.getPlayer());
 
         // If it's a prop, we show that it's now being free to be interacted with
         if (target instanceof final Prop prop)
@@ -64,6 +67,9 @@ public abstract class Action extends BukkitRunnable {
 
     // Gets current action progress in range from 0.0 to 1.0
     public abstract float getProgress();
+
+    // Returns action bar message
+    public abstract String getActionBar();
 
     public Character getPerformer() {
         return performer;

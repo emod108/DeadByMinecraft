@@ -5,6 +5,7 @@ import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Generator;
 import me.mod108.deadbyminecraft.events.GeneratorInteractEvent;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
+import me.mod108.deadbyminecraft.utility.ActionBar;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -55,20 +56,19 @@ public class GeneratorInteractListener implements Listener {
 
             // We can't break regressing generators
             if (generator.getGeneratorState() == Generator.GeneratorState.REGRESSING) {
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "This generator is already regressing!");
+                ActionBar.setActionBar(killer.getPlayer(), ChatColor.RED + "Generator is already regressing");
                 return;
             }
 
             // Can't break generators which have 0 progress
             if (generator.getProgressPercents() == 0f) {
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "This generator has no progress!");
+                ActionBar.setActionBar(killer.getPlayer(), ChatColor.RED + "Generator has no progress");
                 return;
             }
 
             // Generator can be broken only certain amount of times
             if (generator.getTimesBroken() >= Generator.MAX_BREAK_TIMES) {
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "This generator already received maximum" +
-                        " amount of break actions!");
+                ActionBar.setActionBar(killer.getPlayer(), ChatColor.RED + "Generator can't be broken anymore");
                 return;
             }
 

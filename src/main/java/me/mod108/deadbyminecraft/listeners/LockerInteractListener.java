@@ -58,8 +58,8 @@ public class LockerInteractListener implements Listener {
             }
 
             // Case 3: Other survivor is in the locker
-            survivor.getPlayer().sendMessage(ChatColor.YELLOW +
-                    hidingSurvivor.getPlayer().getDisplayName() + " is hiding in this locker already!");
+            survivor.getPlayer().sendMessage(ChatColor.YELLOW + hidingSurvivor.getPlayer().getName() +
+                    " is hiding in this locker!");
             return;
         }
 

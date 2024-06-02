@@ -28,10 +28,6 @@ commands:
     description: Toggles your health regain ability
     usage: /<command>
     permission: deadbyminecraft.togglehealthregain
-  sbtest:
-    description: Testing nametag hiding feature
-    usage: /<command>
-    permission: deadbyminecraft.sbtest
   createlobby:
     description: Creates a new Dead by Minecraft lobby
     usage: /<command>
@@ -84,9 +80,13 @@ commands:
     description: Create a new map
     usage: /<command> (Map name)
     permission: deadbyminecraft.createmap
+  renamemap:
+    description: Renames current map
+    usage: /<command> (Map name)
+    permission: deadbyminecraft.renamemap
   loadmap:
     description: Loads a map from a file
-    usage: /<command> (File name)
+    usage: /<command> (Map name)
     permission: deadbyminecraft.loadmap
   unloadmap:
     description: Unloads the currently loaded map
@@ -123,7 +123,6 @@ permissions:
     deadbyminecraft.togglejump: true
     deadbyminecraft.freeze: true
     deadbyminecraft.togglehealthregain: true
-    deadbyminecraft.sbtest: true
     deadbyminecraft.createlobby: true
     deadbyminecraft.deletelobby: true
     deadbyminecraft.addplayer: true
@@ -137,6 +136,7 @@ permissions:
     deadbyminecraft.testplaysound: true
     deadbyminecraft.getinjured: true
     deadbyminecraft.createmap: true
+    deadbyminecraft.renamemap: true
     deadbyminecraft.loadmap: true
     deadbyminecraft.unloadmap: true
     deadbyminecraft.savemap: true

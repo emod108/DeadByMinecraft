@@ -30,10 +30,10 @@ public class PlayerLeaveListener implements Listener {
             return;
 
         if (player instanceof final Killer killer) {
-            e.setQuitMessage(ChatColor.RED + "Killer " + p.getDisplayName() + " has left the game!\nGame was ended");
+            e.setQuitMessage(ChatColor.RED + "Killer " + p.getName() + " has left the game!\nGame was ended");
             plugin.finishGame();
         } else if (player instanceof final Survivor survivor) {
-            e.setQuitMessage(ChatColor.RED + "Survivor " + p.getDisplayName() + " has left the game!");
+            e.setQuitMessage(ChatColor.RED + "Survivor " + p.getName() + " has left the game!");
 
             // If survivor was on hook while he disconnected, it counts as sacrifice
             final Hook hook = survivor.getHook();

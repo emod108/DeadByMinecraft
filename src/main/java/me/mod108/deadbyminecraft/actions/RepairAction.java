@@ -75,4 +75,9 @@ public class RepairAction extends Action {
     public float getProgress() {
         return ((Generator) target).getProgressPercents();
     }
+
+    @Override
+    public String getActionBar() {
+        return ChatColor.GREEN + "Repairing";
+    }
 }

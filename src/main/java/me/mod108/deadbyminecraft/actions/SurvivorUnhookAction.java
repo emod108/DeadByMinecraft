@@ -72,4 +72,9 @@ public class SurvivorUnhookAction extends Action {
     public float getProgress() {
         return unhookProgress / MAX_UNHOOK_PROGRESS;
     }
+
+    @Override
+    public String getActionBar() {
+        return ChatColor.GREEN + "Unhooking";
+    }
 }

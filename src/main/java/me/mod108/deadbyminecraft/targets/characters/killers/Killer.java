@@ -5,10 +5,8 @@ import me.mod108.deadbyminecraft.actions.*;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
-import me.mod108.deadbyminecraft.targets.props.Breakable;
-import me.mod108.deadbyminecraft.targets.props.ExitGate;
-import me.mod108.deadbyminecraft.targets.props.Hook;
-import me.mod108.deadbyminecraft.targets.props.Locker;
+import me.mod108.deadbyminecraft.targets.props.*;
+import me.mod108.deadbyminecraft.utility.ActionBar;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -42,8 +40,8 @@ public abstract class Killer extends Character {
     // For how long killers are searching lockers
     private static final int LOCKER_SEARCH_TIME = Timings.secondsToTicks(2.3);
 
-    // For how long killer grabs survivors
-    private static final int GRAB_TIME = Timings.secondsToTicks(1.5);
+    // How much time it takes for the killer to grab survivor out of the locker
+    private static final int LOCKER_GRAB_TIME = Timings.secondsToTicks(3);
 
     // Moving speed modifier after successful attack
     private static final float HIT_ATTACK_SPEED = 0.125f;
@@ -138,13 +136,10 @@ public abstract class Killer extends Character {
         // Successful attack
         survivor.getHit();
         setAttackCooldown(HIT_ATTACK_COOLDOWN);
-        player.sendMessage(ChatColor.GREEN + "You hit " + survivor.getPlayer().getDisplayName() + "!");
+        player.sendMessage(ChatColor.GREEN + "You hit " + survivor.getPlayer().getName() + "!");
     }
 
     public void grab(final Survivor survivor) {
-        player.sendMessage(ChatColor.YELLOW + "You've grabbed a survivor!");
-        survivor.getPlayer().sendMessage(ChatColor.RED + "You've been grabbed!");
-
         // Survivor is now being carried
         survivor.cancelAction();
         survivor.setHealthState(Survivor.HealthState.BEING_CARRIED);
@@ -153,6 +148,9 @@ public abstract class Killer extends Character {
         // Creating grab action
         action = new GrabAction(this, survivor);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+
+        // Grab scream
+        SoundManager.playForAll(player.getEyeLocation(), Sound.ENTITY_GHAST_HURT, 1, 1);
     }
 
     public int getAttackCooldownTime() {
@@ -213,10 +211,13 @@ public abstract class Killer extends Character {
     public void decrementStunTime() {
         if (stunTime > 0) {
             --stunTime;
+            ActionBar.setActionBar(player, ChatColor.RED + "Stunned");
 
             // Allowing to move if the killer is no longer stunned
-            if (stunTime == 0)
-                DeadByMinecraft.getPlugin().freezeManager.unFreeze(player);
+            if (stunTime == 0) {
+                ActionBar.resetActionBar(player);
+                DeadByMinecraft.getPlugin().freezeManager.unFreeze(player.getUniqueId());
+            }
         }
     }
 
@@ -237,9 +238,8 @@ public abstract class Killer extends Character {
         attackCooldownTime = 0;
 
         // Freezing killer and playing stun sound
-        DeadByMinecraft.getPlugin().freezeManager.freeze(player);
+        DeadByMinecraft.getPlugin().freezeManager.freeze(player.getUniqueId(), true);
         SoundManager.playForAll(player.getLocation(), getStunSounds(), 1, 1);
-        player.sendMessage(ChatColor.RED + "You were stunned!");
     }
 
     // Returns carrying survivor or null if no survivor carried
@@ -282,8 +282,6 @@ public abstract class Killer extends Character {
         slime.addPassenger(survivor.getPlayer());
 
         // Making survivor being able to start wiggling
-        survivor.getPlayer().sendMessage(ChatColor.YELLOW +
-                "Press SHIFT (dismount button) to start trying to escape the killer");
         final WiggleAction wiggleAction = new WiggleAction(survivor, this);
         survivor.setAction(wiggleAction);
         wiggleAction.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
@@ -318,7 +316,6 @@ public abstract class Killer extends Character {
 
         stopCarrying();
         survivor.setHealthState(Survivor.HealthState.INJURED);
-        survivor.getPlayer().sendMessage(ChatColor.GREEN + "You have escaped the killer's grasp!");
     }
 
     // Hook currently carrying survivor
@@ -347,8 +344,15 @@ public abstract class Killer extends Character {
     @Override
     public void startOpening(final ExitGate exitGate) {}
 
+    @Override
+    public void useHatch(final Hatch hatch) {
+        action = new HatchCloseAction(this, hatch);
+        action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
+    }
+
     public void searchLocker(final Locker locker) {
-        action = new LockerSearchAction(this, locker, LOCKER_SEARCH_TIME);
+        final int lockerTime = locker.getHidingSurvivor() == null ? LOCKER_SEARCH_TIME : LOCKER_GRAB_TIME;
+        action = new LockerSearchAction(this, locker, lockerTime);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
     }
 
@@ -389,6 +393,11 @@ public abstract class Killer extends Character {
     @Override
     public boolean canInteractWithExitGate() {
         return false;
+    }
+
+    @Override
+    public boolean canInteractWithHatch() {
+        return canInteract();
     }
 
     @Override

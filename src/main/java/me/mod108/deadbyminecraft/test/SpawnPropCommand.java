@@ -40,6 +40,7 @@ public class SpawnPropCommand implements CommandExecutor {
                     Generator.GeneratorType.OUTDOOR);
             case "EXITGATE" -> prop = new ExitGate(player.getLocation(), BlockFace.NORTH);
             case "HOOK" -> prop = new Hook(player.getLocation(), BlockFace.NORTH);
+            case "HATCH" -> prop = new Hatch(player.getLocation(), BlockFace.NORTH);
             default -> {
                 player.sendMessage("No prop was chosen!");
                 return true;

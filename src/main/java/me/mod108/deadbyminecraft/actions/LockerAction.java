@@ -3,9 +3,11 @@ package me.mod108.deadbyminecraft.actions;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
+import me.mod108.deadbyminecraft.targets.characters.Survivor;
+import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Locker;
 
-public class LockerAction extends Action {
+public abstract class LockerAction extends Action {
     // For how long this action must go
     protected final int actionTimeTicks;
 
@@ -20,20 +22,19 @@ public class LockerAction extends Action {
         super(performer, target);
 
         // Freezing player
-        DeadByMinecraft.getPlugin().freezeManager.freeze(performer.getPlayer());
+        final boolean freezeCamera = performer instanceof Killer;
+        DeadByMinecraft.getPlugin().freezeManager.freeze(performer.getPlayer().getUniqueId(), freezeCamera);
 
         this.actionTimeTicks = actionTimeTicks;
         this.isRushed = isRushed;
 
-        if (isRushed)
-            SoundManager.playForAll(target.getLocation(), Locker.ENTER_SOUND, 1f, 1f);
+        target.openDoor(isRushed);
     }
 
     @Override
     public void end() {
         super.end();
-        if (isRushed)
-            SoundManager.playForAll(target.getLocation(), Locker.LEAVE_SOUND, 1f, 1f);
+        ((Locker) target).closeDoor(isRushed);
     }
 
     @Override

@@ -4,6 +4,7 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.props.Locker;
+import org.bukkit.ChatColor;
 
 public class LockerEnterAction extends LockerAction {
     public LockerEnterAction(final Survivor performer, final Locker target,
@@ -40,6 +41,11 @@ public class LockerEnterAction extends LockerAction {
 
         // If survivor didn't succeed in entering the locker
         if (performer.getMovementState() != Character.MovementState.IN_LOCKER)
-            DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer());
+            DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer().getUniqueId());
+    }
+
+    @Override
+    public String getActionBar() {
+        return ChatColor.GREEN + "Entering locker";
     }
 }

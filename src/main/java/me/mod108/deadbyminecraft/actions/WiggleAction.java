@@ -29,14 +29,6 @@ public class WiggleAction extends Action {
         if (toggleBuffer > 0)
             return;
 
-        if (tryingToWiggle) {
-            performer.getPlayer().sendMessage(ChatColor.YELLOW + "You aren't trying to escape " +
-                    "the killer's grasp anymore");
-        } else {
-            performer.getPlayer().sendMessage(ChatColor.YELLOW + "You are now trying to escape " +
-                    "the killer's grasp");
-        }
-
         tryingToWiggle = !tryingToWiggle;
         toggleBuffer = TOGGLE_BUFFER_MAX;
     }
@@ -82,5 +74,12 @@ public class WiggleAction extends Action {
     @Override
     public float getProgress() {
         return wiggleProgress / MAX_WIGGLE_PROGRESS;
+    }
+
+    @Override
+    public String getActionBar() {
+        if (((Killer) target).getAction() != null)
+            return "";
+        return tryingToWiggle ? ChatColor.GREEN + "Wiggling" : ChatColor.YELLOW + "SNEAK to start wiggling";
     }
 }

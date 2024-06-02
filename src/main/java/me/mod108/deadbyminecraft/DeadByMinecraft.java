@@ -15,10 +15,7 @@ import me.mod108.deadbyminecraft.managers.JumpingManager;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.managers.SprintManager;
 import me.mod108.deadbyminecraft.managers.VanishManager;
-import me.mod108.deadbyminecraft.targets.props.ExitGate;
-import me.mod108.deadbyminecraft.targets.props.Generator;
-import me.mod108.deadbyminecraft.targets.props.Hook;
-import me.mod108.deadbyminecraft.targets.props.Locker;
+import me.mod108.deadbyminecraft.targets.props.*;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Window;
 import me.mod108.deadbyminecraft.test.*;
@@ -44,6 +41,7 @@ public final class DeadByMinecraft extends JavaPlugin {
         ConfigurationSerialization.registerClass(Generator.class, "Generator");
         ConfigurationSerialization.registerClass(Hook.class, "Hook");
         ConfigurationSerialization.registerClass(Locker.class, "Locker");
+        ConfigurationSerialization.registerClass(Hatch.class, "Hatch");
     }
 
     private static DeadByMinecraft plugin;
@@ -92,13 +90,14 @@ public final class DeadByMinecraft extends JavaPlugin {
         // Test commands
         registerCommand("getmovementspeed", new GetMovementSpeedCommand());
         registerCommand("setmovementspeed", new SetMovementSpeedCommand());
-        registerCommand("sbtest", new ScoreboardTestCommand());
         registerCommand("spawnprop", new SpawnPropCommand());
+        registerCommand("getinjured", new GetInjuredCommand());
 
         // Map loading commands
         registerCommand("createmap", mapLoader);
         registerCommand("loadmap", mapLoader);
         registerCommand("unloadmap", mapLoader);
+        registerCommand("renamemap", mapLoader);
         registerCommand("savemap", mapLoader);
         registerCommand("addprop", mapLoader);
         registerCommand("removelastprop", mapLoader);
@@ -156,6 +155,8 @@ public final class DeadByMinecraft extends JavaPlugin {
         pluginManager.registerEvents(new SurvivorHealListener(), this);
         pluginManager.registerEvents(new EntityDismountListener(), this);
         pluginManager.registerEvents(new PlayerMoveListener(), this);
+        pluginManager.registerEvents(new EntityDamageListener(), this);
+        pluginManager.registerEvents(new HatchInteractListener(), this);
 
         // Inventory interactions
         pluginManager.registerEvents(new DropItemListener(), this);
@@ -165,9 +166,6 @@ public final class DeadByMinecraft extends JavaPlugin {
         pluginManager.registerEvents(new HookInteractListener(), this);
         pluginManager.registerEvents(new KillerHookSurvivorListener(), this);
         pluginManager.registerEvents(new SurvivorUnhookListener(), this);
-
-        // Test
-        registerCommand("getinjured", new GetInjuredCommand());
     }
 
     @Override

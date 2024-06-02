@@ -4,10 +4,7 @@ import me.mod108.crawlingplugin.CrawlingPlugin;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.actions.*;
 import me.mod108.deadbyminecraft.managers.SoundManager;
-import me.mod108.deadbyminecraft.targets.props.ExitGate;
-import me.mod108.deadbyminecraft.targets.props.Generator;
-import me.mod108.deadbyminecraft.targets.props.Hook;
-import me.mod108.deadbyminecraft.targets.props.Locker;
+import me.mod108.deadbyminecraft.targets.props.*;
 import me.mod108.deadbyminecraft.utility.SpeedModifier;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.*;
@@ -94,7 +91,8 @@ public class Survivor extends Character {
 
         // Creating hit effect
         player.playHurtAnimation(0);
-        SoundManager.playForAll(player.getEyeLocation(), Sound.ENTITY_PLAYER_HURT, 1, 1);
+        SoundManager.playForAll(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 1, 1);
+        SoundManager.playForAll(player.getEyeLocation(), Sound.ENTITY_GHAST_HURT, 1, 1);
 
         // Spawning particles
         final World world = Bukkit.getWorld("world");
@@ -221,7 +219,7 @@ public class Survivor extends Character {
         healthState = HealthState.DEAD;
         player.setGameMode(GameMode.SPECTATOR);
 
-        Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " has died!");
+        Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " has died!");
         player.sendTitle(ChatColor.RED + "DEAD", ChatColor.RED + "You bled out", 10, 70, 20);
     }
 
@@ -262,18 +260,21 @@ public class Survivor extends Character {
             hookedOn = null;
         }
 
-        DeadByMinecraft.getPlugin().freezeManager.unFreeze(player);
+        DeadByMinecraft.getPlugin().freezeManager.unFreeze(player.getUniqueId());
         healthState = HealthState.SACRIFICED;
         player.setGameMode(GameMode.SPECTATOR);
 
-        Bukkit.broadcastMessage(ChatColor.RED + player.getDisplayName() + " was sacrificed!");
+        Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " was sacrificed!");
         player.sendTitle(ChatColor.RED + "SACRIFICED", ChatColor.RED + "You were sacrificed", 10, 70, 20);
     }
 
     public void escape() {
+        if (healthState == HealthState.DYING)
+            CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
+
         healthState = HealthState.ESCAPED;
         player.setGameMode(GameMode.SPECTATOR);
-        Bukkit.broadcastMessage(ChatColor.GREEN + player.getDisplayName() + " has escaped!");
+        Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " has escaped!");
         player.sendTitle(ChatColor.GREEN + "ESCAPED",
                 ChatColor.GREEN + "You have escaped", 10, 70, 20);
     }
@@ -342,7 +343,7 @@ public class Survivor extends Character {
     public void getHooked(final Hook hook) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
         hook.hook(this);
-        plugin.freezeManager.freeze(player);
+        plugin.freezeManager.freeze(player.getUniqueId(), false);
 
         final Location teleportLocation = hook.getHook().getRelative(0, -2, 0).getLocation().clone();
         player.teleport(teleportLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING));
@@ -352,14 +353,15 @@ public class Survivor extends Character {
         ++hookStage;
         sacrificeTime = STAGE_PROGRESSION_TIME;
 
-        player.sendMessage(ChatColor.RED + "You were hooked!");
+        // Hooking sounds
+        SoundManager.playForAll(player.getEyeLocation(), Sound.ENTITY_GHAST_HURT, 10, 1);
     }
 
     public void getUnhooked(final Hook hook) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
         hook.unHook();
 
-        plugin.freezeManager.unFreeze(player);
+        plugin.freezeManager.unFreeze(player.getUniqueId());
         healthState = HealthState.INJURED;
         hookedOn = null;
 
@@ -376,24 +378,16 @@ public class Survivor extends Character {
         side.setPlayer(this);
         action = new RepairAction(this, generator, side);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
-        player.sendMessage(ChatColor.GREEN + "You have started repairing this generator. Don't move!");
     }
 
     public void startHealing(final Survivor healingTarget) {
         action = new HealAction(this, healingTarget);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
-        player.sendMessage(ChatColor.GREEN + "You have started healing " + ChatColor.YELLOW +
-                healingTarget.getPlayer().getDisplayName());
-
-        // Message to the one who is being healed
-        healingTarget.getPlayer().sendMessage(ChatColor.GREEN + "You are now being healed by " + ChatColor.YELLOW +
-                player.getDisplayName());
     }
 
     public void startRecovering() {
         action = new RecoverAction(this);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
-        player.sendMessage(ChatColor.GREEN + "You have started recovering");
     }
 
     public boolean isBeingHealed() {
@@ -424,6 +418,12 @@ public class Survivor extends Character {
         action = new SurvivorOpenExitAction(this, exitGate);
         action.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
         player.sendMessage(ChatColor.GREEN + "You have started opening the exit gates. Don't move!");
+    }
+
+    // Escaping through the hatch
+    @Override
+    public void useHatch(final Hatch hatch) {
+        escape();
     }
 
     // Returns true if survivor is hittable
@@ -522,6 +522,19 @@ public class Survivor extends Character {
     @Override
     public boolean canInteractWithExitGate() {
         return canInteract();
+    }
+
+    @Override
+    public boolean canInteractWithHatch() {
+        if (movementState != MovementState.IDLE)
+            return false;
+
+        // Player can escape, even while in the dying state
+        if ((healthState != HealthState.HEALTHY && healthState != HealthState.INJURED &&
+                healthState != HealthState.DEEP_WOUND && healthState != HealthState.DYING))
+            return false;
+
+        return action == null;
     }
 
     @Override

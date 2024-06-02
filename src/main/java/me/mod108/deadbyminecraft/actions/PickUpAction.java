@@ -5,6 +5,7 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.managers.FreezeManager;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
+import me.mod108.deadbyminecraft.utility.ActionBar;
 import me.mod108.deadbyminecraft.utility.ProgressBar;
 import org.bukkit.ChatColor;
 
@@ -20,11 +21,8 @@ public class PickUpAction extends Action {
 
         // Freezing both players
         final FreezeManager manager = DeadByMinecraft.getPlugin().freezeManager;
-        manager.freeze(killer.getPlayer());
-        manager.freeze(survivor.getPlayer());
-
-        killer.getPlayer().sendMessage(ChatColor.YELLOW + "Picking up survivor");
-        survivor.getPlayer().sendMessage(ChatColor.YELLOW + "You are being picked up by the killer");
+        manager.freeze(killer.getPlayer().getUniqueId(), true);
+        manager.freeze(survivor.getPlayer().getUniqueId(), false);
     }
 
     @Override
@@ -36,6 +34,7 @@ public class PickUpAction extends Action {
         // Showing pick up progress to survivor
         final Survivor survivor = (Survivor) target;
         ProgressBar.setProgress(survivor.getPlayer(), getProgress());
+        ActionBar.setActionBar(survivor.getPlayer(), ChatColor.RED + "Being picked up by the killer");
 
         // Progressing the action
         pickingUpProgress += ACTION_SPEED;
@@ -45,7 +44,6 @@ public class PickUpAction extends Action {
 
             // Placing survivor on top of the killer
             ((Killer) performer).getSurvivorOnShoulder(survivor);
-            performer.getPlayer().sendMessage(ChatColor.YELLOW + "Picked up survivor");
             end();
         }
     }
@@ -58,13 +56,18 @@ public class PickUpAction extends Action {
         final Survivor survivor = (Survivor) target;
 
         // Unfreezing both players
-        manager.unFreeze(performer.getPlayer());
-        manager.unFreeze(survivor.getPlayer());
+        manager.unFreeze(performer.getPlayer().getUniqueId());
+        manager.unFreeze(survivor.getPlayer().getUniqueId());
         ProgressBar.resetProgress(survivor.getPlayer());
     }
 
     @Override
     public float getProgress() {
         return pickingUpProgress / MAX_PICK_UP_PROGRESS;
+    }
+
+    @Override
+    public String getActionBar() {
+        return ChatColor.YELLOW + "Picking up survivor";
     }
 }

@@ -3,6 +3,7 @@ package me.mod108.deadbyminecraft.actions;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.props.Locker;
+import org.bukkit.ChatColor;
 
 public class LockerLeaveAction extends LockerAction {
     public LockerLeaveAction(final Survivor performer, final Locker target,
@@ -38,6 +39,11 @@ public class LockerLeaveAction extends LockerAction {
         super.end();
 
         // Unfreezing survivor
-        DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer());
+        DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer().getUniqueId());
+    }
+
+    @Override
+    public String getActionBar() {
+        return ChatColor.GREEN + "Leaving locker";
     }
 }

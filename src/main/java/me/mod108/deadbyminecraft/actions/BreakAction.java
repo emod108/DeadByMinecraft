@@ -4,6 +4,8 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Breakable;
+import me.mod108.deadbyminecraft.targets.props.Generator;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 
 public class BreakAction extends Action {
@@ -25,7 +27,7 @@ public class BreakAction extends Action {
         maxBreakProgress = breakable.getBreakingTime();
         breakingSound = breakable.getBreakingSound();
 
-        DeadByMinecraft.getPlugin().freezeManager.freeze(performer.getPlayer());
+        DeadByMinecraft.getPlugin().freezeManager.freeze(performer.getPlayer().getUniqueId(), true);
     }
 
     @Override
@@ -57,11 +59,18 @@ public class BreakAction extends Action {
     @Override
     public void end() {
         super.end();
-        DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer());
+        DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer().getUniqueId());
     }
 
     @Override
     public float getProgress() {
         return breakProgress / maxBreakProgress;
+    }
+
+    @Override
+    public String getActionBar() {
+        if (target instanceof Generator)
+            return ChatColor.YELLOW + "Breaking generator";
+        return ChatColor.YELLOW + "Breaking pallet";
     }
 }

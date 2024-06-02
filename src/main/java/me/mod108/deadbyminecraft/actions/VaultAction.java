@@ -5,6 +5,7 @@ import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Vaultable;
 import me.mod108.deadbyminecraft.utility.ProgressBar;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -108,5 +109,10 @@ public class VaultAction extends Action {
     @Override
     public boolean isInterruptible() {
         return false;
+    }
+
+    @Override
+    public String getActionBar() {
+        return "";
     }
 }

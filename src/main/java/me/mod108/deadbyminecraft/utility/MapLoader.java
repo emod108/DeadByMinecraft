@@ -39,6 +39,10 @@ public class MapLoader implements CommandExecutor {
             return true;
         }
 
+        if (command.getName().equals("renamemap")) {
+
+        }
+
         // Loads a map
         if (command.getName().equals("loadmap")) {
             if (args.length < 1) {
@@ -71,17 +75,12 @@ public class MapLoader implements CommandExecutor {
 
         // Saves the map
         if (command.getName().equals("savemap")) {
-            if (args.length < 1) {
-                player.sendMessage(ChatColor.YELLOW + "No file name specified!");
-                return true;
-            }
-
             if (mapData == null) {
                 player.sendMessage(ChatColor.YELLOW + "No map to save!");
                 return true;
             }
 
-            final boolean result = mapData.saveData(args[0]);
+            final boolean result = mapData.saveData();
             if (result)
                 player.sendMessage(ChatColor.GREEN + "Map saved successfully");
             else
@@ -163,6 +162,7 @@ public class MapLoader implements CommandExecutor {
             case "GENERATOR" -> prop = generateGenerator(args, player);
             case "EXITGATE" -> prop = generateExitGate(args, player);
             case "HOOK" -> prop = generateHook(args, player);
+            case "HATCH" -> prop = generateHatch(args, player);
             default -> {
                 prop = null;
                 player.sendMessage(ChatColor.YELLOW + "Prop with such name wasn't found");
@@ -280,5 +280,18 @@ public class MapLoader implements CommandExecutor {
                     "Valid directions are: North, South, East, West");
         }
         return direction;
+    }
+
+    private Hatch generateHatch(final String[] args, final Player player) {
+        if (args.length < 2) {
+            player.sendMessage(ChatColor.YELLOW + "Direction of the hatch wasn't specified");
+            return null;
+        }
+
+        final BlockFace direction = getDirection(args[1], player);
+        if (direction == BlockFace.SELF)
+            return null;
+
+        return new Hatch(player.getLocation(), direction);
     }
 }

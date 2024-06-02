@@ -31,11 +31,27 @@ public class PlayerInteractListener implements Listener {
         if (player == null)
             return;
 
-        // Checking if it's a survivor in dying state, so he can start recovering
+        // Cancelling the event, because we handle it our own way
+        e.setCancelled(true);
+
+        // Getting the block
+        final Block block = e.getClickedBlock();
+
+        // Checking if it's a survivor in dying state, so he can start recovering or escape through the hatch
         if (player instanceof final Survivor survivor) {
             if (survivor.getHealthState() == Survivor.HealthState.DYING) {
                 if (!survivor.isBeingHealed() && survivor.getAction() == null &&
                         (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR)) {
+
+                    // Checking if it's a hatch. If it's not, survivor just starts recovering
+                    if (block != null) {
+                        final Hatch hatch = findHatch(block);
+                        if (hatch != null) {
+                            final HatchInteractEvent event = new HatchInteractEvent(player, hatch);
+                            Bukkit.getServer().getPluginManager().callEvent(event);
+                            return;
+                        }
+                    }
                     survivor.startRecovering();
                 }
                 return;
@@ -46,8 +62,7 @@ public class PlayerInteractListener implements Listener {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        // Checking if block is not null
-        final Block block = e.getClickedBlock();
+        // Checking, if block is not null
         if (block == null)
             return;
 
@@ -60,9 +75,6 @@ public class PlayerInteractListener implements Listener {
             {
                 final Locker locker = findLockerByDoor(block);
                 if (locker != null) {
-                    // Canceling main event
-                    e.setCancelled(true);
-
                     final LockerInteractEvent event = new LockerInteractEvent(player, locker);
                     Bukkit.getServer().getPluginManager().callEvent(event);
                     return;
@@ -73,9 +85,6 @@ public class PlayerInteractListener implements Listener {
             {
                 final Pallet pallet = findPallet(block);
                 if (pallet != null) {
-                    // Cancelling main event
-                    e.setCancelled(true);
-
                     final PalletInteractEvent event = new PalletInteractEvent(player, pallet);
                     Bukkit.getServer().getPluginManager().callEvent(event);
                     return;
@@ -87,10 +96,10 @@ public class PlayerInteractListener implements Listener {
                 final ExitGate exitGate = findExitGate(block);
                 if (exitGate != null) {
                     // Cancelling main event
-                    e.setCancelled(true);
 
                     final ExitGateInteractEvent event = new ExitGateInteractEvent(player, exitGate);
                     Bukkit.getServer().getPluginManager().callEvent(event);
+                    return;
                 }
             }
         }
@@ -131,6 +140,17 @@ public class PlayerInteractListener implements Listener {
                 if (hook != null) {
                     final HookInteractEvent event = new HookInteractEvent(player, hook);
                     Bukkit.getServer().getPluginManager().callEvent(event);
+                    return;
+                }
+            }
+
+            // Hatch trapdoor interaction
+            {
+                final Hatch hatch = findHatch(block);
+                if (hatch != null) {
+                    final HatchInteractEvent event = new HatchInteractEvent(player, hatch);
+                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    return;
                 }
             }
         }
@@ -282,6 +302,29 @@ public class PlayerInteractListener implements Listener {
 
             if (block.getLocation().equals(hook.getHook().getLocation()))
                 return hook;
+        }
+
+        return null;
+    }
+
+    public static Hatch findHatch(final Block block) {
+        // Checking block material
+        if (block.getType() != Hatch.HATCH_MATERIAL)
+            return null;
+
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game == null)
+            return null;
+
+        // Checking all props
+        for (final Prop prop : game.getProps()) {
+            // The prop must be a hatch
+            if (!(prop instanceof final Hatch hatch))
+                continue;
+
+            if (block.getLocation().equals(hatch.getLocation())) {
+                return hatch;
+            }
         }
 
         return null;

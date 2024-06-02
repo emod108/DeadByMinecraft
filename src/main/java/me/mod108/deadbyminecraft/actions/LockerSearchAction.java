@@ -1,25 +1,26 @@
 package me.mod108.deadbyminecraft.actions;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.Locker;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 
 public class LockerSearchAction extends LockerAction {
+    final Survivor hidingSurvivor;
+
     public LockerSearchAction(final Killer performer, final Locker target, final int actionTimeTicks) {
         super(performer, target, actionTimeTicks, true);
 
-        final Survivor survivor = target.getHidingSurvivor();
-        if (survivor == null) {
-            performer.getPlayer().sendMessage(ChatColor.YELLOW + "No one is hiding in this locker");
+        hidingSurvivor = target.getHidingSurvivor();
+        if (hidingSurvivor == null)
             return;
-        }
 
-        survivor.setHealthState(Survivor.HealthState.BEING_CARRIED);
-        performer.getPlayer().sendMessage(ChatColor.YELLOW + "You have found " +
-                    survivor.getPlayer().getDisplayName() + " hiding in this locker");
-        survivor.getPlayer().sendMessage(ChatColor.RED + "You have been found!");
+        // Found survivor
+        hidingSurvivor.setHealthState(Survivor.HealthState.BEING_CARRIED);
+        SoundManager.playForAll(target.getLocation(), Sound.ENTITY_GHAST_HURT, 1, 1);
     }
 
     @Override
@@ -31,17 +32,16 @@ public class LockerSearchAction extends LockerAction {
         // Progressing the action
         ++currentActionTime;
         if (currentActionTime >= actionTimeTicks) {
-            final Locker locker = (Locker) target;
-            final Killer killer = (Killer) performer;
-            final Survivor survivor = locker.getHidingSurvivor();
+            if (hidingSurvivor != null) {
+                final Locker locker = (Locker) target;
+                final Killer killer = (Killer) performer;
 
-            if (survivor != null) {
                 // Getting survivor out from the locker
-                survivor.teleportFromLocker(locker);
-                DeadByMinecraft.getPlugin().freezeManager.unFreeze(survivor.getPlayer());
+                hidingSurvivor.teleportFromLocker(locker);
+                DeadByMinecraft.getPlugin().freezeManager.unFreeze(hidingSurvivor.getPlayer().getUniqueId());
 
                 // Picking up survivor
-                killer.getSurvivorOnShoulder(survivor);
+                killer.getSurvivorOnShoulder(hidingSurvivor);
             }
 
             end();
@@ -53,6 +53,13 @@ public class LockerSearchAction extends LockerAction {
         super.end();
 
         // Unfreezing the killer
-        DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer());
+        DeadByMinecraft.getPlugin().freezeManager.unFreeze(performer.getPlayer().getUniqueId());
+    }
+
+    @Override
+    public String getActionBar() {
+        if (hidingSurvivor != null)
+            return ChatColor.RED + "Found " + hidingSurvivor.getPlayer().getName();
+        return ChatColor.YELLOW + "Searching empty locker";
     }
 }

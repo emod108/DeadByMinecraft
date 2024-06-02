@@ -51,4 +51,9 @@ public class SurvivorOpenExitAction extends Action {
     public float getProgress() {
         return ((ExitGate) target).getProgressPercents();
     }
+
+    @Override
+    public String getActionBar() {
+        return ChatColor.GREEN + "Open escape";
+    }
 }

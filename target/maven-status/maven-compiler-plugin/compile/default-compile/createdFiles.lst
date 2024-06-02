@@ -38,6 +38,7 @@ me\mod108\deadbyminecraft\listeners\PlayerInteractListener.class
 me\mod108\deadbyminecraft\targets\props\Generator$GeneratorSide.class
 me\mod108\deadbyminecraft\listeners\PlayerJoinListener.class
 me\mod108\deadbyminecraft\listeners\PlayerMoveListener.class
+me\mod108\deadbyminecraft\actions\HatchCloseAction.class
 me\mod108\deadbyminecraft\events\SurvivorUnhookEvent.class
 me\mod108\deadbyminecraft\managers\SprintManager.class
 me\mod108\deadbyminecraft\utility\MapLoader.class
@@ -49,6 +50,7 @@ me\mod108\deadbyminecraft\actions\BreakAction.class
 me\mod108\deadbyminecraft\listeners\PlayerLeaveListener.class
 me\mod108\deadbyminecraft\events\KillerAttackSurvivorEvent.class
 me\mod108\deadbyminecraft\managers\VanishManager.class
+me\mod108\deadbyminecraft\utility\MyPair.class
 me\mod108\deadbyminecraft\listeners\HookInteractListener.class
 me\mod108\deadbyminecraft\utility\EscapeLine.class
 me\mod108\deadbyminecraft\targets\props\Chest.class
@@ -68,13 +70,16 @@ me\mod108\deadbyminecraft\targets\characters\killers\Trapper.class
 me\mod108\deadbyminecraft\utility\MapData.class
 me\mod108\deadbyminecraft\actions\SurvivorUnhookAction.class
 me\mod108\deadbyminecraft\targets\characters\Character.class
+me\mod108\deadbyminecraft\listeners\HatchInteractListener.class
 me\mod108\deadbyminecraft\listeners\EntityDismountListener.class
 me\mod108\deadbyminecraft\actions\RecoverAction.class
 me\mod108\deadbyminecraft\actions\VaultAction.class
 me\mod108\deadbyminecraft\targets\props\vaultable\Vaultable.class
 me\mod108\deadbyminecraft\targets\props\ExitGate$ExitGateState.class
 me\mod108\deadbyminecraft\actions\LockerLeaveAction.class
+me\mod108\deadbyminecraft\events\HatchInteractEvent.class
 me\mod108\deadbyminecraft\targets\props\Generator$1.class
+me\mod108\deadbyminecraft\utility\ActionBar.class
 me\mod108\deadbyminecraft\commands\StartGameCommand.class
 me\mod108\deadbyminecraft\managers\JumpingManager.class
 me\mod108\deadbyminecraft\events\LockerInteractEvent.class
@@ -91,7 +96,6 @@ me\mod108\deadbyminecraft\utility\EscapeLine$2.class
 me\mod108\deadbyminecraft\targets\props\Hatch.class
 me\mod108\deadbyminecraft\utility\Directions$1.class
 me\mod108\deadbyminecraft\listeners\EntityDamageEntityListener$1.class
-me\mod108\deadbyminecraft\test\ScoreboardTestCommand.class
 me\mod108\deadbyminecraft\actions\LockerSearchAction.class
 me\mod108\deadbyminecraft\listeners\EntityDamageEntityListener.class
 me\mod108\deadbyminecraft\managers\FreezeManager.class
@@ -104,4 +108,5 @@ me\mod108\deadbyminecraft\commands\CreateLobbyCommand.class
 me\mod108\deadbyminecraft\test\SetMovementSpeedCommand.class
 me\mod108\deadbyminecraft\targets\characters\Survivor$HealthState.class
 me\mod108\deadbyminecraft\targets\props\Generator$GeneratorState.class
+me\mod108\deadbyminecraft\listeners\EntityDamageListener.class
 me\mod108\deadbyminecraft\actions\HookAction.class

@@ -6,6 +6,7 @@ import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.Target;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.ExitGate;
+import me.mod108.deadbyminecraft.targets.props.Hatch;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Vaultable;
 import me.mod108.deadbyminecraft.actions.VaultAction;
 import me.mod108.deadbyminecraft.utility.MovementSpeed;
@@ -177,7 +178,11 @@ public abstract class Character implements Target {
             SoundManager.playForAll(vaultable.getLocation(), vaultable.getVaultingSound(), 1f, 1f);
     }
 
+    // Method of interaction with exit gates
     public abstract void startOpening(final ExitGate exitGate);
+
+    // Method of interaction with hatch
+    public abstract void useHatch(final Hatch hatch);
 
     // General method so code won't be repeated
     public abstract boolean canInteract();
@@ -196,6 +201,9 @@ public abstract class Character implements Target {
 
     // Returns true if player can interact with exit gates
     public abstract boolean canInteractWithExitGate();
+
+    // Returns true, if player can interact with the hatch
+    public abstract boolean canInteractWithHatch();
 
     // Returns true if player can interact with survivor (healing, unhooking, picking up, etc.)
     public abstract boolean canInteractWithSurvivor();

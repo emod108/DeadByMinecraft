@@ -1,6 +1,7 @@
 package me.mod108.deadbyminecraft.targets.props;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.utility.Directions;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import org.bukkit.Location;
@@ -8,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Door;
 import org.bukkit.configuration.serialization.SerializableAs;
 
 import java.util.HashMap;
@@ -46,7 +48,7 @@ public class Locker extends Prop {
         final Survivor survivor = hidingSurvivor;
         if (survivor != null) {
             survivor.teleportFromLocker(this);
-            DeadByMinecraft.getPlugin().freezeManager.unFreeze(survivor.getPlayer());
+            DeadByMinecraft.getPlugin().freezeManager.unFreeze(survivor.getPlayer().getUniqueId());
         }
 
         // Destroying the door manually so it won't drop
@@ -67,6 +69,42 @@ public class Locker extends Prop {
 
     public Block getBottomDoorBlock() {
         return bottomDoorBlock;
+    }
+
+    public void openDoor(final boolean isRushed) {
+        // Getting doors
+        final Door topDoor = (Door) bottomDoorBlock.getRelative(0, 1, 0).getBlockData();
+        final Door bottomDoor = (Door) bottomDoorBlock.getBlockData();
+
+        // Opening them
+        topDoor.setOpen(true);
+        bottomDoor.setOpen(true);
+
+        // Setting block data
+        bottomDoorBlock.getRelative(0, 1, 0).setBlockData(topDoor);
+        bottomDoorBlock.setBlockData(bottomDoor);
+
+        // Playing sounds if door was opened in a rush
+        if (isRushed)
+            SoundManager.playForAll(location, ENTER_SOUND, 1f, 1f);
+    }
+
+    public void closeDoor(final boolean isRushed) {
+        // Getting doors
+        final Door topDoor = (Door) bottomDoorBlock.getRelative(0, 1, 0).getBlockData();
+        final Door bottomDoor = (Door) bottomDoorBlock.getBlockData();
+
+        // Opening them
+        topDoor.setOpen(false);
+        bottomDoor.setOpen(false);
+
+        // Setting block data
+        bottomDoorBlock.getRelative(0, 1, 0).setBlockData(topDoor);
+        bottomDoorBlock.setBlockData(bottomDoor);
+
+        // Playing sounds if door was opened in a rush
+        if (isRushed)
+            SoundManager.playForAll(location, LEAVE_SOUND, 1f, 1f);
     }
 
     @Override

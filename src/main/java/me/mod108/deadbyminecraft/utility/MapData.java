@@ -15,21 +15,33 @@ public class MapData implements Serializable {
     transient private boolean showingProps = false;
 
     // Map's name
-    final String name;
+    private String mapName;
 
     // Props, which will be on this map
-    public final ArrayList<Prop> props;
+    private final ArrayList<Prop> props;
 
     // Used for saving
-    public MapData(final String name) {
-        this.name = name;
+    public MapData(final String mapName) {
+        this.mapName = mapName;
         props = new ArrayList<>();
     }
 
     // Used for loading
     public MapData(final MapData loadedData) {
-        this.name = loadedData.name;
+        this.mapName = loadedData.mapName;
         props = loadedData.props;
+    }
+
+    public ArrayList<Prop> getProps() {
+        return props;
+    }
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public void setMapName(final String mapName) {
+        this.mapName = mapName;
     }
 
     public void addProp(final Prop prop) {
@@ -67,10 +79,10 @@ public class MapData implements Serializable {
         }
     }
 
-    public boolean saveData(final String fileName) {
+    public boolean saveData() {
         try {
             final String path = DeadByMinecraft.getPlugin().getDataFolder().getPath() + File.separator +
-                    DeadByMinecraft.MAPS_FOLDER_NAME + File.separator + fileName;
+                    DeadByMinecraft.MAPS_FOLDER_NAME + File.separator + mapName;
 
             final FileOutputStream fileOutputStream = new FileOutputStream(path);
             final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
@@ -83,10 +95,10 @@ public class MapData implements Serializable {
             return false;
         }
     }
-    public static MapData loadData(final String fileName) {
+    public static MapData loadData(final String mapName) {
         try {
             final String path = DeadByMinecraft.getPlugin().getDataFolder().getPath() + File.separator +
-                    DeadByMinecraft.MAPS_FOLDER_NAME + File.separator + fileName;
+                    DeadByMinecraft.MAPS_FOLDER_NAME + File.separator + mapName;
 
             final FileInputStream fileInputStream = new FileInputStream(path);
             final GZIPInputStream gzipInputStream = new GZIPInputStream(fileInputStream);

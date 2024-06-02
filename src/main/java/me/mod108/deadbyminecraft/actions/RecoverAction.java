@@ -33,7 +33,6 @@ public class RecoverAction extends Action {
         final Location currentLocation = performer.getLocation();
         if (currentLocation.getX() != startLocation.getX() || currentLocation.getZ() != startLocation.getZ() ||
                 currentLocation.getY() != startLocation.getY()) {
-            performer.getPlayer().sendMessage(ChatColor.RED + "Recovery process stopped because you moved!");
             end();
             return;
         }
@@ -65,5 +64,10 @@ public class RecoverAction extends Action {
     @Override
     public float getProgress() {
         return ((Survivor) performer).getHealingProgressPercents();
+    }
+
+    @Override
+    public String getActionBar() {
+        return ChatColor.GREEN + "Recovering";
     }
 }

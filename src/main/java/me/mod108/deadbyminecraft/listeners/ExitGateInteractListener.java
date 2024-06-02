@@ -19,11 +19,11 @@ public class ExitGateInteractListener implements Listener {
             return;
 
         // Checking if someone is interacting with the gates already
-        if (exitGate.getInteractingPlayer() != null)
+        if (exitGate.isBeingInteractedWith())
             return;
 
-        final Character player = e.getPlayer();
         // Ability check
+        final Character player = e.getPlayer();
         if (!player.canInteractWithExitGate())
             return;
 

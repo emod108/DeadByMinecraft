@@ -27,14 +27,14 @@ public class KillerAttackSurvivorListener implements Listener {
         // Checking if killer is able to attack survivors
         if (!killer.canHitSurvivors()) {
             if (killer.isStunned()) { // Is stunned
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "You can't hit survivors while stunned. " +
+                killer.getPlayer().sendMessage(ChatColor.RED + "You can't hit survivors while stunned. " +
                         "Stun time left: " + Timings.ticksToSeconds(killer.getStunTime()) + "s");
             }
             else if (killer.isOnAttackCooldown()) { // On attack cooldown
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "Your attack is still on cooldown. " +
+                killer.getPlayer().sendMessage(ChatColor.RED + "Your attack is still on cooldown. " +
                         "You can attack again in: " + Timings.ticksToSeconds(killer.getAttackCooldownTime()) + "s");
             } else { // Doing action
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "You can't hit survivors while doing actions.");
+                killer.getPlayer().sendMessage(ChatColor.RED + "You can't hit survivors while doing actions.");
             }
 
             return;
@@ -45,7 +45,7 @@ public class KillerAttackSurvivorListener implements Listener {
         final Location survivorLocation = survivor.getLocation();
         final double attackDistance = killerLocation.distanceSquared(survivorLocation);
         if (attackDistance > Killer.ATTACK_DISTANCE_SQUARED) {
-            killer.getPlayer().sendMessage(ChatColor.YELLOW + "You're too far to hit this survivor!");
+            killer.getPlayer().sendMessage(ChatColor.RED + "You must be closer to hit this survivor!");
             final KillerMissEvent event = new KillerMissEvent(killer);
             Bukkit.getServer().getPluginManager().callEvent(event);
             return;
@@ -69,14 +69,14 @@ public class KillerAttackSurvivorListener implements Listener {
         // Checking if killer is able to attack survivors
         if (!killer.canHitSurvivors()) {
             if (killer.isStunned()) { // Is stunned
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "You can't hit survivors while stunned. " +
+                killer.getPlayer().sendMessage(ChatColor.RED + "You can't hit survivors while stunned. " +
                         "Stun time left: " + Timings.ticksToSeconds(killer.getStunTime()) + "s");
             }
             else if (killer.isOnAttackCooldown()) { // On attack cooldown
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "Your attack is still on cooldown. " +
+                killer.getPlayer().sendMessage(ChatColor.RED + "Your attack is still on cooldown. " +
                         "You can attack again in: " + Timings.ticksToSeconds(killer.getAttackCooldownTime()) + "s");
             } else { // Doing action
-                killer.getPlayer().sendMessage(ChatColor.YELLOW + "You can't hit survivors while doing actions.");
+                killer.getPlayer().sendMessage(ChatColor.RED + "You can't hit survivors while doing actions.");
             }
 
             return;
