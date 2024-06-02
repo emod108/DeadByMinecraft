@@ -25,7 +25,7 @@ public class PalletInteractListener implements Listener {
         palletLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
 
         // Distance check
-        if (player.getPlayer().getLocation().distance(palletLocation) > Character.ACTION_MAX_DISTANCE)
+        if (player.getPlayer().getLocation().distanceSquared(palletLocation) > Character.ACTION_DISTANCE_SQUARED)
             return;
 
         // Ability check

@@ -8,7 +8,12 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.serialization.SerializableAs;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@SerializableAs("Locker")
 public class Locker extends Prop {
     public static final Material LOCKER_MATERIAL = Material.MANGROVE_PLANKS;
     public static final Material DOOR_MATERIAL = Material.MANGROVE_DOOR;
@@ -62,5 +67,17 @@ public class Locker extends Prop {
 
     public Block getBottomDoorBlock() {
         return bottomDoorBlock;
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> map = new HashMap<>();
+        map.put("location", location);
+        map.put("direction", direction);
+        return map;
+    }
+
+    public static Locker deserialize(Map<String, Object> map) {
+        return new Locker((Location) map.get("location"), (BlockFace) map.get("direction"));
     }
 }

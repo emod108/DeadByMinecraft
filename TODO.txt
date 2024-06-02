@@ -21,11 +21,11 @@
     5.3 Bonus: Implement skill-checks in any way
 
 6. Implement escaping
-    7.1 Bonus: Implement the hatch
+    7.1 Implement the hatch
     7.2 Implement endgame collapse timer
 
 7. Polish and add more beauty (Title screens, hot-bar messages, sounds, animations, etc.)
 
-8. Implement random map generation
+8. Implement map generation (bonus if randomized)
 
 9. Connect everything together

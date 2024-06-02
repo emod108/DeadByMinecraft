@@ -6,14 +6,11 @@ import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.Target;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.props.ExitGate;
-import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Vaultable;
-import me.mod108.deadbyminecraft.targets.props.vaultable.Window;
 import me.mod108.deadbyminecraft.actions.VaultAction;
 import me.mod108.deadbyminecraft.utility.MovementSpeed;
 import me.mod108.deadbyminecraft.utility.SpeedModifier;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -23,7 +20,8 @@ public abstract class Character implements Target {
     public enum MovementState { IDLE, IN_LOCKER }
 
     // Distance, from which an action can be done
-    public static final double ACTION_MAX_DISTANCE = 1.8;
+    private static final double ACTION_DISTANCE = 1.8;
+    public static final double ACTION_DISTANCE_SQUARED = ACTION_DISTANCE * ACTION_DISTANCE;
 
     // Player who plays as this character
     protected Player player;

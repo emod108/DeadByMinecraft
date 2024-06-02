@@ -13,6 +13,7 @@ E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\dea
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\props\vaultable\Pallet.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\RecoverAction.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\actions\SurvivorOpenExitAction.java
+E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\utility\MapLoader.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\props\Locker.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\utility\EscapeLine.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\HookInteractListener.java
@@ -54,6 +55,7 @@ E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\dea
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\commands\RemovePlayerCommand.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\commands\FinishGameCommand.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\targets\props\vaultable\Window.java
+E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\utility\MapData.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\events\ExitGateInteractEvent.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\listeners\LockerInteractListener.java
 E:\Programming\Java\MinecraftPlugins\DeadByMinecraft\src\main\java\me\mod108\deadbyminecraft\test\ScoreboardTestCommand.java

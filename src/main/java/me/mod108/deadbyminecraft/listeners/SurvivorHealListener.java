@@ -29,8 +29,8 @@ public class SurvivorHealListener implements Listener {
         // Distance check
         final Location performerLocation = performer.getLocation();
         final Location healingTargetLocation = healingTarget.getLocation();
-        final double healingDistance = performerLocation.distance(healingTargetLocation);
-        if (healingDistance > Character.ACTION_MAX_DISTANCE) {
+        final double healingDistance = performerLocation.distanceSquared(healingTargetLocation);
+        if (healingDistance > Character.ACTION_DISTANCE_SQUARED) {
             performer.getPlayer().sendMessage(ChatColor.YELLOW + "You're too far to heal that survivor!");
             return;
         }

@@ -15,20 +15,43 @@ import me.mod108.deadbyminecraft.managers.JumpingManager;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.managers.SprintManager;
 import me.mod108.deadbyminecraft.managers.VanishManager;
+import me.mod108.deadbyminecraft.targets.props.ExitGate;
+import me.mod108.deadbyminecraft.targets.props.Generator;
+import me.mod108.deadbyminecraft.targets.props.Hook;
+import me.mod108.deadbyminecraft.targets.props.Locker;
+import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
+import me.mod108.deadbyminecraft.targets.props.vaultable.Window;
 import me.mod108.deadbyminecraft.test.*;
 import me.mod108.deadbyminecraft.utility.Game;
 import me.mod108.deadbyminecraft.utility.Lobby;
+import me.mod108.deadbyminecraft.utility.MapData;
+import me.mod108.deadbyminecraft.utility.MapLoader;
 import org.bukkit.Server;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public final class DeadByMinecraft extends JavaPlugin {
+    // Making props serializable
+    static {
+        ConfigurationSerialization.registerClass(Pallet.class, "Pallet");
+        ConfigurationSerialization.registerClass(Window.class, "Window");
+        ConfigurationSerialization.registerClass(ExitGate.class, "ExitGate");
+        ConfigurationSerialization.registerClass(Generator.class, "Generator");
+        ConfigurationSerialization.registerClass(Hook.class, "Hook");
+        ConfigurationSerialization.registerClass(Locker.class, "Locker");
+    }
+
     private static DeadByMinecraft plugin;
 
     // Used to adjust position of an object to make it centred
     public static final double CENTERING = 0.5;
+
+    public static final String MAPS_FOLDER_NAME = "maps";
 
     // A way to get plugin instance
     public static DeadByMinecraft getPlugin() {
@@ -42,6 +65,7 @@ public final class DeadByMinecraft extends JavaPlugin {
     public final SoundManager soundManager = new SoundManager();
     public final SprintManager sprintManager = new SprintManager();
     public final VanishManager vanishManager = new VanishManager();
+    public final MapLoader mapLoader = new MapLoader();
 
     // Game
     private Lobby lobby = null;
@@ -53,11 +77,33 @@ public final class DeadByMinecraft extends JavaPlugin {
         final Server server = getServer();
         final PluginManager pluginManager = server.getPluginManager();
 
+        // Creating maps folder
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+        final File folder = new File(getDataFolder(), MAPS_FOLDER_NAME);
+        if (!folder.exists()) {
+            try {
+                folder.mkdir();
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         // Test commands
         registerCommand("getmovementspeed", new GetMovementSpeedCommand());
         registerCommand("setmovementspeed", new SetMovementSpeedCommand());
         registerCommand("sbtest", new ScoreboardTestCommand());
         registerCommand("spawnprop", new SpawnPropCommand());
+
+        // Map loading commands
+        registerCommand("createmap", mapLoader);
+        registerCommand("loadmap", mapLoader);
+        registerCommand("unloadmap", mapLoader);
+        registerCommand("savemap", mapLoader);
+        registerCommand("addprop", mapLoader);
+        registerCommand("removelastprop", mapLoader);
+        registerCommand("showprops", mapLoader);
+        registerCommand("hideprops", mapLoader);
 
         // Game management commands
         registerCommand("createlobby", new CreateLobbyCommand());
@@ -129,6 +175,10 @@ public final class DeadByMinecraft extends JavaPlugin {
         if (game != null)
             game.finishGame();
         game = null;
+
+        final MapData mapData = mapLoader.getMapData();
+        if (mapData != null)
+            mapData.hideProps();
     }
 
     private void registerCommand(final String command, final CommandExecutor executor) {

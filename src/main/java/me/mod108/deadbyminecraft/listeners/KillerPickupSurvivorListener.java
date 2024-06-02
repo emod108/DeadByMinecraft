@@ -22,9 +22,9 @@ public class KillerPickupSurvivorListener implements Listener {
         final Survivor survivor = e.getSurvivor();
         final Location killerLocation = killer.getLocation();
         final Location survivorLocation = survivor.getLocation();
-        final double pickupDistance = killerLocation.distance(survivorLocation);
+        final double pickupDistance = killerLocation.distanceSquared(survivorLocation);
 
-        if (pickupDistance > Character.ACTION_MAX_DISTANCE) {
+        if (pickupDistance > Character.ACTION_DISTANCE_SQUARED) {
             killer.getPlayer().sendMessage(ChatColor.YELLOW + "You're too far to pick the survivor up!");
             return;
         }

@@ -11,7 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import static me.mod108.deadbyminecraft.targets.characters.Character.ACTION_MAX_DISTANCE;
+import static me.mod108.deadbyminecraft.targets.characters.Character.ACTION_DISTANCE_SQUARED;
 
 public class LockerInteractListener implements Listener {
     @EventHandler
@@ -32,7 +32,7 @@ public class LockerInteractListener implements Listener {
         lockerDoorLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
 
         // Distance check
-        if (player.getPlayer().getLocation().distance(lockerDoorLocation) > ACTION_MAX_DISTANCE &&
+        if (player.getPlayer().getLocation().distanceSquared(lockerDoorLocation) > ACTION_DISTANCE_SQUARED &&
                 player.getMovementState() != Character.MovementState.IN_LOCKER)
             return;
 

@@ -5,15 +5,23 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Wall;
+import org.bukkit.configuration.serialization.SerializableAs;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@SerializableAs("Window")
 public class Window extends Vaultable {
     private static final Sound VAULT_SOUND = Sound.BLOCK_FENCE_GATE_CLOSE;
+    private static final Material DEFAULT_MATERIAL = Material.STONE_BRICK_WALL;
 
     private final Material wallMaterial;
 
     public Window(final Location location, final Material wallMaterial) {
         super(location, BlockFace.NORTH); // Direction doesn't matter for this block
-        this.wallMaterial = wallMaterial;
+
+        // Material provided must be a wall
+        this.wallMaterial = (wallMaterial.createBlockData() instanceof Wall) ? wallMaterial : DEFAULT_MATERIAL;
     }
 
     @Override
@@ -37,5 +45,17 @@ public class Window extends Vaultable {
     @Override
     public Sound getVaultingSound() {
         return VAULT_SOUND;
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> map = new HashMap<>();
+        map.put("location", location);
+        map.put("material", wallMaterial);
+        return map;
+    }
+
+    public static Window deserialize(Map<String, Object> map) {
+        return new Window((Location) map.get("location"), (Material) map.get("material"));
     }
 }

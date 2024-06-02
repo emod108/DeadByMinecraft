@@ -3,13 +3,20 @@ package me.mod108.deadbyminecraft.targets.props.vaultable;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.props.Breakable;
+import me.mod108.deadbyminecraft.targets.props.Hook;
+import me.mod108.deadbyminecraft.utility.Game;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.TrapDoor;
+import org.bukkit.configuration.serialization.SerializableAs;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@SerializableAs("Pallet")
 public class Pallet extends Vaultable implements Breakable {
     public static final Material STANDING_MATERIAL = Material.SPRUCE_TRAPDOOR;
     public static final Material DROPPED_MATERIAL = Material.SPRUCE_SLAB;
@@ -80,6 +87,21 @@ public class Pallet extends Vaultable implements Breakable {
     @Override
     public void getBroken() {
         destroy();
-        DeadByMinecraft.getPlugin().getGame().removeProp(this);
+
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game != null)
+            game.removeProp(this);
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> map = new HashMap<>();
+        map.put("location", location);
+        map.put("direction", direction);
+        return map;
+    }
+
+    public static Pallet deserialize(Map<String, Object> map) {
+        return new Pallet((Location) map.get("location"), (BlockFace) map.get("direction"));
     }
 }

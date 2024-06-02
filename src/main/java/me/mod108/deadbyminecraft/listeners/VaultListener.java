@@ -19,7 +19,7 @@ public class VaultListener implements Listener {
         windowLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
 
         // Distance check
-        if (player.getPlayer().getLocation().distance(windowLocation) > Character.ACTION_MAX_DISTANCE)
+        if (player.getPlayer().getLocation().distanceSquared(windowLocation) > Character.ACTION_DISTANCE_SQUARED)
             return;
 
         // Ability check

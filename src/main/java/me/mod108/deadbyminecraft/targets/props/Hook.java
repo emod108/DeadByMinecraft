@@ -6,7 +6,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.serialization.SerializableAs;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@SerializableAs("Hook")
 public class Hook extends Prop {
     public static final Material STAND_MATERIAL = Material.OAK_FENCE;
     public static final Material HOOK_MATERIAL = Material.IRON_BARS;
@@ -93,5 +98,17 @@ public class Hook extends Prop {
         removeBlock(hook.getLocation(), true);
         hookedSurvivor = null;
         hook = null;
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> map = new HashMap<>();
+        map.put("location", location);
+        map.put("direction", direction);
+        return map;
+    }
+
+    public static Hook deserialize(Map<String, Object> map) {
+        return new Hook((Location) map.get("location"), (BlockFace) map.get("direction"));
     }
 }

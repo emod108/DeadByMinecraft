@@ -43,8 +43,8 @@ public class KillerAttackSurvivorListener implements Listener {
         // Checking attack distance
         final Location killerLocation = killer.getLocation();
         final Location survivorLocation = survivor.getLocation();
-        final double attackDistance = killerLocation.distance(survivorLocation);
-        if (attackDistance > Killer.ATTACK_DISTANCE) {
+        final double attackDistance = killerLocation.distanceSquared(survivorLocation);
+        if (attackDistance > Killer.ATTACK_DISTANCE_SQUARED) {
             killer.getPlayer().sendMessage(ChatColor.YELLOW + "You're too far to hit this survivor!");
             final KillerMissEvent event = new KillerMissEvent(killer);
             Bukkit.getServer().getPluginManager().callEvent(event);

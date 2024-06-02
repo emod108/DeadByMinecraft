@@ -2,7 +2,6 @@ package me.mod108.deadbyminecraft.targets.characters.killers;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.actions.*;
-import me.mod108.deadbyminecraft.managers.FreezeManager;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
@@ -31,7 +30,8 @@ public abstract class Killer extends Character {
     public static final float CARRYING_SPEED = 0.92f;
 
     // How far can killers attack
-    public static final double ATTACK_DISTANCE = 1.6;
+    private static final double ATTACK_DISTANCE = 1.6;
+    public static final double ATTACK_DISTANCE_SQUARED = ATTACK_DISTANCE * ATTACK_DISTANCE;
 
     // For how long killers vault a window in ticks
     private static final int DEFAULT_VAULT_TIME = Timings.secondsToTicks(1.5);

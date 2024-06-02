@@ -2,61 +2,145 @@ name: DeadByMinecraft
 version: '${project.version}'
 main: me.mod108.deadbyminecraft.DeadByMinecraft
 api-version: '1.20'
+depend: [CrawlingPlugin]
 commands:
   getmovementspeed:
     description: Prints your current movement speed in %
     usage: /<command>
+    permission: deadbyminecraft.getmovementspeed
   setmovementspeed:
     description: Changes your current movement speed to a value between 0.0 and 50.0 (0% and 5000%)
     usage: /<command> (speed)
+    permission: deadbyminecraft.setmovementspeed
   togglesprint:
     description: Toggles your sprint ability
     usage: /<command>
+    permission: deadbyminecraft.togglesprint
   togglejump:
     description: Toggles your jump ability
     usage: /<command>
+    permission: deadbyminecraft.togglejump
   freeze:
     description: Disables any movements for you (or enables if you're frozen already)
     usage: /<command>
+    permission: deadbyminecraft.freeze
   togglehealthregain:
     description: Toggles your health regain ability
     usage: /<command>
+    permission: deadbyminecraft.togglehealthregain
   sbtest:
     description: Testing nametag hiding feature
     usage: /<command>
+    permission: deadbyminecraft.sbtest
   createlobby:
     description: Creates a new Dead by Minecraft lobby
     usage: /<command>
+    permission: deadbyminecraft.createlobby
   deletelobby:
     description: Deletes current Dead by Minecraft lobby
     usage: /<command>
+    permission: deadbyminecraft.deletelobby
   addplayer:
     description: Adds a player to Dead by Minecraft lobby
     usage: /<command> (player) (role) [killer]
+    permission: deadbyminecraft.addplayer
   removeplayer:
     description: Removes player from Dead by Minecraft lobby
     usage: /<command> (player)
+    permission: deadbyminecraft.removeplayer
   getplayers:
     description: Gets the list of all players in the game on in the lobby
     usage: /<command>
+    permission: deadbyminecraft.getplayers
   getkillers:
     description: Gets the list of all killers available
     usage: /<command>
+    permission: deadbyminecraft.getkillers
   startgame:
     description: Starts a new game
     usage: /<command>
+    permission: deadbyminecraft.startgame
   finishgame:
     description: Finishes the current game
     usage: /<command>
+    permission: deadbyminecraft.finishgame
   spawnprop:
     description: Spawns a prop
     usage: /<command>
+    permission: deadbyminecraft.spawnprop
   vanish:
     description: Hides you
     usage: /<command>
+    permission: deadbyminecraft.vanish
   testplaysound:
     description: Plays a sound by its name
-    usage: /<command> (sound)
+    usage: /<command> (sound) [volume] [pitch]
+    permission: deadbyminecraft.testplaysound
   getinjured:
     description: Injures you
     usage: /<command>
+    permission: deadbyminecraft.getinjured
+  createmap:
+    description: Create a new map
+    usage: /<command> (Map name)
+    permission: deadbyminecraft.createmap
+  loadmap:
+    description: Loads a map from a file
+    usage: /<command> (File name)
+    permission: deadbyminecraft.loadmap
+  unloadmap:
+    description: Unloads the currently loaded map
+    usage: /<command>
+    permission: deadbyminecraft.unloadmap
+  savemap:
+    description: Saves map data from a file
+    usage: /<command> (File name)
+    permission: deadbyminecraft.savemap
+  addprop:
+    description: Adds prop to the current map on the place where you stand
+    usage: /<command> (prop) [additional data1] [additional data2]
+    permission: deadbyminecraft.addprop
+  removelastprop:
+    description: Removes the last prop from the current map
+    usage: /<command>
+    permission: deadbyminecraft.removelastprop
+  showprops:
+    description: Shows all props which will be loaded when the game starts
+    usage: /<command>
+    permission: deadbyminecraft.showprops
+  hideprops:
+    description: Hides all props which will be loaded when the game starts
+    usage: /<command>
+    permission: deadbyminecraft.hideprops
+permissions:
+  deadbyminecraft.*:
+    description: Allows to use all Dead by Minecraft commands
+    default: op
+  children:
+    deadbyminecraft.getmovementspeed: true
+    deadbyminecraft.setmovementspeed: true
+    deadbyminecraft.togglesprint: true
+    deadbyminecraft.togglejump: true
+    deadbyminecraft.freeze: true
+    deadbyminecraft.togglehealthregain: true
+    deadbyminecraft.sbtest: true
+    deadbyminecraft.createlobby: true
+    deadbyminecraft.deletelobby: true
+    deadbyminecraft.addplayer: true
+    deadbyminecraft.removeplayer: true
+    deadbyminecraft.getplayers: true
+    deadbyminecraft.getkillers: true
+    deadbyminecraft.startgame: true
+    deadbyminecraft.finishgame: true
+    deadbyminecraft.spawnprop: true
+    deadbyminecraft.vanish: true
+    deadbyminecraft.testplaysound: true
+    deadbyminecraft.getinjured: true
+    deadbyminecraft.createmap: true
+    deadbyminecraft.loadmap: true
+    deadbyminecraft.unloadmap: true
+    deadbyminecraft.savemap: true
+    deadbyminecraft.addprop: true
+    deadbyminecraft.removelastprop: true
+    deadbyminecraft.showprops: true
+    deadbyminecraft.hideprops: true

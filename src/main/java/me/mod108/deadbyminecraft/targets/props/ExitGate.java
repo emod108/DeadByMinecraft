@@ -11,8 +11,13 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Switch;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.util.Vector;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@SerializableAs("ExitGate")
 public class ExitGate extends Prop {
     // Gate's parameters
     public static final Material GATE_SWITCH_MATERIAL = Material.LEVER;
@@ -157,5 +162,17 @@ public class ExitGate extends Prop {
         escapePoint.add(Directions.getVector(Directions.turnRight(direction), 1));
         final EscapeLine escapeLine = new EscapeLine(escapePoint, direction);
         game.addEscapeLine(escapeLine);
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> map = new HashMap<>();
+        map.put("location", location);
+        map.put("direction", direction);
+        return map;
+    }
+
+    public static ExitGate deserialize(Map<String, Object> map) {
+        return new ExitGate((Location) map.get("location"), (BlockFace) map.get("direction"));
     }
 }

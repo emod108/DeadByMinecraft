@@ -5,65 +5,34 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6377da4-c582-4f84-aa27-15fd891d1763" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/PlayerMoveListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/EscapeLine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/MapData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/MapLoader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/config.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TODO.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TODO.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/DeadByMinecraft.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/DeadByMinecraft.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/Action.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/BreakAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/BreakAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/GrabAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/GrabAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/HealAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/HealAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/HookAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/HookAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/PickUpAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/PickUpAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/RecoverAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/RecoverAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/RepairAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/RepairAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/SurvivorOpenExitAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/SurvivorOpenExitAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/SurvivorUnhookAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/SurvivorUnhookAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/VaultAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/VaultAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/WiggleAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/actions/WiggleAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/ExitGateInteractListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/ExitGateInteractListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/GeneratorInteractListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/GeneratorInteractListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/KillerAttackSurvivorListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/KillerAttackSurvivorListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/KillerPickupSurvivorListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/KillerPickupSurvivorListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/LockerInteractListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/LockerInteractListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/PalletInteractListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/PalletInteractListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/PlayerMoveListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/PlayerMoveListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/SurvivorHealListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/SurvivorHealListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/SurvivorUnhookListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/SurvivorUnhookListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/VaultListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/listeners/VaultListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/FreezeManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/FreezeManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/HealthRegainManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/HealthRegainManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/JumpingManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/JumpingManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/SoundManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/SoundManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/SprintManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/SprintManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/VanishManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/managers/VanishManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/characters/Survivor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/characters/Survivor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/characters/Character.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/characters/Character.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/characters/killers/Killer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/characters/killers/Killer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/ExitGate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/ExitGate.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Generator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Generator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/Directions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/Directions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Hook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Hook.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Locker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Locker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Prop.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/Prop.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/vaultable/Pallet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/vaultable/Pallet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/vaultable/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/targets/props/vaultable/Window.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/EscapeLine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/me/mod108/deadbyminecraft/utility/EscapeLine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/DeadByMinecraft-1.0-SNAPSHOT-shaded.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/DeadByMinecraft-1.0-SNAPSHOT-shaded.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/DeadByMinecraft-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/DeadByMinecraft-1.0-SNAPSHOT.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/DeadByMinecraft.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/DeadByMinecraft.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/Action.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/Action.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/BreakAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/BreakAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/GrabAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/GrabAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/HealAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/HealAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/HookAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/HookAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/PickUpAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/PickUpAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/RecoverAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/RecoverAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/SurvivorOpenExitAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/SurvivorOpenExitAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/SurvivorUnhookAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/SurvivorUnhookAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/WiggleAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/actions/WiggleAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/listeners/ExitGateInteractListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/listeners/ExitGateInteractListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/listeners/GeneratorInteractListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/listeners/GeneratorInteractListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/listeners/KillerAttackSurvivorListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/listeners/KillerAttackSurvivorListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/FreezeManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/FreezeManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/HealthRegainManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/HealthRegainManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/JumpingManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/JumpingManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/SoundManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/SoundManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/SprintManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/SprintManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/VanishManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/managers/VanishManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/characters/Survivor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/characters/Survivor.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/characters/killers/Killer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/characters/killers/Killer.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/ExitGate$ExitGateState.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/ExitGate$ExitGateState.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/ExitGate.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/ExitGate.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator$1.class" afterDir="false" />
@@ -71,9 +40,12 @@
       <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator$GeneratorState.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator$GeneratorState.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator$GeneratorType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator$GeneratorType.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Generator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/utility/Directions.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/utility/Directions.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/utility/Game$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/utility/Game$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/utility/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/utility/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Hook.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Hook.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Locker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Locker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Prop.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/Prop.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/vaultable/Pallet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/vaultable/Pallet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/vaultable/Window.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/me/mod108/deadbyminecraft/targets/props/vaultable/Window.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/original-DeadByMinecraft-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/original-DeadByMinecraft-1.0-SNAPSHOT.jar" afterDir="false" />
@@ -110,20 +82,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/Programming/Java/MinecraftPlugins/CrawlingPlugin&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "TODO_SCOPE": "All Places",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "E:/Programming/Java/MinecraftPlugins/CrawlingPlugin",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="DeadByMinecraft package" type="MavenRunConfiguration" factoryName="Maven">
       <MavenSettings>

@@ -12,11 +12,15 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+@SerializableAs("Generator")
 public class Generator extends Prop implements Breakable {
     public enum GeneratorType { INDOOR, OUTDOOR }
     public enum GeneratorState { IDLE, REGRESSING, REPAIRED }
@@ -107,39 +111,7 @@ public class Generator extends Prop implements Breakable {
     private int timesBroken = 0;
 
     // A sound of generator having repair progress is being constantly played
-    final BukkitRunnable idleProgressSound = new BukkitRunnable() {
-        static final int MAX_TIME_BEFORE_SOUND = Timings.secondsToTicks(2);
-        static final int MIN_TIME_BEFORE_SOUND = Timings.secondsToTicks(0.05);
-        static final Sound IDLE_SOUND_FIRST = Sound.BLOCK_PISTON_EXTEND;
-        static final Sound IDLE_SOUND_SECOND = Sound.BLOCK_PISTON_CONTRACT;
-
-        int ticksRan = 0;
-        Sound currentIdleSound = IDLE_SOUND_FIRST;
-
-        @Override
-        public void run() {
-            if (repairProgress == 0f)
-                return;
-
-            // Idle sound if repaired
-            if (generatorState == GeneratorState.REPAIRED) {
-                SoundManager.playForAll(location, currentIdleSound, 0.04f, 2.0f);
-                currentIdleSound = (currentIdleSound == IDLE_SOUND_FIRST) ? IDLE_SOUND_SECOND : IDLE_SOUND_FIRST;
-                return;
-            }
-
-            final float progressPercents = getProgressPercents();
-            final int ticksBeforeSound = (int) (MAX_TIME_BEFORE_SOUND - (progressPercents *
-                    (MAX_TIME_BEFORE_SOUND - MIN_TIME_BEFORE_SOUND)));
-
-            ++ticksRan;
-            if (ticksRan > ticksBeforeSound) {
-                ticksRan = 0;
-                SoundManager.playForAll(location, currentIdleSound, progressPercents, 2.0f);
-                currentIdleSound = (currentIdleSound == IDLE_SOUND_FIRST) ? IDLE_SOUND_SECOND : IDLE_SOUND_FIRST;
-            }
-        }
-    };
+    BukkitRunnable idleProgressSound = null;
 
     // Generator type
     private final GeneratorType generatorType;
@@ -210,12 +182,51 @@ public class Generator extends Prop implements Breakable {
         calculateSides();
 
         // Generator sounds
+        idleProgressSound = new BukkitRunnable() {
+            static final int MAX_TIME_BEFORE_SOUND = Timings.secondsToTicks(2);
+            static final int MIN_TIME_BEFORE_SOUND = Timings.secondsToTicks(0.05);
+            static final Sound IDLE_SOUND_FIRST = Sound.BLOCK_PISTON_EXTEND;
+            static final Sound IDLE_SOUND_SECOND = Sound.BLOCK_PISTON_CONTRACT;
+
+            int ticksRan = 0;
+            Sound currentIdleSound = IDLE_SOUND_FIRST;
+
+            @Override
+            public void run() {
+                if (repairProgress == 0f)
+                    return;
+
+                // Idle sound if repaired
+                if (generatorState == GeneratorState.REPAIRED) {
+                    SoundManager.playForAll(location, currentIdleSound, 0.04f, 2.0f);
+                    currentIdleSound = (currentIdleSound == IDLE_SOUND_FIRST) ? IDLE_SOUND_SECOND : IDLE_SOUND_FIRST;
+                    return;
+                }
+
+                final float progressPercents = getProgressPercents();
+                final int ticksBeforeSound = (int) (MAX_TIME_BEFORE_SOUND - (progressPercents *
+                        (MAX_TIME_BEFORE_SOUND - MIN_TIME_BEFORE_SOUND)));
+
+                ++ticksRan;
+                if (ticksRan > ticksBeforeSound) {
+                    ticksRan = 0;
+                    SoundManager.playForAll(location, currentIdleSound, progressPercents, 2.0f);
+                    currentIdleSound = (currentIdleSound == IDLE_SOUND_FIRST) ? IDLE_SOUND_SECOND : IDLE_SOUND_FIRST;
+                }
+            }
+        };
         idleProgressSound.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
     }
 
     @Override
     public void destroy() {
+        // Stopping generator sounds
         idleProgressSound.cancel();
+        idleProgressSound = null;
+
+        // Clearing arrays
+        interactableBlocks.clear();
+        generatorSides.clear();
 
         // Make it so everyone who interacts with this generator stops
         for (final Character player : getInteractingPlayers()) {
@@ -378,5 +389,19 @@ public class Generator extends Prop implements Breakable {
 
     public ArrayList<Block> getInteractableBlocks() {
         return interactableBlocks;
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> map = new HashMap<>();
+        map.put("location", location);
+        map.put("direction", direction);
+        map.put("type", generatorType);
+        return map;
+    }
+
+    public static Generator deserialize(Map<String, Object> map) {
+        return new Generator((Location) map.get("location"), (BlockFace) map.get("direction"),
+                (GeneratorType) map.get("type"));
     }
 }

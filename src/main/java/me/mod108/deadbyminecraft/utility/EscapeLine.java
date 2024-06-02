@@ -21,7 +21,8 @@ public class EscapeLine {
     private static final int BLOCKER_WIDTH = ExitGate.GATES_WIDTH;
 
     // From how far blocking wall is visible to the killer
-    public static final int BLOCKER_VISIBLE_DISTANCE = 4;
+    private static final double BLOCKER_VISIBLE_DISTANCE = 4;
+    public static final double BLOCKER_VISIBLE_DISTANCE_SQUARED = BLOCKER_VISIBLE_DISTANCE * BLOCKER_VISIBLE_DISTANCE;
 
     // Escape point
     private final Location escapePoint;
@@ -69,7 +70,7 @@ public class EscapeLine {
     }
 
     // Gets 1d distance from blocking wall to the killer
-    public double getDistanceToKiller(final Killer killer) {
+    public double getDistanceSquaredToKiller(final Killer killer) {
         final Location killerLocation = killer.getLocation().clone();
         final Location pointLocation = escapePoint.clone().add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING);
 
@@ -85,7 +86,7 @@ public class EscapeLine {
             pointLocation.setZ(0);
         }
 
-        return killerLocation.distance(pointLocation);
+        return killerLocation.distanceSquared(pointLocation);
     }
 
     // Shows blocking wall to the killer

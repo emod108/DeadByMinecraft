@@ -51,9 +51,11 @@ public class PlayerMoveListener implements Listener {
         // Checking if we need to visually block the exit for the killer
         final Killer killer = (Killer) character;
         for (final EscapeLine escape : escapes) {
-            if (escape.isVisibleToKiller() && escape.getDistanceToKiller(killer) > EscapeLine.BLOCKER_VISIBLE_DISTANCE) {
+            if (escape.isVisibleToKiller() && escape.getDistanceSquaredToKiller(killer) >
+                    EscapeLine.BLOCKER_VISIBLE_DISTANCE_SQUARED) {
                 escape.hideFromKiller(killer);
-            } else if (!escape.isVisibleToKiller() && escape.getDistanceToKiller(killer) < EscapeLine.BLOCKER_VISIBLE_DISTANCE) {
+            } else if (!escape.isVisibleToKiller() && escape.getDistanceSquaredToKiller(killer) <
+                    EscapeLine.BLOCKER_VISIBLE_DISTANCE_SQUARED) {
                 escape.showToKiller(killer);
             }
         }

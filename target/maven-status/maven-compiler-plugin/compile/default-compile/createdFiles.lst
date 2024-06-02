@@ -40,6 +40,7 @@ me\mod108\deadbyminecraft\listeners\PlayerJoinListener.class
 me\mod108\deadbyminecraft\listeners\PlayerMoveListener.class
 me\mod108\deadbyminecraft\events\SurvivorUnhookEvent.class
 me\mod108\deadbyminecraft\managers\SprintManager.class
+me\mod108\deadbyminecraft\utility\MapLoader.class
 me\mod108\deadbyminecraft\commands\RemovePlayerCommand.class
 me\mod108\deadbyminecraft\targets\props\Prop.class
 me\mod108\deadbyminecraft\test\SpawnPropCommand.class
@@ -64,6 +65,7 @@ me\mod108\deadbyminecraft\commands\AddPlayerCommand.class
 me\mod108\deadbyminecraft\listeners\KillerPickupSurvivorListener.class
 me\mod108\deadbyminecraft\listeners\KillerAttackSurvivorListener.class
 me\mod108\deadbyminecraft\targets\characters\killers\Trapper.class
+me\mod108\deadbyminecraft\utility\MapData.class
 me\mod108\deadbyminecraft\actions\SurvivorUnhookAction.class
 me\mod108\deadbyminecraft\targets\characters\Character.class
 me\mod108\deadbyminecraft\listeners\EntityDismountListener.class

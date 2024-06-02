@@ -25,8 +25,8 @@ public class SurvivorUnhookListener implements Listener {
         // Distance check
         final Location performerLocation = performer.getLocation();
         final Location unhookTargetLocation = unhookTarget.getLocation();
-        final double unhookDistance = performerLocation.distance(unhookTargetLocation);
-        if (unhookDistance > Character.ACTION_MAX_DISTANCE) {
+        final double unhookDistance = performerLocation.distanceSquared(unhookTargetLocation);
+        if (unhookDistance > Character.ACTION_DISTANCE_SQUARED) {
             performer.getPlayer().sendMessage(ChatColor.YELLOW + "You're too far to unhook that survivor!");
             return;
         }

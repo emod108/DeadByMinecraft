@@ -8,10 +8,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.Door;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-public abstract class Prop implements Target {
+public abstract class Prop implements Target, ConfigurationSerializable {
     // Location of the prop. All blocks are being build relatively from this location
     protected final Location location;
 
@@ -123,4 +125,7 @@ public abstract class Prop implements Target {
     public boolean isBuilt() {
         return blocks.size() > 0;
     }
+
+    @Override
+    abstract public Map<String, Object> serialize();
 }
