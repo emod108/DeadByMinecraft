@@ -28,12 +28,10 @@ public class GetInjuredCommand implements CommandExecutor {
             return true;
         }
 
-        if (!(character instanceof final Survivor survivor)) {
+        if (character instanceof final Survivor survivor)
+            survivor.getHit();
+        else
             player.sendMessage("You're not a survivor!");
-            return true;
-        }
-
-        survivor.getHit();
         return true;
     }
 }

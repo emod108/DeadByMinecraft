@@ -39,6 +39,11 @@ public class PlayerLeaveListener implements Listener {
             final Hook hook = survivor.getHook();
             if (hook != null) {
                 hook.becomeBroken();
+            } else if (survivor.getHealthState() == Survivor.HealthState.BEING_CARRIED) {
+                final Killer killer = game.getKiller();
+                if (killer != null) {
+                    killer.stopCarrying();
+                }
             }
 
             game.resetPlayer(player);

@@ -90,11 +90,6 @@ public abstract class Character implements Target {
         return currentSpeed;
     }
 
-    // Shows if speed effects are active on this player
-    public boolean getIsSpeedActive() {
-        return isSpeedActive;
-    }
-
     // Sets if speed effect are active on this player
     // On true base speed and speed modifiers are working
     // On false only default minecraft speed is being left
@@ -141,10 +136,6 @@ public abstract class Character implements Target {
 
     public MovementState getMovementState() {
         return movementState;
-    }
-
-    public void setMovementState(final MovementState movementState) {
-        this.movementState = movementState;
     }
 
     public Action getAction() {

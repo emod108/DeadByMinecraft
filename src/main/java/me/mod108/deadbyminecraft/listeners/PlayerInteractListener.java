@@ -18,6 +18,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import java.util.ArrayList;
+
 public class PlayerInteractListener implements Listener {
     @EventHandler
     public void onPlayerInteract(final PlayerInteractEvent e) {
@@ -75,8 +77,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final Locker locker = findLockerByDoor(block);
                 if (locker != null) {
-                    final LockerInteractEvent event = new LockerInteractEvent(player, locker);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new LockerInteractEvent(player, locker));
                     return;
                 }
             }
@@ -85,8 +86,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final Pallet pallet = findPallet(block);
                 if (pallet != null) {
-                    final PalletInteractEvent event = new PalletInteractEvent(player, pallet);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new PalletInteractEvent(player, pallet));
                     return;
                 }
             }
@@ -95,10 +95,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final ExitGate exitGate = findExitGate(block);
                 if (exitGate != null) {
-                    // Cancelling main event
-
-                    final ExitGateInteractEvent event = new ExitGateInteractEvent(player, exitGate);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new ExitGateInteractEvent(player, exitGate));
                     return;
                 }
             }
@@ -108,8 +105,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final Window window = findWindow(block);
                 if (window != null) {
-                    final VaultEvent event = new VaultEvent(player, window);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new VaultEvent(player, window));
                     return;
                 }
             }
@@ -118,8 +114,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final Pallet pallet = findPallet(block);
                 if (pallet != null) {
-                    final PalletInteractEvent event = new PalletInteractEvent(player, pallet);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new PalletInteractEvent(player, pallet));
                     return;
                 }
             }
@@ -128,8 +123,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final Generator generator = findGenerator(block);
                 if (generator != null) {
-                    final GeneratorInteractEvent event = new GeneratorInteractEvent(player, generator);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new GeneratorInteractEvent(player, generator));
                     return;
                 }
             }
@@ -138,8 +132,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final Hook hook = findHook(block);
                 if (hook != null) {
-                    final HookInteractEvent event = new HookInteractEvent(player, hook);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new HookInteractEvent(player, hook));
                     return;
                 }
             }
@@ -148,8 +141,7 @@ public class PlayerInteractListener implements Listener {
             {
                 final Hatch hatch = findHatch(block);
                 if (hatch != null) {
-                    final HatchInteractEvent event = new HatchInteractEvent(player, hatch);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new HatchInteractEvent(player, hatch));
                     return;
                 }
             }
@@ -171,11 +163,8 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return null;
 
-        for (final Prop prop : game.getProps()) {
-            // The prop must be a window
-            if (!(prop instanceof final Window window))
-                continue;
-
+        final ArrayList<Window> windows = game.getWindows();
+        for (final Window window : windows) {
             // Checking if clicked block belongs to this locker's door
             if (block.getLocation().equals(window.getLocation()))
                 return window;
@@ -195,11 +184,8 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return null;
 
-        for (final Prop prop : game.getProps()) {
-            // The prop must be a locker
-            if (!(prop instanceof final Locker locker))
-                continue;
-
+        final ArrayList<Locker> lockers = game.getLockers();
+        for (final Locker locker : lockers) {
             // Checking if clicked block belongs to this locker's door
             final Block bottomDoorBlock = locker.getBottomDoorBlock();
             if (bottomDoorBlock.getLocation().equals(block.getLocation()) ||
@@ -221,11 +207,8 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return null;
 
-        for (final Prop prop : game.getProps()) {
-            // The prop must be a pallet
-            if (!(prop instanceof final Pallet pallet))
-                continue;
-
+        final ArrayList<Pallet> pallets = game.getPallets();
+        for (final Pallet pallet : pallets) {
             // Checking if clicked block belongs to this pallet
             if (block.getLocation().equals(pallet.getPallet().getLocation()))
                 return pallet;
@@ -247,11 +230,8 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return null;
 
-        for (final Prop prop : game.getProps()) {
-            // The prop must be a generator
-            if (!(prop instanceof final Generator generator))
-                continue;
-
+        final ArrayList<Generator> generators = game.getGenerators();
+        for (final Generator generator : generators) {
             // Checking if clicked block belongs to this generator
             for (final Block generatorBlock : generator.getInteractableBlocks())
                 if (generatorBlock.getLocation().equals(block.getLocation()))
@@ -272,12 +252,9 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return null;
 
-        // Checking all props
-        for (final Prop prop : game.getProps()) {
-            // The prop must be an exit gate
-            if (!(prop instanceof final ExitGate exitGate))
-                continue;
-
+        // Checking all gates
+        final ArrayList<ExitGate> exitGates = game.getExitGates();
+        for (final ExitGate exitGate : exitGates) {
             if (block.getLocation().equals(exitGate.getGateSwitch().getLocation()))
                 return exitGate;
         }
@@ -294,12 +271,9 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return null;
 
-        // Checking all props
-        for (final Prop prop : game.getProps()) {
-            // The prop must be a hook
-            if (!(prop instanceof final Hook hook))
-                continue;
-
+        // Getting hooks
+        final ArrayList<Hook> hooks = game.getHooks();
+        for (final Hook hook : hooks) {
             if (block.getLocation().equals(hook.getHook().getLocation()))
                 return hook;
         }
@@ -316,16 +290,14 @@ public class PlayerInteractListener implements Listener {
         if (game == null)
             return null;
 
-        // Checking all props
-        for (final Prop prop : game.getProps()) {
-            // The prop must be a hatch
-            if (!(prop instanceof final Hatch hatch))
-                continue;
+        // Getting the hatch
+        final Hatch hatch = game.getHatch();
+        if (hatch == null)
+            return null;
 
-            if (block.getLocation().equals(hatch.getLocation())) {
-                return hatch;
-            }
-        }
+        // Comparing block and hatch locations
+        if (block.getLocation().equals(hatch.getLocation()))
+            return hatch;
 
         return null;
     }

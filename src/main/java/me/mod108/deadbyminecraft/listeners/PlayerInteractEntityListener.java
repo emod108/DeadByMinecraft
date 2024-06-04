@@ -47,12 +47,11 @@ public class PlayerInteractEntityListener implements Listener {
         // Killer interacting with a survivor
         if (interactingPlayer instanceof final Killer killer) {
             if (interactedWithPlayer instanceof final Survivor survivor) {
-                // Killer picking a survivor up
-                if (survivor.getHealthState() == Survivor.HealthState.DYING) {
-                    final KillerPickupSurvivorEvent event = new KillerPickupSurvivorEvent(killer, survivor);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
-                }
+                // Killer picking up a survivor
+                if (survivor.getHealthState() == Survivor.HealthState.DYING)
+                    Bukkit.getServer().getPluginManager().callEvent(new KillerPickupSurvivorEvent(killer, survivor));
             }
+            return;
         }
 
         // A survivor interacting with another survivor
@@ -60,14 +59,12 @@ public class PlayerInteractEntityListener implements Listener {
             if (interactedWithPlayer instanceof final Survivor target) {
                 // Survivor unhooks another survivor
                 if (target.getHealthState() == Survivor.HealthState.HOOKED) {
-                    final SurvivorUnhookEvent event = new SurvivorUnhookEvent(performer, target);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    Bukkit.getServer().getPluginManager().callEvent(new SurvivorUnhookEvent(performer, target));
                     return;
                 }
 
                 // Survivor heals another survivor
-                final SurvivorHealEvent event = new SurvivorHealEvent(performer, target);
-                Bukkit.getServer().getPluginManager().callEvent(event);
+                Bukkit.getServer().getPluginManager().callEvent(new SurvivorHealEvent(performer, target));
             }
         }
     }

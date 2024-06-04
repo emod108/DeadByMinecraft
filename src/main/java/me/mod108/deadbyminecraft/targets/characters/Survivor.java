@@ -5,6 +5,7 @@ import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.actions.*;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.props.*;
+import me.mod108.deadbyminecraft.utility.Game;
 import me.mod108.deadbyminecraft.utility.SpeedModifier;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.*;
@@ -20,10 +21,10 @@ public class Survivor extends Character {
     private static final int MAX_HOOK_STAGE = 3;
 
     // Default time survivor has before hook stage progression (in ticks)
-    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(10);
+    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(75);
 
     // Default time survivor has before dying from bleeding out
-    private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(20);
+    private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(240);
 
     // Default speed is 100%
     public static final float DEFAULT_SPEED = 1.0f;
@@ -44,7 +45,7 @@ public class Survivor extends Character {
     private static final int DEFAULT_TICKS_TILL_BLOOD_PARTICLES = Timings.secondsToTicks(0.25);
 
     // Progress to reach so survivor can regain a health state
-    public static final float MAX_HEALING_PROGRESS = 12.0f;
+    public static final float MAX_HEALING_PROGRESS = 16.0f;
 
     // Current hook stage
     private int hookStage = 0;
@@ -82,6 +83,10 @@ public class Survivor extends Character {
 
     public void setHealthState(final HealthState healthState) {
         this.healthState = healthState;
+
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game != null)
+            game.survivorsHealthChanged(this);
     }
 
     public void getHit() {
@@ -107,7 +112,7 @@ public class Survivor extends Character {
         player.sendMessage(ChatColor.RED + "You were hit by the killer!");
 
         if (healthState == HealthState.HEALTHY) {
-            healthState = HealthState.INJURED;
+            setHealthState(HealthState.INJURED);
             player.sendMessage(ChatColor.RED + "You are now injured.");
 
             final SpeedModifier onHitSprint = new SpeedModifier(0.65f, Timings.secondsToTicks(1.8),
@@ -122,24 +127,29 @@ public class Survivor extends Character {
     }
 
     public void goToDyingState() {
-        healthState = HealthState.DYING;
+        makeRedScreen();
+        setHealthState(HealthState.DYING);
         CrawlingPlugin.getPlugin().getCrawlingManager().startCrawling(player);
         player.sendMessage(ChatColor.RED + "You are now in dying state.");
     }
 
-    // Converts percents to progress
-    public static float healingPercentsToProgress(final float percents) {
-        return percents * MAX_HEALING_PROGRESS;
+    // This function makes screen red
+    public void makeRedScreen() {
+        final WorldBorder worldBorder = player.getWorldBorder();
+        if (worldBorder != null)
+            worldBorder.setWarningDistance(Integer.MAX_VALUE);
     }
 
-    // Converts healing progress to percents
-    public static float healingProgressToPercents(final float progress) {
-        return progress / MAX_HEALING_PROGRESS;
+    // This function clears red screen
+    public void clearRedScreen() {
+        final WorldBorder worldBorder = player.getWorldBorder();
+        if (worldBorder != null)
+            worldBorder.setWarningDistance(5);
     }
 
     // Returns current healing progress in range from 0.0 to 1.0
     public float getHealingProgressPercents() {
-        return healingProgressToPercents(healingProgress);
+        return healingProgress / MAX_HEALING_PROGRESS;
     }
 
     // Returns current healing progress
@@ -160,17 +170,18 @@ public class Survivor extends Character {
         healingProgress = 0.0f;
         switch (healthState) {
             case INJURED -> {
-                healthState = HealthState.HEALTHY;
+                setHealthState(HealthState.HEALTHY);
                 player.sendMessage(ChatColor.GREEN + "You are no longer injured.");
             }
             case DEEP_WOUND -> {
-                healthState = HealthState.INJURED;
+                setHealthState(HealthState.INJURED);
                 player.sendMessage(ChatColor.GREEN + "You are no longer in deep wound.");
             }
             case DYING -> {
-                healthState = HealthState.INJURED;
+                setHealthState(HealthState.INJURED);
                 CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
                 player.sendMessage(ChatColor.GREEN + "You are no longer in dying state.");
+                clearRedScreen();
 
                 // Hiding bleed-out timer
                 player.setLevel(0);
@@ -215,8 +226,9 @@ public class Survivor extends Character {
     // This function is called when survivor dies
     public void die() {
         CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
+        clearRedScreen();
 
-        healthState = HealthState.DEAD;
+        setHealthState(HealthState.DEAD);
         player.setGameMode(GameMode.SPECTATOR);
 
         Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " has died!");
@@ -261,7 +273,7 @@ public class Survivor extends Character {
         }
 
         DeadByMinecraft.getPlugin().freezeManager.unFreeze(player.getUniqueId());
-        healthState = HealthState.SACRIFICED;
+        setHealthState(HealthState.SACRIFICED);
         player.setGameMode(GameMode.SPECTATOR);
 
         Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " was sacrificed!");
@@ -269,11 +281,14 @@ public class Survivor extends Character {
     }
 
     public void escape() {
-        if (healthState == HealthState.DYING)
+        if (healthState == HealthState.DYING) {
             CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
+            clearRedScreen();
+        }
 
-        healthState = HealthState.ESCAPED;
+        setHealthState(HealthState.ESCAPED);
         player.setGameMode(GameMode.SPECTATOR);
+
         Bukkit.broadcastMessage(ChatColor.GREEN + player.getName() + " has escaped!");
         player.sendTitle(ChatColor.GREEN + "ESCAPED",
                 ChatColor.GREEN + "You have escaped", 10, 70, 20);
@@ -347,14 +362,14 @@ public class Survivor extends Character {
 
         final Location teleportLocation = hook.getHook().getRelative(0, -2, 0).getLocation().clone();
         player.teleport(teleportLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING));
-        healthState = HealthState.HOOKED;
+        setHealthState(HealthState.HOOKED);
         hookedOn = hook;
 
         ++hookStage;
         sacrificeTime = STAGE_PROGRESSION_TIME;
 
         // Hooking sounds
-        SoundManager.playForAll(player.getEyeLocation(), Sound.ENTITY_GHAST_HURT, 10, 1);
+        SoundManager.playForAll(player.getEyeLocation(), Sound.ENTITY_GHAST_HURT, 100f, 1f);
     }
 
     public void getUnhooked(final Hook hook) {
@@ -362,7 +377,7 @@ public class Survivor extends Character {
         hook.unHook();
 
         plugin.freezeManager.unFreeze(player.getUniqueId());
-        healthState = HealthState.INJURED;
+        setHealthState(HealthState.INJURED);
         hookedOn = null;
 
         // Hiding sacrifice time
@@ -458,6 +473,12 @@ public class Survivor extends Character {
     public boolean isAlive() {
         return healthState != HealthState.DEAD && healthState != HealthState.DISCONNECTED &&
                 healthState != HealthState.SACRIFICED && healthState != HealthState.ESCAPED;
+    }
+
+    // Returns true, if survivor is considered downed (for the endgame collapse)
+    public boolean isDowned() {
+        return healthState == HealthState.DYING || healthState == HealthState.BEING_CARRIED ||
+                healthState == HealthState.HOOKED;
     }
 
     // Returns true, if survivor can be healed

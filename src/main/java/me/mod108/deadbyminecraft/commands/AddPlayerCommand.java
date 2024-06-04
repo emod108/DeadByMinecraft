@@ -1,6 +1,7 @@
 package me.mod108.deadbyminecraft.commands;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.utility.Game;
 import me.mod108.deadbyminecraft.utility.Lobby;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
 import me.mod108.deadbyminecraft.targets.characters.killers.Trapper;
@@ -51,7 +52,7 @@ public class AddPlayerCommand implements CommandExecutor {
         if (args[1].equalsIgnoreCase("SURVIVOR")) {
             // Checking if there's still a place for survivors
             if (lobby.hasMaxSurvivors()) {
-                sender.sendMessage(ChatColor.YELLOW+ "There are already " + Lobby.MAX_SURVIVORS
+                sender.sendMessage(ChatColor.YELLOW+ "There are already " + Game.MAX_SURVIVORS_NUM
                         + " Survivors! You can't add anymore until you remove someone.");
                 return true;
             }

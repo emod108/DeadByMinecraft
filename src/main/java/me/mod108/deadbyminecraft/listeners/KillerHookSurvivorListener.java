@@ -17,14 +17,12 @@ public class KillerHookSurvivorListener implements Listener {
         // Killer must stand in front of the hook
         final Location hookingLocation = hook.getLocation().getBlock().
                 getRelative(hook.getDirection(), 2).getLocation();
-
         final Location killerLocation = killer.getLocation().getBlock().getLocation();
 
         if (!hookingLocation.equals(killerLocation)) {
             killer.getPlayer().sendMessage(ChatColor.YELLOW + "You must stand in front of the hook to hook survivors!");
             return;
         }
-
         killer.hookSurvivor(hook);
     }
 }

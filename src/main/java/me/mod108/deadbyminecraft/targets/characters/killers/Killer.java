@@ -261,6 +261,7 @@ public abstract class Killer extends Character {
 
     public void getSurvivorOnShoulder(final Survivor survivor) {
         carriedSurvivor = survivor;
+        survivor.clearRedScreen();
 
         // Getting the world
         final World world = Bukkit.getWorld("world");

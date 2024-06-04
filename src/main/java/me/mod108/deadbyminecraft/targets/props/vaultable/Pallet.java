@@ -87,10 +87,6 @@ public class Pallet extends Vaultable implements Breakable {
     @Override
     public void getBroken() {
         destroy();
-
-        final Game game = DeadByMinecraft.getPlugin().getGame();
-        if (game != null)
-            game.removeProp(this);
     }
 
     @Override

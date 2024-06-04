@@ -7,7 +7,7 @@ import org.bukkit.ChatColor;
 
 public class WiggleAction extends Action {
     // Max wiggle progress
-    private static final float MAX_WIGGLE_PROGRESS = 10f;
+    private static final float MAX_WIGGLE_PROGRESS = 16f;
 
     // How often can survivor toggle between trying and not trying to wiggle
     private static final int TOGGLE_BUFFER_MAX = Timings.secondsToTicks(0.5);

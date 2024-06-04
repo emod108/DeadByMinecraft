@@ -44,9 +44,8 @@ public class EntityDismountListener implements Listener {
             if (action == null)
                 return;
 
-            if (action instanceof final WiggleAction wiggleAction) {
+            if (action instanceof final WiggleAction wiggleAction)
                 wiggleAction.toggleTryingToWiggle();
-            }
         }
     }
 }

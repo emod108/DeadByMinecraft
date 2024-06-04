@@ -1,6 +1,7 @@
 package me.mod108.deadbyminecraft.targets.props;
 
 import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.utility.Game;
 import me.mod108.deadbyminecraft.actions.Action;
 import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
@@ -79,7 +80,7 @@ public class Generator extends Prop implements Breakable {
     public static final Material NOT_REPAIRED_LAMP_MATERIAL = Material.REDSTONE_LAMP;
     public static final Material REPAIRED_LAMP_MATERIAL = Material.GLOWSTONE;
 
-    public static final Sound REPAIR_SOUND = Sound.UI_BUTTON_CLICK;
+    public static final Sound REPAIR_SOUND = Sound.BLOCK_COMPARATOR_CLICK;
     public static final Sound FINISH_REPAIR_SOUND = Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST;
 
     // How many fences the generator's lamp sits on
@@ -99,7 +100,7 @@ public class Generator extends Prop implements Breakable {
     public static final int MAX_BREAK_TIMES = 8;
 
     // Max repair progress
-    public static final float MAX_REPAIR_PROGRESS = 10f;
+    public static final float MAX_REPAIR_PROGRESS = 90f;
 
     // Progress reduction per tick while regressing
     private static final float REGRESS_SPEED = Action.ACTION_SPEED / 4f;
@@ -197,8 +198,8 @@ public class Generator extends Prop implements Breakable {
                     return;
 
                 // Idle sound if repaired
-                if (generatorState == GeneratorState.REPAIRED) {
-                    SoundManager.playForAll(location, currentIdleSound, 0.04f, 2.0f);
+                if (getGeneratorState() == GeneratorState.REPAIRED) {
+                    SoundManager.playForAll(location, currentIdleSound, 0.02f, 2.0f);
                     currentIdleSound = (currentIdleSound == IDLE_SOUND_FIRST) ? IDLE_SOUND_SECOND : IDLE_SOUND_FIRST;
                     return;
                 }
@@ -271,19 +272,9 @@ public class Generator extends Prop implements Breakable {
         generatorSides.add(side);
     }
 
-    // Converts percents to progress
-    public static float percentsToProgress(final float percents) {
-        return percents * MAX_REPAIR_PROGRESS;
-    }
-
-    // Converts repair progress to percents
-    public static float progressToPercents(final float progress) {
-        return progress / MAX_REPAIR_PROGRESS;
-    }
-
     // Returns current repair progress in range from 0.0 to 1.0
     public float getProgressPercents() {
-        return progressToPercents(repairProgress);
+        return repairProgress / MAX_REPAIR_PROGRESS;
     }
 
     // Adds this progress to generator repair
@@ -302,6 +293,10 @@ public class Generator extends Prop implements Breakable {
 
     // This function is called when generator is fully repaired
     public void becomeRepaired() {
+        if (generatorState == GeneratorState.REPAIRED)
+            return;
+
+        repairProgress = MAX_REPAIR_PROGRESS;
         generatorState = GeneratorState.REPAIRED;
         for (final Block block : blocks) {
             if (block.getType() == NOT_REPAIRED_LAMP_MATERIAL)
@@ -316,8 +311,12 @@ public class Generator extends Prop implements Breakable {
             player.cancelAction();
             player.getPlayer().sendMessage(ChatColor.GREEN + "Generator has been repaired!");
         }
-
         SoundManager.playForAll(location, FINISH_REPAIR_SOUND, 100f, 1f);
+
+        // Notifying the game about repaired generator
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game != null)
+            game.generatorRepaired();
     }
 
     // Simulates regression over time

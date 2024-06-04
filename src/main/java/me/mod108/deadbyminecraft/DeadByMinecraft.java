@@ -49,6 +49,7 @@ public final class DeadByMinecraft extends JavaPlugin {
     // Used to adjust position of an object to make it centred
     public static final double CENTERING = 0.5;
 
+    // Where Dead by Minecraft maps are saved
     public static final String MAPS_FOLDER_NAME = "maps";
 
     // A way to get plugin instance
@@ -100,9 +101,14 @@ public final class DeadByMinecraft extends JavaPlugin {
         registerCommand("renamemap", mapLoader);
         registerCommand("savemap", mapLoader);
         registerCommand("addprop", mapLoader);
+        registerCommand("removeprop", mapLoader);
         registerCommand("removelastprop", mapLoader);
         registerCommand("showprops", mapLoader);
         registerCommand("hideprops", mapLoader);
+        registerCommand("addspawnpoint", mapLoader);
+        registerCommand("removespawnpoint", mapLoader);
+        registerCommand("mapstats", mapLoader);
+        registerCommand("refreshmap", mapLoader);
 
         // Game management commands
         registerCommand("createlobby", new CreateLobbyCommand());
@@ -207,9 +213,34 @@ public final class DeadByMinecraft extends JavaPlugin {
             return;
 
         lobby.removeOfflinePlayers();
-        game = new Game(plugin.getLobby().getPlayers());
-        game.startGame();
+        final int survivorsCount = lobby.getSurvivorsCount();
+        if (survivorsCount < 1 || survivorsCount > Game.MAX_SURVIVORS_NUM) {
+            System.out.println("Invalid number of survivors");
+            return;
+        }
+
+        if (!lobby.hasKiller()) {
+            System.out.println("No killers in the lobby");
+            return;
+        }
+
+        final MapData mapData = mapLoader.getMapData();
+        if (mapData == null) {
+            System.out.println("Map is not loaded");
+            return;
+        }
+
+        if (!mapData.isValid()) {
+            System.out.println("Map is not valid");
+            return;
+        }
+
+        game = new Game(plugin.getLobby().getPlayers(), mapData.getProps(),
+                mapData.getKillerSpawn(), mapData.getSurvivorSpawns());
         lobby = null;
+        mapLoader.unloadMap();
+
+        game.startGame();
     }
 
     public void finishGame() {

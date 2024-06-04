@@ -48,8 +48,7 @@ public class FreezeManager implements Listener, CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command,
-                             final String label, final String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof final Player player) {
             final UUID playerUUID = player.getUniqueId();
             if (getFrozenIndex(playerUUID) == NOT_FROZEN) {

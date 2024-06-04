@@ -1,5 +1,7 @@
 package me.mod108.deadbyminecraft.targets.props;
 
+import me.mod108.deadbyminecraft.DeadByMinecraft;
+import me.mod108.deadbyminecraft.utility.Game;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -61,6 +63,10 @@ public class Hatch extends Prop {
         final TrapDoor trapDoor = (TrapDoor) hatchBlock.getBlockData();
         trapDoor.setOpen(false);
         hatchBlock.setBlockData(trapDoor);
+
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game != null)
+            game.hatchClosed();
     }
 
     @Override

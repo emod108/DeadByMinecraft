@@ -16,8 +16,7 @@ public class DropItemListener implements Listener {
             return;
 
         // Checking if player is in the game
-        final Character player = game.getPlayer(e.getPlayer());
-        if (player == null)
+        if (game.getPlayer(e.getPlayer()) == null)
             return;
 
         e.setCancelled(true);

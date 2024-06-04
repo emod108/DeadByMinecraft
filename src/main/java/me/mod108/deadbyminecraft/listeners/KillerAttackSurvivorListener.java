@@ -36,7 +36,6 @@ public class KillerAttackSurvivorListener implements Listener {
             } else { // Doing action
                 killer.getPlayer().sendMessage(ChatColor.RED + "You can't hit survivors while doing actions.");
             }
-
             return;
         }
 

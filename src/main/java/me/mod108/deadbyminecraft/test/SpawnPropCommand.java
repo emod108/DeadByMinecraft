@@ -46,7 +46,6 @@ public class SpawnPropCommand implements CommandExecutor {
                 return true;
             }
         }
-
         game.addProp(prop);
         return true;
     }

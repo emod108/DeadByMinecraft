@@ -52,8 +52,7 @@ public class PalletInteractListener implements Listener {
         }
 
         // If pallet was dropped already, it means we need to vault it
-        final VaultEvent vaultEvent = new VaultEvent(player, pallet);
-        Bukkit.getServer().getPluginManager().callEvent(vaultEvent);
+        Bukkit.getServer().getPluginManager().callEvent(new VaultEvent(player, pallet));
     }
 
     private void checkPalletStun(final Pallet pallet) {

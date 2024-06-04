@@ -89,12 +89,12 @@ me\mod108\deadbyminecraft\listeners\VaultListener.class
 me\mod108\deadbyminecraft\actions\GrabAction.class
 me\mod108\deadbyminecraft\events\KillerMissEvent.class
 me\mod108\deadbyminecraft\actions\HealAction.class
-me\mod108\deadbyminecraft\items\Item.class
 me\mod108\deadbyminecraft\targets\characters\Character$MovementState.class
 me\mod108\deadbyminecraft\targets\props\BasementHook.class
 me\mod108\deadbyminecraft\utility\EscapeLine$2.class
 me\mod108\deadbyminecraft\targets\props\Hatch.class
 me\mod108\deadbyminecraft\utility\Directions$1.class
+me\mod108\deadbyminecraft\utility\Game$2.class
 me\mod108\deadbyminecraft\listeners\EntityDamageEntityListener$1.class
 me\mod108\deadbyminecraft\actions\LockerSearchAction.class
 me\mod108\deadbyminecraft\listeners\EntityDamageEntityListener.class

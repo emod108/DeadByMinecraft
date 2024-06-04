@@ -44,32 +44,31 @@ public class EntityDamageEntityListener implements Listener {
         e.setCancelled(true);
 
         // Getting the killer
-        final Character killer = game.getPlayer(attacker);
+        final Character attackerPlayer = game.getPlayer(attacker);
 
         // Player is not a part of the game
-        if (killer == null)
+        if (attackerPlayer == null)
             return;
 
         // Not the killer
-        if (!(killer instanceof Killer))
+        if (!(attackerPlayer instanceof final Killer killer))
             return;
 
         // Adding killer to the list of attackers for later use
         attackers.add(attacker.getUniqueId());
 
         // Getting the survivor
-        final Character survivor = game.getPlayer(victim);
+        final Character victimPlayer = game.getPlayer(victim);
 
         // Player is not a part of the game
-        if (survivor == null)
+        if (victimPlayer == null)
             return;
 
         // Not a survivor
-        if (!(survivor instanceof Survivor))
+        if (!(victimPlayer instanceof final Survivor survivor))
             return;
 
-        final KillerAttackSurvivorEvent event = new KillerAttackSurvivorEvent((Killer) killer, (Survivor) survivor);
-        Bukkit.getServer().getPluginManager().callEvent(event);
+        Bukkit.getServer().getPluginManager().callEvent(new KillerAttackSurvivorEvent(killer, survivor));
     }
 
     // This event fires every time players left clicks
@@ -104,10 +103,8 @@ public class EntityDamageEntityListener implements Listener {
                     return;
 
                 // Player must be the killer
-                if (attacker instanceof final Killer killer) {
-                    final KillerMissEvent event = new KillerMissEvent(killer);
-                    Bukkit.getServer().getPluginManager().callEvent(event);
-                }
+                if (attacker instanceof final Killer killer)
+                    Bukkit.getServer().getPluginManager().callEvent(new KillerMissEvent(killer));
             }
         }, 1L);
     }

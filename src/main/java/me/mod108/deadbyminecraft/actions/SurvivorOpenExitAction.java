@@ -54,6 +54,6 @@ public class SurvivorOpenExitAction extends Action {
 
     @Override
     public String getActionBar() {
-        return ChatColor.GREEN + "Open escape";
+        return ChatColor.GREEN + "Opening escape";
     }
 }

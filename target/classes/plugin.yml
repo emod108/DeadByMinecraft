@@ -100,6 +100,10 @@ commands:
     description: Adds prop to the current map on the place where you stand
     usage: /<command> (prop) [additional data1] [additional data2]
     permission: deadbyminecraft.addprop
+  removeprop:
+    description: Removes prop on the place where you stand
+    usage: /<command>
+    permission: deadbyminecraft.removeprop
   removelastprop:
     description: Removes the last prop from the current map
     usage: /<command>
@@ -112,6 +116,22 @@ commands:
     description: Hides all props which will be loaded when the game starts
     usage: /<command>
     permission: deadbyminecraft.hideprops
+  addspawnpoint:
+    description: Adds spawn point to the map
+    usage: /<command> (survivor/killer)
+    permission: deadbyminecraft.addspawnpoint
+  removespawnpoint:
+    description: Removes the last survivor or killer spawn point
+    usage: /<command> (survivor/killer)
+    permission: deadbyminecraft.removespawnpoint
+  mapstats:
+    description: Prints map stats
+    usage: /<command>
+    permission: deadbyminecraft.mapstats
+  refreshmap:
+    description: Refreshes map
+    usage: /<command>
+    permission: deadbyminecraft.refreshmap
 permissions:
   deadbyminecraft.*:
     description: Allows to use all Dead by Minecraft commands
@@ -141,6 +161,11 @@ permissions:
     deadbyminecraft.unloadmap: true
     deadbyminecraft.savemap: true
     deadbyminecraft.addprop: true
+    deadbyminecraft.removeprop: true
     deadbyminecraft.removelastprop: true
     deadbyminecraft.showprops: true
     deadbyminecraft.hideprops: true
+    deadbyminecraft.addspawnpoint: true
+    deadbyminecraft.removespawnpoint: true
+    deadbyminecraft.mapstats: true
+    deadbyminecraft.refreshmap: true

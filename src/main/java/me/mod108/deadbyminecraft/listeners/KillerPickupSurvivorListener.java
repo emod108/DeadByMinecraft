@@ -24,9 +24,7 @@ public class KillerPickupSurvivorListener implements Listener {
         final Location survivorLocation = survivor.getLocation();
         final double pickupDistance = killerLocation.distanceSquared(survivorLocation);
 
-        if (pickupDistance > Character.ACTION_DISTANCE_SQUARED)
-            return;
-
-        killer.pickUp(survivor);
+        if (pickupDistance <= Character.ACTION_DISTANCE_SQUARED)
+            killer.pickUp(survivor);
     }
 }

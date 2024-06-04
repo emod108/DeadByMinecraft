@@ -3,14 +3,20 @@ import me.mod108.crawlingplugin.CrawlingPlugin;
 import me.mod108.deadbyminecraft.DeadByMinecraft;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
+import me.mod108.deadbyminecraft.targets.characters.Survivor.HealthState;
 import me.mod108.deadbyminecraft.targets.characters.killers.Killer;
-import me.mod108.deadbyminecraft.targets.props.Generator;
-import me.mod108.deadbyminecraft.targets.props.Prop;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
+import me.mod108.deadbyminecraft.targets.props.*;
+import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
+import me.mod108.deadbyminecraft.targets.props.vaultable.Window;
+import org.bukkit.*;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Boss;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -19,21 +25,47 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class Game {
-    // Additional generators so killer can't camp a single generator
-    private static final int ADDITIONAL_GENERATORS = 2;
-
-    // Players who play in this game session
-    private final ArrayList<Character> players;
-
-    // Props in the game
-    private final ArrayList<Prop> props = new ArrayList<>();
+    public final static int MAX_SURVIVORS_NUM = 4;
 
     // Escape lines, which survivors must to cross
     private final ArrayList<EscapeLine> escapeLines = new ArrayList<>();
 
-    // Generators in the game
-    private final int startingGenerators;
-    private int generatorsLeft;
+    // 4 minutes is max time of endgame collapse
+    private static final int MAX_ENDGAME_COLLAPSE_TIME = Timings.secondsToTicks(240);
+
+    BukkitRunnable finishGameTask = null;
+
+    // Players list
+    private final ArrayList<Character> players;
+
+    // Props list
+    private final ArrayList<Prop> props;
+
+    // Escape information
+    private final ArrayList<Generator> generators = new ArrayList<>();
+    private int generatorsLeft = 1;
+    private final ArrayList<ExitGate> exitGates = new ArrayList<>();
+    private boolean everythingIsPowered = false;
+    private Hatch hatch = null;
+
+    // Other props
+    private final ArrayList<Pallet> pallets = new ArrayList<>();
+    private final ArrayList<Window> windows = new ArrayList<>();
+    private final ArrayList<Hook> hooks = new ArrayList<>();
+    private final ArrayList<Locker> lockers = new ArrayList<>();
+
+    // Player information
+    private final Location killerSpawn;
+    private Killer killer;
+    private final ArrayList<Location> survivorSpawns;
+    private final ArrayList<Survivor> survivors = new ArrayList<>();
+    private int survivorsLeft = 0;
+    private boolean survivorDowned = false;
+
+    // Endgame collapse information
+    private int endGameCollapseTimer = MAX_ENDGAME_COLLAPSE_TIME;
+    private boolean endGameCollapseStarted = false;
+    final BossBar endGameCollapseBar;
 
     // Timer which updates game status every tick (player speed, stuns, generator regressions, etc)
     final BukkitRunnable gameUpdater = new BukkitRunnable() {
@@ -42,24 +74,95 @@ public class Game {
             if (isCancelled())
                 return;
 
+            if (endGameCollapseStarted) {
+                endGameCollapseTimer -= survivorDowned ? 1 : 2;
+
+                // Updating Boss bar
+                float bossBarProgress = (float) endGameCollapseTimer / MAX_ENDGAME_COLLAPSE_TIME;
+                if (bossBarProgress < 0)
+                    bossBarProgress = 0;
+                endGameCollapseBar.setProgress(bossBarProgress);
+
+                // Sacrificing all survivors if the timer reaches 0
+                if (endGameCollapseTimer <= 0) {
+                    for (final Survivor survivor : survivors) {
+                        if (survivor.isAlive())
+                            survivor.getSacrificed();
+                    }
+                }
+            }
+
             // Updating all players
             for (final Character player : players)
                 updatePlayer(player);
 
             // Regressing generators
-            for (final Prop prop : props) {
-                if (prop instanceof final Generator generator) {
-                    generator.regress();
-                }
-            }
+            for (final Generator generator : generators)
+                generator.regress();
         }
     };
 
-    public Game(final ArrayList<Character> players) {
+    public Game(final ArrayList<Character> players, final ArrayList<Prop> props, final Location killerSpawn,
+                final ArrayList<Location> survivorSpawns) {
         this.players = players;
+        this.props = props;
+        this.killerSpawn = killerSpawn;
+        this.survivorSpawns = survivorSpawns;
 
-        startingGenerators = players.size() + ADDITIONAL_GENERATORS;
-        generatorsLeft = startingGenerators;
+        // Assigning props
+        for (final Prop prop : props)
+            assignProp(prop);
+
+        // Assigning player
+        for (final Character player : players) {
+            if (player instanceof final Survivor survivor) {
+                ++generatorsLeft;
+                survivors.add(survivor);
+                ++survivorsLeft;
+            } else {
+                killer = (Killer) player;
+            }
+        }
+
+        // Creating endgame collapse timer
+        final String endGameCollapseTitle = ChatColor.RED + "ENDGAME COLLAPSE";
+        endGameCollapseBar = Bukkit.createBossBar(endGameCollapseTitle, BarColor.YELLOW, BarStyle.SEGMENTED_12);
+        endGameCollapseBar.setVisible(false);
+    }
+
+    // Assigns prop to a field
+    private void assignProp(final Prop prop) {
+        if (prop instanceof final Generator generator) {
+            generators.add(generator);
+            return;
+        }
+
+        if (prop instanceof final ExitGate exitGate) {
+            exitGates.add(exitGate);
+            return;
+        }
+
+        if (prop instanceof final Pallet pallet) {
+            pallets.add(pallet);
+        }
+
+        if (prop instanceof final Window window) {
+            windows.add(window);
+            return;
+        }
+
+        if (prop instanceof final Hook hook) {
+            hooks.add(hook);
+            return;
+        }
+
+        if (prop instanceof final Locker locker) {
+            lockers.add(locker);
+            return;
+        }
+
+        if (prop instanceof final Hatch h)
+            this.hatch = h;
     }
 
     public void startGame() {
@@ -68,12 +171,29 @@ public class Game {
             preparePlayer(player);
         }
 
+        for (final Prop prop : props) {
+            if (prop instanceof Hatch && survivorsLeft > 1)
+                continue;
+            prop.build();
+        }
+
+        // Spawning players
+        if (killerSpawn != null)
+            killer.getPlayer().teleport(killerSpawn);
+        for (int i = 0; i < survivors.size() && i < survivorSpawns.size(); ++i)
+            survivors.get(i).getPlayer().teleport(survivorSpawns.get(i));
+
         // Starting game timer
         gameUpdater.runTaskTimer(DeadByMinecraft.getPlugin(), 0, 1);
     }
 
     public void finishGame() {
         gameUpdater.cancel();
+        endGameCollapseBar.setVisible(false);
+        endGameCollapseBar.removeAll();
+
+        if (finishGameTask != null)
+            finishGameTask.cancel();
 
         // Clearing all props
         for (final Prop prop : props) {
@@ -83,15 +203,15 @@ public class Game {
         props.clear();
 
         // Resetting every player
-        for (final Character player : players) {
+        for (final Character player : players)
             resetPlayer(player);
-        }
     }
 
     // This method prepares player for the game
     private void preparePlayer(final Character player) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
         createScoreboard(player);
+        endGameCollapseBar.addPlayer(player.getPlayer());
         player.setIsSpeedActive(true);
         player.getPlayer().getInventory().clear();
 
@@ -107,37 +227,43 @@ public class Game {
         player.getPlayer().setGameMode(GameMode.ADVENTURE);
 
         // Preparing killer
-        if (player instanceof final Killer killer) {
-            killer.applyKillerKit();
+        if (player instanceof final Killer k) {
+            k.applyKillerKit();
+            return;
         }
+
+        // Preparing survivor
+        final Survivor survivor = (Survivor) player;
+        final WorldBorder worldBorder = Bukkit.createWorldBorder();
+        survivor.getPlayer().setWorldBorder(worldBorder);
     }
 
     // Updates this player. Must be called every tick
     private void updatePlayer(final Character player) {
-        if (player instanceof final Killer killer) {
-            killer.decrementStunTime();
-            killer.decrementAttackCooldownTime();
+        if (player instanceof final Killer k) {
+            k.decrementStunTime();
+            k.decrementAttackCooldownTime();
 
             // If killer has no action, then we use progress bar for attack/stun cooldown
-            if (killer.getAction() == null) {
+            if (k.getAction() == null) {
                 // If killer is stunned
-                if (killer.isStunned())
-                    ProgressBar.setProgress(killer.getPlayer(), killer.getStunRecoverProgress());
+                if (k.isStunned())
+                    ProgressBar.setProgress(k.getPlayer(), k.getStunRecoverProgress());
                 else // Attack recover time
-                    ProgressBar.setProgress(killer.getPlayer(), killer.getAttackRecoverProgress());
+                    ProgressBar.setProgress(k.getPlayer(), k.getAttackRecoverProgress());
             }
         } else if (player instanceof final Survivor survivor) {
             // Spawning blood particles under injured survivors
-            final Survivor.HealthState healthState = survivor.getHealthState();
+            final HealthState healthState = survivor.getHealthState();
 
             // We don't update disconnected survivors
-            if (healthState == Survivor.HealthState.DISCONNECTED)
+            if (healthState == HealthState.DISCONNECTED)
                 return;
 
             // Create blood particles on injured survivors
             if (survivor.getMovementState() != Character.MovementState.IN_LOCKER) {
-                if (healthState == Survivor.HealthState.INJURED || healthState == Survivor.HealthState.DEEP_WOUND ||
-                        healthState == Survivor.HealthState.DYING || healthState == Survivor.HealthState.HOOKED) {
+                if (healthState == HealthState.INJURED || healthState == HealthState.DEEP_WOUND ||
+                        healthState == HealthState.DYING || healthState == HealthState.HOOKED) {
                     survivor.bleed();
                 }
             }
@@ -156,14 +282,17 @@ public class Game {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
         removeScoreboard(player);
 
+        // Removing world border
+        player.getPlayer().setWorldBorder(null);
+
         // Resetting killer
-        if (player instanceof final Killer killer) {
+        if (player instanceof final Killer k) {
             // Stops carrying survivor. Does nothing if no survivors carried
-            killer.stopCarrying();
+            k.stopCarrying();
 
             // Hiding exit gates blockers
             for (final EscapeLine escape : escapeLines) {
-                escape.hideFromKiller(killer);
+                escape.hideFromKiller(k);
             }
         }
 
@@ -195,35 +324,122 @@ public class Game {
         return players;
     }
 
-    public Killer getKiller() {
-        for (final Character character : players) {
-            if (character instanceof Killer)
-                return (Killer) character;
+    // This function must be called, when Health state of a survivor has changed
+    public void survivorsHealthChanged(final Survivor survivor) {
+        if (!survivor.isAlive()) {
+            --survivorsLeft;
+            checkSurvivorsNum();
         }
-        return null;
+
+        for (final Survivor survivorEntry : survivors) {
+            if (survivorEntry.isDowned()) {
+                survivorDowned = true;
+                endGameCollapseBar.setColor(BarColor.WHITE);
+                return;
+            }
+        }
+        survivorDowned = false;
+        endGameCollapseBar.setColor(BarColor.YELLOW);
     }
 
-    public ArrayList<Prop> getProps() {
-        return props;
+    // This function must be called, when generator was repaired
+    public void generatorRepaired() {
+        // If all needed generators were repaired
+        --generatorsLeft;
+        if (generatorsLeft <= 0)
+            powerEverything();
+    }
+
+    private void powerEverything() {
+        if (everythingIsPowered)
+            return;
+        everythingIsPowered = true;
+
+        // Powering gates
+        for (final ExitGate gate : exitGates)
+            gate.setGateState(ExitGate.ExitGateState.POWERED);
+
+        // Powering all not powered generators
+        for (final Generator generator : generators)
+            generator.becomeRepaired();
+    }
+
+    // This function should be called, when an exit gate was opened
+    public void gateOpened(final EscapeLine escapeLine) {
+        escapeLines.add(escapeLine);
+        startEndGameCollapse();
+    }
+
+    // This function should be called, when the hatch was closed
+    public void hatchClosed() {
+        powerEverything();
+        startEndGameCollapse();
+    }
+
+    // This function starts endgame collapse
+    private void startEndGameCollapse() {
+        if (endGameCollapseStarted)
+            return;
+        endGameCollapseStarted = true;
+        endGameCollapseBar.setVisible(true);
+    }
+
+    // This function checks if game should end or hatch should spawn
+    private void checkSurvivorsNum() {
+        if (survivorsLeft == 1)
+            hatch.build();
+        else if (survivorsLeft == 0) { // Finishing the game in 5 seconds
+            finishGameTask = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    finishGameTask = null;
+                    DeadByMinecraft.getPlugin().finishGame();
+                }
+            };
+            finishGameTask.runTaskLater(DeadByMinecraft.getPlugin(), Timings.secondsToTicks(3));
+        }
+    }
+
+    public Killer getKiller() {
+        return killer;
+    }
+
+    public ArrayList<Generator> getGenerators() {
+        return generators;
+    }
+
+    public ArrayList<ExitGate> getExitGates() {
+        return exitGates;
+    }
+
+    public ArrayList<Pallet> getPallets() {
+        return pallets;
+    }
+
+    public ArrayList<Window> getWindows() {
+        return windows;
+    }
+
+    public ArrayList<Hook> getHooks() {
+        return hooks;
+    }
+
+    public ArrayList<Locker> getLockers() {
+        return lockers;
+    }
+
+    public Hatch getHatch() {
+        return hatch;
     }
 
     public void addProp(final Prop prop) {
         props.add(prop);
-
-        if (!prop.isBuilt())
-            prop.build();
-    }
-
-    public void removeProp(final Prop prop) {
-        props.removeIf(n -> (n.getLocation().equals(prop.getLocation())));
+        assignProp(prop);
+        prop.build();
     }
 
     public ArrayList<EscapeLine> getEscapeLines() {
         return escapeLines;
-    }
-
-    public void addEscapeLine(final EscapeLine escapeLine) {
-        escapeLines.add(escapeLine);
     }
 
     private void createScoreboard(final Character player) {

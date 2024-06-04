@@ -68,7 +68,6 @@ public class HealAction extends Action {
         if (currentLocation.getX() != targetLocation.getX() || currentLocation.getZ() != targetLocation.getZ() ||
                 currentLocation.getY() != targetLocation.getY()) {
             end();
-            ;
             performer.getPlayer().sendMessage(ChatColor.RED + healedTarget.getPlayer().getName() +
                     "has moved! Healing was canceled.");
             healedTarget.getPlayer().sendMessage(ChatColor.RED + "You have moved! " + performer.getPlayer().getName()

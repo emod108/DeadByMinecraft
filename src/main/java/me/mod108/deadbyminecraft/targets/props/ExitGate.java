@@ -26,7 +26,7 @@ public class ExitGate extends Prop {
     public static final Material GATE_MATERIAL = Material.IRON_BLOCK;
     public static final int GATES_WIDTH = 6;
     public static final int GATES_HEIGHT = 5;
-    public static final float MAX_OPEN_PROGRESS = 10.0f;
+    public static final float MAX_OPEN_PROGRESS = 20.0f;
 
     // How far is escape zone from lever's location
     private static final int ESCAPE_ZONE_DISTANCE = 10;
@@ -161,7 +161,7 @@ public class ExitGate extends Prop {
         escapePoint.add(Directions.getVector(direction, ESCAPE_ZONE_DISTANCE));
         escapePoint.add(Directions.getVector(Directions.turnRight(direction), 1));
         final EscapeLine escapeLine = new EscapeLine(escapePoint, direction);
-        game.addEscapeLine(escapeLine);
+        game.gateOpened(escapeLine);
     }
 
     @Override

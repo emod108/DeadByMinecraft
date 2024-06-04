@@ -20,16 +20,12 @@ public class EntityDamageListener implements Listener {
         if (!(e.getEntity() instanceof final Player player))
             return;
 
-        // Getting the player
-        final Character character = game.getPlayer(player);
-
-        // Player is not a part of the game
-        if (character == null)
+        // Checking if player is part of the game
+        if (game.getPlayer(player) == null)
             return;
 
         // Cancelling the event if it's not custom damage
-        if (e.getCause() != EntityDamageEvent.DamageCause.CUSTOM) {
+        if (e.getCause() != EntityDamageEvent.DamageCause.CUSTOM)
             e.setCancelled(true);
-        }
     }
 }

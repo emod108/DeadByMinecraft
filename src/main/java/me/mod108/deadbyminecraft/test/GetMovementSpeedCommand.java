@@ -24,7 +24,6 @@ public class GetMovementSpeedCommand implements CommandExecutor {
             player.sendMessage(ChatColor.YELLOW + "Your current movement speed is: "
                     + MovementSpeed.toPercents(speed));
         }
-
         return true;
     }
 }

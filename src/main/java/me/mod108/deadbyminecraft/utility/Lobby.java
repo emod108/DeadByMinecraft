@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class Lobby {
-    public static final int MAX_SURVIVORS = 4;
     public static final int PLAYER_NOT_FOUND = -1;
 
     private final ArrayList<Character> players = new ArrayList<>();
@@ -17,16 +16,12 @@ public class Lobby {
         return players;
     }
 
-    public int getPlayersCount() {
-        return players.size();
-    }
-
     public int getSurvivorsCount() {
         return (int) players.stream().filter(Survivor.class::isInstance).count();
     }
 
     public boolean hasMaxSurvivors() {
-        return getSurvivorsCount() == MAX_SURVIVORS;
+        return getSurvivorsCount() == Game.MAX_SURVIVORS_NUM;
     }
 
     public boolean hasKiller() {
@@ -38,7 +33,7 @@ public class Lobby {
     }
 
     public void addSurvivor(final Player player) {
-        if (getSurvivorsCount() < MAX_SURVIVORS)
+        if (getSurvivorsCount() < Game.MAX_SURVIVORS_NUM)
             players.add(new Survivor(player));
     }
 
