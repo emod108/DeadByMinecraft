@@ -9,6 +9,7 @@ import me.mod108.deadbyminecraft.targets.props.*;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Window;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -214,22 +215,25 @@ public class Game {
 
     // This method prepares player for the game
     private void preparePlayer(final Character player) {
+        final Player playerEntity = player.getPlayer();
+
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
         addToScoreboard(player);
-        endGameCollapseBar.addPlayer(player.getPlayer());
+        endGameCollapseBar.addPlayer(playerEntity);
         player.setIsSpeedActive(true);
-        player.getPlayer().getInventory().clear();
+        playerEntity.getInventory().clear();
+        playerEntity.setHealth(20);
 
-        plugin.healthRegainManager.disableHealthRegain(player.getPlayer());
-        plugin.jumpingManager.disableJumping(player.getPlayer());
-        plugin.sprintManager.disableSprinting(player.getPlayer());
+        plugin.healthRegainManager.disableHealthRegain(playerEntity);
+        plugin.jumpingManager.disableJumping(playerEntity);
+        plugin.sprintManager.disableSprinting(playerEntity);
 
         // Clearing any experience
-        player.getPlayer().setExp(0.0f);
-        player.getPlayer().setLevel(0);
+        playerEntity.setExp(0.0f);
+        playerEntity.setLevel(0);
 
         // Setting game mode to adventure
-        player.getPlayer().setGameMode(GameMode.ADVENTURE);
+        playerEntity.setGameMode(GameMode.ADVENTURE);
 
         // Preparing killer
         if (player instanceof final Killer k) {
@@ -240,7 +244,7 @@ public class Game {
         // Preparing survivor
         final Survivor survivor = (Survivor) player;
         final WorldBorder worldBorder = Bukkit.createWorldBorder();
-        survivor.getPlayer().setWorldBorder(worldBorder);
+        playerEntity.setWorldBorder(worldBorder);
     }
 
     // Updates this player. Must be called every tick
@@ -287,12 +291,14 @@ public class Game {
 
     // This method fully resets player
     public void resetPlayer(final Character player) {
+        final Player playerEntity = player.getPlayer();
+
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
         removeFromScoreboard(player);
         player.removeAllAuras();
 
         // Removing world border
-        player.getPlayer().setWorldBorder(null);
+        playerEntity.setWorldBorder(null);
 
         // Resetting killer
         if (player instanceof final Killer k) {
@@ -309,16 +315,21 @@ public class Game {
         player.setIsSpeedActive(false);
         player.getPlayer().getInventory().clear();
 
-        plugin.freezeManager.unFreeze(player.getPlayer().getUniqueId());
-        plugin.healthRegainManager.enableHealthRegain(player.getPlayer());
-        plugin.jumpingManager.enableJumping(player.getPlayer());
-        plugin.sprintManager.enableSprinting(player.getPlayer());
-        plugin.vanishManager.show(player.getPlayer());
+        plugin.freezeManager.unFreeze(playerEntity.getUniqueId());
+        plugin.healthRegainManager.enableHealthRegain(playerEntity);
+        plugin.jumpingManager.enableJumping(playerEntity);
+        plugin.sprintManager.enableSprinting(playerEntity);
+        plugin.vanishManager.show(playerEntity);
 
-        ProgressBar.resetProgress(player.getPlayer());
-        player.getPlayer().setLevel(0);
-        CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player.getPlayer());
-        player.getPlayer().setGameMode(GameMode.ADVENTURE);
+        ProgressBar.resetProgress(playerEntity);
+        playerEntity.setLevel(0);
+        CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(playerEntity);
+        playerEntity.setGameMode(GameMode.ADVENTURE);
+
+        // Teleporting player to spawn
+        final World world = Bukkit.getWorld("world");
+        if (world != null)
+            playerEntity.teleport(world.getSpawnLocation());
     }
 
     public Character getPlayer(final Player player) {
