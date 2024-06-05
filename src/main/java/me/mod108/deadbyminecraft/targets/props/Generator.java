@@ -7,10 +7,7 @@ import me.mod108.deadbyminecraft.managers.SoundManager;
 import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.utility.Directions;
 import me.mod108.deadbyminecraft.utility.Timings;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -325,6 +322,15 @@ public class Generator extends Prop implements Breakable {
         if (generatorState != GeneratorState.REGRESSING)
             return;
         repairProgress -= REGRESS_SPEED;
+
+        // Spawning particles
+        final World world = Bukkit.getWorld("world");
+        if (world != null && interactableBlocks.size() > 0) {
+            final int randomIndex = (int)(Math.random() * interactableBlocks.size());
+            final Block randomBlock = interactableBlocks.get(randomIndex);
+            world.spawnParticle(Particle.CRIT, randomBlock.getLocation().clone().add(0.5, 0.5, 0.5),
+                    1, 0.3, 0.3, 0.3);
+        }
 
         // Progress can't go below 0
         if (repairProgress <= 0.0f) {

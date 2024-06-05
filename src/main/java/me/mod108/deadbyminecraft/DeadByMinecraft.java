@@ -19,10 +19,7 @@ import me.mod108.deadbyminecraft.targets.props.*;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Pallet;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Window;
 import me.mod108.deadbyminecraft.test.*;
-import me.mod108.deadbyminecraft.utility.Game;
-import me.mod108.deadbyminecraft.utility.Lobby;
-import me.mod108.deadbyminecraft.utility.MapData;
-import me.mod108.deadbyminecraft.utility.MapLoader;
+import me.mod108.deadbyminecraft.utility.*;
 import org.bukkit.Server;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
@@ -70,6 +67,10 @@ public final class DeadByMinecraft extends JavaPlugin {
     private Lobby lobby = null;
     private Game game = null;
 
+    // Glowing Entities util
+    // Made by SkytAsul: https://github.com/SkytAsul/GlowingEntities/
+    public GlowingEntities glowingEntities;
+
     @Override
     public void onEnable() {
         plugin = this;
@@ -88,11 +89,12 @@ public final class DeadByMinecraft extends JavaPlugin {
             }
         }
 
+        // Registering glowing entities util
+        glowingEntities = new GlowingEntities(this);
+
         // Test commands
         registerCommand("getmovementspeed", new GetMovementSpeedCommand());
         registerCommand("setmovementspeed", new SetMovementSpeedCommand());
-        registerCommand("spawnprop", new SpawnPropCommand());
-        registerCommand("getinjured", new GetInjuredCommand());
 
         // Map loading commands
         registerCommand("createmap", mapLoader);
@@ -163,6 +165,7 @@ public final class DeadByMinecraft extends JavaPlugin {
         pluginManager.registerEvents(new PlayerMoveListener(), this);
         pluginManager.registerEvents(new EntityDamageListener(), this);
         pluginManager.registerEvents(new HatchInteractListener(), this);
+        pluginManager.registerEvents(new SneakListener(), this);
 
         // Inventory interactions
         pluginManager.registerEvents(new DropItemListener(), this);
@@ -179,6 +182,9 @@ public final class DeadByMinecraft extends JavaPlugin {
         if (game != null)
             game.finishGame();
         game = null;
+
+        // Stopping glowing entities plugin
+        glowingEntities.disable();
 
         final MapData mapData = mapLoader.getMapData();
         if (mapData != null)

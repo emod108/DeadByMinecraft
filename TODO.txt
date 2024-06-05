@@ -11,17 +11,13 @@
     3.4 Bonus: Add basement
 
 4. Implement survivors
-    4.1 Add heartbeat
-    4.2 Add auras
-    4.3 Bonus: Implement scratch marks and blood pools
-    4.4 Bonus: Add endurance status effect
-    4.5 Bonus: Implement skill-checks in any way
+    4.1 Add auras
+    4.2 Bonus: Implement scratch marks and blood pools
+    4.3 Bonus: Add endurance status effect
+    4.4 Bonus: Implement skill-checks in any way
 
 5. Implement escaping
     5.1 Implement endgame collapse timer
-
-6. Polish and add more beauty
-    6.1 Add hatch and gates sounds
 
 7. Implement map generation (bonus if randomized)
 

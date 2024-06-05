@@ -60,10 +60,6 @@ commands:
     description: Finishes the current game
     usage: /<command>
     permission: deadbyminecraft.finishgame
-  spawnprop:
-    description: Spawns a prop
-    usage: /<command>
-    permission: deadbyminecraft.spawnprop
   vanish:
     description: Hides you
     usage: /<command>
@@ -72,10 +68,6 @@ commands:
     description: Plays a sound by its name
     usage: /<command> (sound) [volume] [pitch]
     permission: deadbyminecraft.testplaysound
-  getinjured:
-    description: Injures you
-    usage: /<command>
-    permission: deadbyminecraft.getinjured
   createmap:
     description: Create a new map
     usage: /<command> (Map name)
@@ -151,10 +143,8 @@ permissions:
     deadbyminecraft.getkillers: true
     deadbyminecraft.startgame: true
     deadbyminecraft.finishgame: true
-    deadbyminecraft.spawnprop: true
     deadbyminecraft.vanish: true
     deadbyminecraft.testplaysound: true
-    deadbyminecraft.getinjured: true
     deadbyminecraft.createmap: true
     deadbyminecraft.renamemap: true
     deadbyminecraft.loadmap: true

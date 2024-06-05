@@ -12,14 +12,9 @@ import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Boss;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.*;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -33,6 +28,7 @@ public class Game {
     // 4 minutes is max time of endgame collapse
     private static final int MAX_ENDGAME_COLLAPSE_TIME = Timings.secondsToTicks(240);
 
+    // This runnable purpose it to finish the game after certain time
     BukkitRunnable finishGameTask = null;
 
     // Players list
@@ -66,6 +62,13 @@ public class Game {
     private int endGameCollapseTimer = MAX_ENDGAME_COLLAPSE_TIME;
     private boolean endGameCollapseStarted = false;
     final BossBar endGameCollapseBar;
+
+    // Scoreboard information
+    Scoreboard scoreboard = null;
+    private final static String killerTeamStr = "killer";
+    private final static String survivorTeamStr = "survivor";
+    private final ArrayList<MyPair<Integer, String>> scores = new ArrayList<>();
+    private final static int escapeScoreIndex = 6;
 
     // Timer which updates game status every tick (player speed, stuns, generator regressions, etc)
     final BukkitRunnable gameUpdater = new BukkitRunnable() {
@@ -166,10 +169,11 @@ public class Game {
     }
 
     public void startGame() {
+        createScoreboard();
+
         // Preparing all players for the game
-        for (final Character player : players) {
+        for (final Character player : players)
             preparePlayer(player);
-        }
 
         for (final Prop prop : props) {
             if (prop instanceof Hatch && survivorsLeft > 1)
@@ -205,12 +209,13 @@ public class Game {
         // Resetting every player
         for (final Character player : players)
             resetPlayer(player);
+        deleteScoreboard();
     }
 
     // This method prepares player for the game
     private void preparePlayer(final Character player) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
-        createScoreboard(player);
+        addToScoreboard(player);
         endGameCollapseBar.addPlayer(player.getPlayer());
         player.setIsSpeedActive(true);
         player.getPlayer().getInventory().clear();
@@ -268,6 +273,9 @@ public class Game {
                 }
             }
 
+            // Playing terror radius
+            survivor.playTerrorRadius(killer.getLocation());
+
             // Processing bleed-out and sacrifice timers
             survivor.processBleedOut();
             survivor.processSacrifice();
@@ -280,7 +288,8 @@ public class Game {
     // This method fully resets player
     public void resetPlayer(final Character player) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
-        removeScoreboard(player);
+        removeFromScoreboard(player);
+        player.removeAllAuras();
 
         // Removing world border
         player.getPlayer().setWorldBorder(null);
@@ -327,19 +336,83 @@ public class Game {
     // This function must be called, when Health state of a survivor has changed
     public void survivorsHealthChanged(final Survivor survivor) {
         if (!survivor.isAlive()) {
+            // Hiding his aura from everyone
+            for (final Survivor otherSurvivor : survivors) {
+                if (otherSurvivor.samePlayer(survivor))
+                    continue;
+                otherSurvivor.addAura(survivor);
+            }
+            killer.removeAura(survivor);
+            survivor.removeAllAuras();
+
+            // Checking game status
             --survivorsLeft;
             checkSurvivorsNum();
         }
 
+        // Updating scoreboard
+        int indexInScoreboard = 11;
+        for (final Survivor survivorEntry : survivors) {
+            if (survivorEntry.samePlayer(survivor)) {
+                final Objective objective = scoreboard.getObjective(DisplaySlot.SIDEBAR);
+                if (objective != null) {
+                    // Removing old score
+                    for (int i = 0; i < scores.size(); ++i) {
+                        final MyPair<Integer, String> pair = scores.get(i);
+                        if (pair.first == indexInScoreboard) {
+                            scoreboard.resetScores(pair.second);
+                            scores.remove(i);
+                            break;
+                        }
+                    }
+
+                    // Adding new score
+                    final String entry = ChatColor.BLUE + survivor.getPlayer().getName() + ": " +
+                            Survivor.healthStateToStr(survivor.getHealthState());
+                    final Score survivorScore = objective.getScore(entry);
+                    survivorScore.setScore(indexInScoreboard);
+                    scores.add(new MyPair<>(indexInScoreboard, entry));
+                }
+                break;
+            }
+            --indexInScoreboard;
+        }
+
+        // Endgame collapse
+        boolean checkedEngameCollapse = false;
         for (final Survivor survivorEntry : survivors) {
             if (survivorEntry.isDowned()) {
                 survivorDowned = true;
                 endGameCollapseBar.setColor(BarColor.WHITE);
-                return;
+                checkedEngameCollapse = true;
+                break;
             }
         }
-        survivorDowned = false;
-        endGameCollapseBar.setColor(BarColor.YELLOW);
+        if (!checkedEngameCollapse) {
+            survivorDowned = false;
+            endGameCollapseBar.setColor(BarColor.YELLOW);
+        }
+        checkIfDoomed();
+    }
+
+    // Check if everyone who is left is hooked and can't unhook themselves
+    public void checkIfDoomed() {
+        boolean atLeastOneStanding = false;
+        for (final Survivor leftSurvivor : survivors) {
+            if (!leftSurvivor.isAlive())
+                continue;
+
+            if (leftSurvivor.getHealthState() != HealthState.HOOKED || leftSurvivor.canSelfUnhook()) {
+                atLeastOneStanding = true;
+                break;
+            }
+        }
+
+        // If all survivors are dead or hooked, we sacrifice remaining survivor immediately
+        if (!atLeastOneStanding) {
+            for (final Survivor leftSurvivor : survivors)
+                leftSurvivor.getSacrificed();
+        }
     }
 
     // This function must be called, when generator was repaired
@@ -348,12 +421,34 @@ public class Game {
         --generatorsLeft;
         if (generatorsLeft <= 0)
             powerEverything();
+        else { // Update scoreboard if there are still generators to be repaired
+            final Objective objective = scoreboard.getObjective(DisplaySlot.SIDEBAR);
+            if (objective != null) {
+                // Deleting old escape score
+                for (int i = 0; i < scores.size(); ++i) {
+                    final MyPair<Integer, String> pair = scores.get(i);
+                    if (pair.first == escapeScoreIndex) {
+                        scoreboard.resetScores(pair.second);
+                        scores.remove(i);
+                        break;
+                    }
+                }
+
+                // Adding new escape score
+                final String escapeStr = ChatColor.YELLOW + "Generators left: " + generatorsLeft;
+                final Score escapeScore = objective.getScore(escapeStr);
+                escapeScore.setScore(escapeScoreIndex);
+                scores.add(new MyPair<>(escapeScoreIndex, escapeStr));
+            }
+        }
     }
 
     private void powerEverything() {
         if (everythingIsPowered)
             return;
         everythingIsPowered = true;
+        for (final Character player : players)
+            player.getPlayer().sendMessage(ChatColor.YELLOW + "Exit gates have been powered!\n");
 
         // Powering gates
         for (final ExitGate gate : exitGates)
@@ -362,6 +457,26 @@ public class Game {
         // Powering all not powered generators
         for (final Generator generator : generators)
             generator.becomeRepaired();
+
+        // Updating scoreboard
+        final Objective objective = scoreboard.getObjective(DisplaySlot.SIDEBAR);
+        if (objective != null) {
+            // Deleting old escape score
+            for (int i = 0; i < scores.size(); ++i) {
+                final MyPair<Integer, String> pair = scores.get(i);
+                if (pair.first == escapeScoreIndex) {
+                    scoreboard.resetScores(pair.second);
+                    scores.remove(i);
+                    break;
+                }
+            }
+
+            // Adding new escape score
+            final String escapeStr = ChatColor.YELLOW + "Escape through Exit Gates!";
+            final Score escapeScore = objective.getScore(escapeStr);
+            escapeScore.setScore(escapeScoreIndex);
+            scores.add(new MyPair<>(escapeScoreIndex, escapeStr));
+        }
     }
 
     // This function should be called, when an exit gate was opened
@@ -396,8 +511,12 @@ public class Game {
                     DeadByMinecraft.getPlugin().finishGame();
                 }
             };
-            finishGameTask.runTaskLater(DeadByMinecraft.getPlugin(), Timings.secondsToTicks(3));
+            finishGameTask.runTaskLater(DeadByMinecraft.getPlugin(), Timings.secondsToTicks(5));
         }
+    }
+
+    public ArrayList<Survivor> getSurvivors() {
+        return survivors;
     }
 
     public Killer getKiller() {
@@ -432,25 +551,54 @@ public class Game {
         return hatch;
     }
 
-    public void addProp(final Prop prop) {
-        props.add(prop);
-        assignProp(prop);
-        prop.build();
-    }
-
     public ArrayList<EscapeLine> getEscapeLines() {
         return escapeLines;
     }
 
-    private void createScoreboard(final Character player) {
-        // Getting scoreboard
-        final ScoreboardManager manager = Bukkit.getScoreboardManager();
-        if (manager == null)
-            return;
-        final Scoreboard scoreboard = manager.getMainScoreboard();
+    private void createScoreboard() {
+        // Creating scoreboard
+        final ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
+        assert scoreboardManager != null;
+        scoreboard = scoreboardManager.getNewScoreboard();
 
-        // Getting team
-        final String teamStr = player instanceof Killer ? "killer" : "survivor";
+        // Creating teams
+        createTeam(killerTeamStr);
+        createTeam(survivorTeamStr);
+
+        // Creating objective
+        final Objective objective = scoreboard.registerNewObjective("Dead by Minecraft",
+                Criteria.DUMMY, ChatColor.GOLD + "Dead by Minecraft");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        // Creating scores
+        int currentScore = 12;
+        final Score emptyAfterObjective = objective.getScore("");
+        emptyAfterObjective.setScore(currentScore);
+        --currentScore;
+
+        // Survivors scores
+        for (final Survivor survivor : survivors) {
+            final String entry = ChatColor.BLUE + survivor.getPlayer().getName() + ": " +
+                    Survivor.healthStateToStr(survivor.getHealthState());
+            final Score survivorScore = objective.getScore(entry);
+            survivorScore.setScore(currentScore);
+            scores.add(new MyPair<>(currentScore, entry));
+            --currentScore;
+        }
+
+        // Empty space after survivors
+        final Score spacingScore = objective.getScore("");
+        spacingScore.setScore(currentScore);
+        --currentScore;
+
+        // Escape score
+        final String escapeStr = ChatColor.YELLOW + "Generators left: " + generatorsLeft;
+        final Score escapeScore = objective.getScore(escapeStr);
+        escapeScore.setScore(escapeScoreIndex);
+        scores.add(new MyPair<>(escapeScoreIndex, escapeStr));
+    }
+
+    private Team createTeam(final String teamStr) {
         Team team = scoreboard.getTeam(teamStr);
         if (team == null) {
             team = scoreboard.registerNewTeam(teamStr);
@@ -458,35 +606,46 @@ public class Game {
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
             team.setColor(ChatColor.RED);
         }
+        return team;
+    }
 
-        // Adding player to the team
+    private void deleteScoreboard() {
+        // Unregistering killer team
+        final Team killerTeam = scoreboard.getTeam(killerTeamStr);
+        if (killerTeam != null) {
+            final Set<String> entries = killerTeam.getEntries();
+            for (final String entry : entries)
+                killerTeam.removeEntry(entry);
+            killerTeam.unregister();
+        }
+
+        // Unregistering survivor team
+        final Team survivorTeam = scoreboard.getTeam(survivorTeamStr);
+        if (survivorTeam != null) {
+            final Set<String> entries = survivorTeam.getEntries();
+            for (final String entry : entries)
+                survivorTeam.removeEntry(entry);
+            survivorTeam.unregister();
+        }
+
+        scores.clear();
+        scoreboard = null;
+    }
+
+    private void addToScoreboard(final Character player) {
+        player.getPlayer().setScoreboard(scoreboard);
+
+        // Adding to a team
+        final String teamStr = player instanceof Killer ? killerTeamStr : survivorTeamStr;
+        Team team = scoreboard.getTeam(teamStr);
+        if (team == null)
+            team = createTeam(teamStr);
         team.addEntry(player.getPlayer().getName());
     }
 
-    private void removeScoreboard(final Character player) {
-        // Getting scoreboard
-        final ScoreboardManager manager = Bukkit.getScoreboardManager();
-        if (manager == null)
-            return;
-        final Scoreboard scoreboard = manager.getMainScoreboard();
-
-        // Getting team
-        final String teamStr = player instanceof Killer ? "killer" : "survivor";
-        final Team team = scoreboard.getTeam(teamStr);
-        if (team == null)
-            return;
-
-        // Removing player from the team
-        final Set<String> entries = team.getEntries();
-        final String playerName = player.getPlayer().getName();
-        for (final String entry : entries) {
-            if (entry.equalsIgnoreCase(playerName)) {
-                team.removeEntry(playerName);
-            }
-        }
-
-        // If it was the last player on the team
-        if (team.getSize() == 0)
-            team.unregister();
+    private void removeFromScoreboard(final Character player) {
+        final ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
+        if (scoreboardManager != null)
+            player.getPlayer().setScoreboard(scoreboardManager.getMainScoreboard());
     }
 }

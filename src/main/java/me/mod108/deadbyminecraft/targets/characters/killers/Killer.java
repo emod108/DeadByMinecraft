@@ -7,6 +7,7 @@ import me.mod108.deadbyminecraft.targets.characters.Character;
 import me.mod108.deadbyminecraft.targets.characters.Survivor;
 import me.mod108.deadbyminecraft.targets.props.*;
 import me.mod108.deadbyminecraft.utility.ActionBar;
+import me.mod108.deadbyminecraft.utility.Game;
 import me.mod108.deadbyminecraft.utility.Timings;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -15,6 +16,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
 
 public abstract class Killer extends Character {
     // For how much killer moves forward after attacking
@@ -262,6 +265,14 @@ public abstract class Killer extends Character {
     public void getSurvivorOnShoulder(final Survivor survivor) {
         carriedSurvivor = survivor;
         survivor.clearRedScreen();
+
+        // Hiding survivor aura
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game != null) {
+            final ArrayList<Survivor> survivors = game.getSurvivors();
+            for (final Survivor anotherSurvivor : survivors)
+                anotherSurvivor.removeAura(survivor);
+        }
 
         // Getting the world
         final World world = Bukkit.getWorld("world");

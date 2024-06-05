@@ -17,11 +17,45 @@ public class Survivor extends Character {
     public enum HealthState { HEALTHY, INJURED, DEEP_WOUND, DYING, BEING_CARRIED, HOOKED,
         SACRIFICED, DEAD, DISCONNECTED, ESCAPED }
 
+    public static String healthStateToStr(final HealthState healthState) {
+        return switch (healthState) {
+            case HEALTHY -> ChatColor.GREEN + "HEALTHY";
+            case INJURED -> ChatColor.YELLOW + "INJURED";
+            case DEEP_WOUND -> ChatColor.YELLOW + "DEEP WOUND";
+            case DYING -> ChatColor.RED + "DYING";
+            case BEING_CARRIED -> ChatColor.RED + "CARRIED";
+            case HOOKED -> ChatColor.RED + "HOOKED";
+            case SACRIFICED -> ChatColor.DARK_RED + "SACRIFICED";
+            case DEAD -> ChatColor.DARK_RED + "DEAD";
+            case DISCONNECTED -> ChatColor.DARK_RED + "DISCONNECTED";
+            case ESCAPED -> ChatColor.DARK_GREEN + "ESCAPED";
+        };
+    }
+
+    // At which distances terror radius plays
+    private static final double TERROR_FAR_SQUARED = 32 * 32;
+    private static final int TERROR_FAR_HEARTBEAT_DELAY = Timings.secondsToTicks(1.5);
+    private static final double TERROR_CLOSER_SQUARED = 16 * 16;
+    private static final int TERROR_CLOSER_HEARTBEAT_DELAY = Timings.secondsToTicks(1);
+    private static final double TERROR_CLOSE_SQUARED = 8 * 8;
+    private static final int TERROR_CLOSE_HEARTBEAT_DELAY = Timings.secondsToTicks(0.5);
+    private static final int TERROR_SECOND_BEAT_DELAY = Timings.secondsToTicks(0.15);
+
+    private int currentTerrorBeatDelay = 0;
+    private int nextBeat = 0;
+    private boolean secondBeat = false;
+
     // After achieving this hook stage survivor dies
     private static final int MAX_HOOK_STAGE = 3;
 
     // Default time survivor has before hook stage progression (in ticks)
-    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(75);
+    private static final int STAGE_PROGRESSION_TIME = Timings.secondsToTicks(60);
+
+    // Penalty applied to stage progression time if self-unhook was unsuccessful
+    private static final int FAILED_UNHOOK_TIME_PENALTY = Timings.secondsToTicks(20);
+
+    // Chance of unhooking yourself
+    private static final double SELF_UNHOOK_CHANCE = 0.04;
 
     // Default time survivor has before dying from bleeding out
     private static final int STARTING_BLEEDOUT_TIME = Timings.secondsToTicks(240);
@@ -51,7 +85,7 @@ public class Survivor extends Character {
     private int hookStage = 0;
 
     // Time survivor has before hook stage progression (in ticks)
-    private int sacrificeTime = 0;
+    private int sacrificeTime = STAGE_PROGRESSION_TIME;
 
     // Hook survivor is hooked on
     private Hook hookedOn = null;
@@ -84,6 +118,7 @@ public class Survivor extends Character {
     public void setHealthState(final HealthState healthState) {
         this.healthState = healthState;
 
+        // Notifying the game
         final Game game = DeadByMinecraft.getPlugin().getGame();
         if (game != null)
             game.survivorsHealthChanged(this);
@@ -131,6 +166,14 @@ public class Survivor extends Character {
         setHealthState(HealthState.DYING);
         CrawlingPlugin.getPlugin().getCrawlingManager().startCrawling(player);
         player.sendMessage(ChatColor.RED + "You are now in dying state.");
+
+        // Showing aura to everyone
+        final Game game = DeadByMinecraft.getPlugin().getGame();
+        if (game != null) {
+            final ArrayList<Survivor> survivors = game.getSurvivors();
+            for (final Survivor survivor : survivors)
+                survivor.addAura(this);
+        }
     }
 
     // This function makes screen red
@@ -145,6 +188,35 @@ public class Survivor extends Character {
         final WorldBorder worldBorder = player.getWorldBorder();
         if (worldBorder != null)
             worldBorder.setWarningDistance(5);
+    }
+
+    public void playTerrorRadius(final Location killerLocation) {
+        final double distanceSquared = killerLocation.distanceSquared(getLocation());
+
+        // Too far to hear terror radius
+        if (distanceSquared > TERROR_FAR_SQUARED)
+            return;
+
+        // Progressing beat
+        ++nextBeat;
+        if (nextBeat < currentTerrorBeatDelay)
+            return;
+
+        // Playing beat
+        SoundManager.playForOne(player, getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1f, 0.5f);
+        nextBeat = 0;
+
+        // Calculating next beat
+        final int terrorDelay;
+        if (distanceSquared < TERROR_CLOSE_SQUARED)
+            terrorDelay = TERROR_CLOSE_HEARTBEAT_DELAY;
+        else if (distanceSquared < TERROR_CLOSER_SQUARED)
+            terrorDelay = TERROR_CLOSER_HEARTBEAT_DELAY;
+        else
+            terrorDelay = TERROR_FAR_HEARTBEAT_DELAY;
+
+        currentTerrorBeatDelay = secondBeat ? terrorDelay : TERROR_SECOND_BEAT_DELAY;
+        secondBeat = !secondBeat;
     }
 
     // Returns current healing progress in range from 0.0 to 1.0
@@ -182,6 +254,14 @@ public class Survivor extends Character {
                 CrawlingPlugin.getPlugin().getCrawlingManager().stopCrawling(player);
                 player.sendMessage(ChatColor.GREEN + "You are no longer in dying state.");
                 clearRedScreen();
+
+                // Hiding dying aura
+                final Game game = DeadByMinecraft.getPlugin().getGame();
+                if (game != null) {
+                    final ArrayList<Survivor> survivors = game.getSurvivors();
+                    for (final Survivor survivor : survivors)
+                        survivor.removeAura(this);
+                }
 
                 // Hiding bleed-out timer
                 player.setLevel(0);
@@ -235,6 +315,23 @@ public class Survivor extends Character {
         player.sendTitle(ChatColor.RED + "DEAD", ChatColor.RED + "You bled out", 10, 70, 20);
     }
 
+    public void trySelfUnhook() {
+        final double randomResult = Math.random();
+        if (randomResult < SELF_UNHOOK_CHANCE) {
+            player.sendMessage(ChatColor.GREEN + "You have unhooked yourself!");
+            getUnhooked(hookedOn);
+            return;
+        }
+
+        player.sendMessage(ChatColor.RED + "Self-unhook attempt failed!");
+        sacrificeTime -= FAILED_UNHOOK_TIME_PENALTY;
+    }
+
+    // Returns true if survivor can try to self-unhook
+    public boolean canSelfUnhook() {
+        return hookStage < 2 && sacrificeTime > 0;
+    }
+
     // If survivor is hooked, he can be sacrificed after some time.
     // Must be called every tick
     public void processSacrifice() {
@@ -242,14 +339,18 @@ public class Survivor extends Character {
             return;
 
         // Processing timer
-        if (!beingUnhooked && sacrificeTime > 0) {
+        if (!beingUnhooked && sacrificeTime > 0)
             --sacrificeTime;
 
-            // Progressing to the next stage
-            if (sacrificeTime == 0) {
-                ++hookStage;
-                sacrificeTime = STAGE_PROGRESSION_TIME;
-            }
+        // Progressing to the next stage
+        if (sacrificeTime <= 0) {
+            ++hookStage;
+            sacrificeTime += STAGE_PROGRESSION_TIME;
+            player.sendMessage(ChatColor.RED + "You have hit stage " + hookStage + "!");
+
+            final Game game = DeadByMinecraft.getPlugin().getGame();
+            if (game != null)
+                game.checkIfDoomed();
         }
 
         // PLACE FOR CHECK IF PERSON HIT THE 3rd stage
@@ -267,6 +368,9 @@ public class Survivor extends Character {
 
     // This function is called, when survivor is sacrificed
     public void getSacrificed() {
+        if (!isAlive())
+            return;
+
         if (hookedOn != null) {
             hookedOn.becomeBroken();
             hookedOn = null;
@@ -295,6 +399,8 @@ public class Survivor extends Character {
     }
 
     public boolean isBeingUnhooked() {
+        if (action != null && action instanceof SelfUnhookAction)
+            return true;
         return beingUnhooked;
     }
 
@@ -328,7 +434,8 @@ public class Survivor extends Character {
 
         // Survivor is now in the locker
         locker.setHidingSurvivor(this);
-        movementState = MovementState.IN_LOCKER;
+        setMovementState(MovementState.IN_LOCKER);
+        hideAllAuras();
     }
 
     public void leaveLocker(final Locker locker) {
@@ -342,7 +449,7 @@ public class Survivor extends Character {
         // Showing player
         DeadByMinecraft.getPlugin().vanishManager.show(player);
         locker.setHidingSurvivor(null);
-        movementState = Character.MovementState.IDLE;
+        setMovementState(Character.MovementState.IDLE);
 
         // Teleporting to the door
         final Location exitLocation = locker.getBottomDoorBlock().getLocation().clone();
@@ -353,6 +460,7 @@ public class Survivor extends Character {
         exitLocation.setYaw(playerPitchAndYaw.getYaw());
         player.teleport(exitLocation.add(DeadByMinecraft.CENTERING,
                 0, DeadByMinecraft.CENTERING));
+        showAllAuras();
     }
 
     public void getHooked(final Hook hook) {
@@ -364,9 +472,20 @@ public class Survivor extends Character {
         player.teleport(teleportLocation.add(DeadByMinecraft.CENTERING, 0, DeadByMinecraft.CENTERING));
         setHealthState(HealthState.HOOKED);
         hookedOn = hook;
-
-        ++hookStage;
         sacrificeTime = STAGE_PROGRESSION_TIME;
+        ++hookStage;
+
+        // Showing auras to everyone
+        final Game game = plugin.getGame();
+        if (game != null) {
+            final ArrayList<Survivor> survivors = game.getSurvivors();
+            for (final Survivor survivor : survivors)
+                survivor.addAura(this);
+            game.getKiller().addAura(this);
+        }
+
+        if (canSelfUnhook())
+            player.sendMessage(ChatColor.YELLOW + "You can try to self-unhook!");
 
         // Hooking sounds
         SoundManager.playForAll(player.getEyeLocation(), Sound.ENTITY_GHAST_HURT, 100f, 1f);
@@ -374,14 +493,25 @@ public class Survivor extends Character {
 
     public void getUnhooked(final Hook hook) {
         final DeadByMinecraft plugin = DeadByMinecraft.getPlugin();
-        hook.unHook();
+        if (hookedOn != null) {
+            hook.unHook();
+            hookedOn = null;
+        }
 
         plugin.freezeManager.unFreeze(player.getUniqueId());
         setHealthState(HealthState.INJURED);
-        hookedOn = null;
 
         // Hiding sacrifice time
         player.setLevel(0);
+
+        // Hiding aura from everyone
+        final Game game = plugin.getGame();
+        if (game != null) {
+            final ArrayList<Survivor> survivors = game.getSurvivors();
+            for (final Survivor survivor : survivors)
+                survivor.removeAura(this);
+            game.getKiller().removeAura(this);
+        }
     }
 
     // Returns hook on which survivor is hooked on

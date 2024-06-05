@@ -67,11 +67,6 @@ public class WiggleAction extends Action {
     }
 
     @Override
-    public void end() {
-        super.end();
-    }
-
-    @Override
     public float getProgress() {
         return wiggleProgress / MAX_WIGGLE_PROGRESS;
     }

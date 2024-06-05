@@ -9,6 +9,7 @@ import me.mod108.deadbyminecraft.targets.props.ExitGate;
 import me.mod108.deadbyminecraft.targets.props.Hatch;
 import me.mod108.deadbyminecraft.targets.props.vaultable.Vaultable;
 import me.mod108.deadbyminecraft.actions.VaultAction;
+import me.mod108.deadbyminecraft.utility.Game;
 import me.mod108.deadbyminecraft.utility.MovementSpeed;
 import me.mod108.deadbyminecraft.utility.SpeedModifier;
 import org.bukkit.Location;
@@ -42,6 +43,10 @@ public abstract class Character implements Target {
     // Current character's action
     protected Action action = null;
 
+    // This is a list of players, auras of which are visible to this player
+    final ArrayList<Character> auras = new ArrayList<>();
+    boolean aurasVisible = true;
+
     public Character(final Player player, final float baseSpeed) {
         this.player = player;
         this.baseSpeed = baseSpeed;
@@ -52,6 +57,85 @@ public abstract class Character implements Target {
         if (otherPlayer == null)
             return false;
         return (player.getUniqueId().equals(otherPlayer.getPlayer().getUniqueId()));
+    }
+
+    // Adds an aura
+    public void addAura(final Character aura) {
+        // Player can't see his own aura
+        if (samePlayer(aura))
+            return;
+
+        // Checking if aura is already visible
+        for (final Character visibleAura : auras) {
+            if (visibleAura.samePlayer(aura))
+                return;
+        }
+        auras.add(aura);
+        try {
+            if (aurasVisible)
+                DeadByMinecraft.getPlugin().glowingEntities.setGlowing(aura.getPlayer(), player);
+        } catch (final ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Removes an aura
+    public void removeAura(final Character aura) {
+        for (int i = 0; i < auras.size(); ++i) {
+            if (auras.get(i).samePlayer(aura)) {
+                auras.remove(i);
+                try {
+                    if (aurasVisible)
+                        DeadByMinecraft.getPlugin().glowingEntities.unsetGlowing(aura.getPlayer(), player);
+                } catch (final ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
+            }
+        }
+    }
+
+    // Removes all visible auras
+    public void removeAllAuras() {
+        if (aurasVisible) {
+            for (final Character visibleAura : auras) {
+                try {
+                    DeadByMinecraft.getPlugin().glowingEntities.unsetGlowing(visibleAura.getPlayer(), player);
+                } catch (final ReflectiveOperationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        auras.clear();
+    }
+
+    // Hides all visible auras
+    public void hideAllAuras() {
+        if (!aurasVisible)
+            return;
+
+        for (final Character visibleAura : auras) {
+            try {
+                DeadByMinecraft.getPlugin().glowingEntities.unsetGlowing(visibleAura.getPlayer(), player);
+            } catch (final ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        aurasVisible = false;
+    }
+
+    // Shows all visible auras
+    public void showAllAuras() {
+        if (aurasVisible)
+            return;
+        for (final Character visibleAura : auras) {
+            try {
+                DeadByMinecraft.getPlugin().glowingEntities.setGlowing(visibleAura.getPlayer(), player);
+            } catch (final ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        aurasVisible = true;
     }
 
     public boolean isInArea(final double x1, final double x2,
@@ -136,6 +220,10 @@ public abstract class Character implements Target {
 
     public MovementState getMovementState() {
         return movementState;
+    }
+
+    public void setMovementState(final MovementState movementState) {
+        this.movementState = movementState;
     }
 
     public Action getAction() {
