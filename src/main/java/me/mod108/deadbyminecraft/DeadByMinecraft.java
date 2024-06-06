@@ -30,6 +30,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 
 public final class DeadByMinecraft extends JavaPlugin {
+    // Plugin instance. It is set in onEnabled(). To access it, getPlugin() should be used.
+    private static DeadByMinecraft plugin;
+
+    // A way to get plugin instance
+    public static DeadByMinecraft getPlugin() {
+        return plugin;
+    }
+
     // Making props serializable
     static {
         ConfigurationSerialization.registerClass(Pallet.class, "Pallet");
@@ -41,18 +49,11 @@ public final class DeadByMinecraft extends JavaPlugin {
         ConfigurationSerialization.registerClass(Hatch.class, "Hatch");
     }
 
-    private static DeadByMinecraft plugin;
-
     // Used to adjust position of an object to make it centred
     public static final double CENTERING = 0.5;
 
     // Where Dead by Minecraft maps are saved
     public static final String MAPS_FOLDER_NAME = "maps";
-
-    // A way to get plugin instance
-    public static DeadByMinecraft getPlugin() {
-        return plugin;
-    }
 
     // Different game managers
     public final FreezeManager freezeManager = new FreezeManager();
