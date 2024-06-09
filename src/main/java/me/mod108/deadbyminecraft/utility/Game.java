@@ -77,7 +77,6 @@ public class Game {
         public void run() {
             if (isCancelled())
                 return;
-
             if (endGameCollapseStarted) {
                 endGameCollapseTimer -= survivorDowned ? 1 : 2;
 
@@ -89,10 +88,9 @@ public class Game {
 
                 // Sacrificing all survivors if the timer reaches 0
                 if (endGameCollapseTimer <= 0) {
-                    for (final Survivor survivor : survivors) {
+                    for (final Survivor survivor : survivors)
                         if (survivor.isAlive())
                             survivor.getSacrificed();
-                    }
                 }
             }
 

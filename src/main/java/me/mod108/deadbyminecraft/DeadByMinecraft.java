@@ -75,8 +75,6 @@ public final class DeadByMinecraft extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        final Server server = getServer();
-        final PluginManager pluginManager = server.getPluginManager();
 
         // Creating maps folder
         getConfig().options().copyDefaults();
@@ -122,6 +120,10 @@ public final class DeadByMinecraft extends JavaPlugin {
         registerCommand("getkillers", new GetKillersCommand());
         registerCommand("startgame", new StartGameCommand());
         registerCommand("finishgame", new FinishGameCommand());
+
+        // Getting plugin manager to register events
+        final Server server = getServer();
+        final PluginManager pluginManager = server.getPluginManager();
 
         // Freeze manager
         pluginManager.registerEvents(freezeManager, this);
