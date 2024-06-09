@@ -12,6 +12,6 @@ The plugin was created and tested for Spigot servers on version 1.20.2
 Dependencies:
 1) This plugin uses GlowingEntities util made by SkytAsul: https://github.com/SkytAsul/GlowingEntities/tree/master
 (Copy-pasted into the project, GlowingEntities.java)
-2) This plugin uses my own CrawlingPlugin, which is not public yet and requires some polishing. It will be added later.
+2) This plugin uses my own CrawlingPlugin to enable crawling: https://github.com/emod108/CrawlingPlugin
 
 There will be future updates to this plugin later soon, right now it can be used only for educational purposes.
