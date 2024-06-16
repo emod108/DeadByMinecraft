@@ -7,14 +7,13 @@ public class Directions {
     public static Vector getVector(final BlockFace direction, final int vectorValue) {
         final Vector vector = new Vector();
 
-        switch (direction) {
+        return switch (direction) {
             case NORTH -> vector.setZ(-vectorValue);
             case SOUTH -> vector.setZ(vectorValue);
             case EAST -> vector.setX(vectorValue);
             case WEST -> vector.setX(-vectorValue);
-        }
-
-        return vector;
+            default -> vector;
+        };
     }
 
     public static BlockFace turnLeft(final BlockFace direction) {
